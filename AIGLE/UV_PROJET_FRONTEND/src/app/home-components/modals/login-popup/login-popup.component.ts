@@ -14,8 +14,8 @@ import { UserService } from '../../../services/user.service';
   styleUrls: ['./login-popup.component.css']
 })
 export class LoginPopupComponent {
-  password !: string;
-  email !: string;
+  password!: string;
+  email!: string;
   user: any;
   loginForm!: FormGroup;
   codeForm!: FormGroup;
@@ -51,46 +51,152 @@ export class LoginPopupComponent {
     });
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.compose([Validators.required, this.customValidator.patternValidator()])]
-    }, {
-      validator: this.customValidator.MatchPassword('password', 'confirmPassword')
+      password: ['', Validators.compose([
+        Validators.required,
+        this.customValidator.patternValidator()
+      ])]
     });
 
     this.resetForm = this.fb.group({
       newPassword: ['', Validators.required],
-      confirmPassword: ['', [Validators.required, ]]
-    },
-    {
-      validator: this.customValidator.MatchPassword('newPassword', 'confirmPassword'),
+      confirmPassword: ['', Validators.required]
+    }, {
+      validator: this.customValidator.MatchPassword('newPassword', 'confirmPassword')
+    });
+  }
+
+  get loginFormControl() { return this.loginForm.controls; }
+  get resetRequestFormControl() { return this.resetRequestForm.controls; }
+  get verificationFormControl() { return this.verificationForm.controls; }
+  get resetFormControl() { return this.resetForm.controls; }
+
+  onSubmit() {
+    this.submitted = true;
+
+    if (this.loginForm.invalid) return;
+
+    this.isLoading = true;
+
+    this.userService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
+      next: value => {
+        const queryParams = {
+          token: value.access_token,
+          name: value.username,
+          role: value.role,
+          id: value.id,
+          isLoggedOut: false
+        };
+
+        // Stockage local
+        localStorage.setItem('token', value.access_token);
+        localStorage.setItem('name', value.username);
+        localStorage.setItem('role', value.role);
+        localStorage.setItem('id', value.id);
+        localStorage.setItem('user', JSON.stringify(value.user));
+
+        // 🔁 Redirection en fonction du rôle
+        this.redirectUserByRole(value.role, queryParams);
+
+        this.dialogRef.close();
+      },
+      error: err => {
+        console.error(err);
+        this.isLoading = false;
+        this.errorMessage = "Adresse email ou mot de passe invalide";
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // ✅ Méthode ajoutée : redirection selon le rôle
+  private redirectUserByRole(role: string, queryParams: any) {
+    switch (role) {
+      case 'admin':
+        this.router.navigate(['/admin/dashboard'], { queryParams });
+        break;
+      case 'superviseur':
+        this.router.navigate(['/enseignant'], { queryParams });
+        break;
+      case 'user':
+        this.router.navigate(['/user/dashboard'], { queryParams });
+        break;
+      default:
+        this.router.navigate(['/unauthorized']);
+        break;
     }
-  );
   }
 
-  get loginFormControl() {
-    return this.loginForm.controls;
+  onCancel() {
+    this.dialogRef.close();
   }
 
-  get resetRequestFormControl() {
-    return this.resetRequestForm.controls;
+  openRegisterDialog(): void {
+    this.dialogRef.close();
+    const dialogRef2 = this.dialog.open(RegisterComponent, {
+      width: '387px',
+      height: '600px',
+    });
+    dialogRef2.afterClosed().subscribe(() => console.log('Register dialog closed'));
   }
 
-  get verificationFormControl() {
-    return this.verificationForm.controls;
+  openForgetPasswordDialog(): void {
+    this.dialogRef.close();
+    const dialogRef3 = this.dialog.open(ForgetPasswordComponent, {
+      width: '400px',
+      height: '500px'
+    });
+    dialogRef3.afterClosed().subscribe(() => console.log('Forget password dialog closed'));
   }
 
-  get resetFormControl() {
-    return this.resetForm.controls;
+  onSendVerificationCode() {
+    this.submitted = true;
+    if (this.resetRequestForm.invalid) return;
+
+    this.isLoading = true;
+    const email = this.resetRequestForm.value.email;
+
+    this.userService.sendVerificationCode(email).subscribe({
+      next: () => { this.showVerification = true; },
+      error: err => {
+        console.error(err);
+        this.isLoading = false;
+        this.errorMessage = 'Erreur lors de l\'envoi du code de vérification.';
+        alert(this.errorMessage);
+      },
+      complete: () => { this.isLoading = false; }
+    });
+  }
+
+  onVerifyCode() {
+    this.submitted = true;
+    if (this.verificationForm.invalid) return;
+
+    this.isLoading = true;
+    const { email } = this.resetRequestForm.value;
+    const { verificationCode } = this.verificationForm.value;
+
+    this.userService.verifyResetcode(email, verificationCode).subscribe({
+      next: () => { this.showResetPasswordForm = true; },
+      error: err => {
+        console.error(err);
+        this.isLoading = false;
+        this.errorMessage = 'Code de vérification invalide.';
+        alert(this.errorMessage);
+      },
+      complete: () => { this.isLoading = false; }
+    });
   }
 
   onResetPassword() {
     this.submitted = true;
-    if (this.resetForm.invalid) {
-      return;
-    }
+    if (this.resetForm.invalid) return;
+
     this.isLoading = true;
-    const email = this.resetRequestForm.value.email;
-    const newPassword = this.resetForm.value.newPassword;
-    const verificationCode = this.verificationForm.value.verificationCode;
+    const { email } = this.resetRequestForm.value;
+    const { newPassword } = this.resetForm.value;
+    const { verificationCode } = this.verificationForm.value;
 
     this.userService.resetPassword(email, newPassword, verificationCode).subscribe({
       next: () => {
@@ -100,169 +206,10 @@ export class LoginPopupComponent {
       error: err => {
         console.error(err);
         this.isLoading = false;
-        this.errorMessage = 'Aucun utilisateur trouver avec cette adresse email';
+        this.errorMessage = 'Aucun utilisateur trouvé avec cette adresse email.';
         alert(this.errorMessage);
       },
-      complete: () => {
-        this.isLoading = false;
-      }
-    });
-  }
-
-  onVerifyCode() {
-    this.submitted = true;
-    if (this.verificationForm.invalid) {
-      return;
-    }
-
-    this.isLoading = true;
-    const email = this.resetRequestForm.value.email;
-    const verificationCode = this.verificationForm.value.verificationCode;
-
-    this.userService.verifyResetcode(email, verificationCode).subscribe({
-      next: () => {
-        this.showResetPasswordForm = true;
-      },
-      error: err => {
-        console.error(err);
-        this.isLoading = false;
-        this.errorMessage = 'Code de vérification invalide.';
-        alert(this.errorMessage);
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
-    });
-  }
-
-  onSendVerificationCode() {
-    this.submitted = true;
-    if (this.resetRequestForm.invalid) {
-      return;
-    }
-
-    this.isLoading = true;
-    const email = this.resetRequestForm.value.email;
-
-    this.userService.sendVerificationCode(email).subscribe({
-      next: () => {
-        this.showVerification = true;
-      },
-      error: err => {
-        console.error(err);
-        this.isLoading = true;
-        this.errorMessage = 'Erreur lors de l\'envoi du code de vérification.';
-        alert(this.errorMessage);
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
-    });
-  }
-
-  mustMatch(controlName: string) {
-    return (formGroup: FormGroup) => {
-      const control = formGroup.controls[controlName];
-      const matchingControl = formGroup.controls['confirmPassword'];
-
-      if (matchingControl.errors && !matchingControl.errors['mustMatch']) {
-        return;
-      }
-
-      if (control.value !== matchingControl.value) {
-        matchingControl.setErrors({ mustMatch: true });
-      } else {
-        matchingControl.setErrors(null);
-      }
-    };
-  }
-
-  onSubmit() {
-    this.submitted = true;
-
-    if (this.loginForm.invalid) {
-      return;
-    }
-
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      this.userService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
-        next: value => {
-          console.log(value)
-
-
-          const queryParams={
-           token:value.access_token,
-           name:value.username,
-           role : value.role,
-           id:value.id,
-           isLoggedOut:false
-          }
-          const userRole=value.role;
-          const token=value.access_token;
-          const name = value.username;
-          const role = value.role;
-          const id = value.id;
-
-          localStorage.setItem('token', token);
-          localStorage.setItem('name', name);
-          localStorage.setItem('role', role);
-          localStorage.setItem('id',id);
-          localStorage.setItem('user', JSON.stringify(value.user)); // Stocker les informations de l'utilisateur
-
-          //alert(`Bienvenue sur votre page d'utilisateur, ${name}`);
-
-
-
-          // Rediriger l'utilisateur en fonction de son rôle
-
-            this.router.navigateByUrl(
-              this.router.createUrlTree([`/${userRole}/dashboard`]),
-              { replaceUrl: true }
-            );
-          // Fermer le modal
-          this.dialogRef.close();
-        },
-        error: err => {
-          console.error(err);
-          this.isLoading = false;
-          this.errorMessage = "Addresse email ou mot de passe invalide";
-        },
-        complete: () => {
-          this.isLoading = false;
-          //this.router.navigate(['']);
-        }
-      });
-    }
-  }
-
-  onCancel() {
-    this.dialogRef.close();
-  }
-
-  openRegisterDialog(): void {
-    this.dialogRef.close(); // Close the current dialog
-
-    const dialogRef2 = this.dialog.open(RegisterComponent, {
-      width: '387px',
-      height: '600px',
-    });
-
-    dialogRef2.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
-  }
-
-  openForgetPasswordDialog(): void {
-    this.dialogRef.close(); // Close the current dialog
-
-    const dialogRef3 = this.dialog.open(ForgetPasswordComponent, {
-      width: '400px',
-      height: '500px'
-    });
-
-    dialogRef3.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+      complete: () => { this.isLoading = false; }
     });
   }
 }

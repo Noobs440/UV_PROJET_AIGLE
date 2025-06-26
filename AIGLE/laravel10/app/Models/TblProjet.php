@@ -103,7 +103,7 @@ class TblProjet extends Model
 
     public function collaborateurs()
     {
-        return $this->hasMany(TblCollaborateur::class);
+        return $this->belongsToMany(TblCollaborateur::class, 'collaborateur_projets');
     }
 
     public function toSearchableArray()

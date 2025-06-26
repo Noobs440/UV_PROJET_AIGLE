@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+
 import { UserRoutingModule } from './user-routing.module';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { SubmitPopupComponent } from './user-components/submit-popup/submit-popup.component';
@@ -11,7 +13,6 @@ import { DocumentPopupComponent } from './user-components/document-popup/documen
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogActions, MatDialogContent } from '@angular/material/dialog';
 import { CompleteDialogComponent } from './user-components/complete-dialog/complete-dialog.component';
-import { HelpComponent } from './user-components/help/help.component';
 
 
 @NgModule({
@@ -21,8 +22,7 @@ import { HelpComponent } from './user-components/help/help.component';
     UserComponent,
     ProjectDetailComponent,
     DocumentPopupComponent,
-    CompleteDialogComponent,
-    HelpComponent
+    CompleteDialogComponent
   ],
   imports: [
     CommonModule,

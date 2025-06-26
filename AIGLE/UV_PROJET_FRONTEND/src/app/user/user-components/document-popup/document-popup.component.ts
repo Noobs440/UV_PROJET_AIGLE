@@ -101,7 +101,7 @@ export class DocumentPopupComponent {
       console.error('Form is invalid or image not selected');
     }
     } else if (this.formType === 'collaborator' && this.collaboratorForm.valid) {
-      this.colService.addCollaborateur(this.collaboratorForm.value.name, this.collaboratorForm.value.email, this.id, this.user_id).subscribe({
+      this.colService.addCollaborateur(this.collaboratorForm.value.name, this.collaboratorForm.value.email).subscribe({
         next: value => {
           alert("collaborateur ajouter avec succes");
         },

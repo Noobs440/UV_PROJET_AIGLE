@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_superviseurs', function (Blueprint $table) {
+        Schema::create('tbl_collaborateurs', function (Blueprint $table) {
             $table->id();
-            $table->string('nom_sup')->unique();
-            $table->string('email_sup')->unique();
-            $table->string('role')->default('superviseur');
+            $table->string('nom_collab')->unique();
+            $table->string('email_collab')->unique();
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_superviseurs');
+        Schema::dropIfExists('tbl_collaborateurs');
     }
 };

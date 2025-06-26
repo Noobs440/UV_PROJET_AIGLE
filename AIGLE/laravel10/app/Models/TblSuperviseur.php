@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-
 /**
  * @OA\Schema(
  *     schema="TblSuperviseur",
@@ -13,24 +12,14 @@ use Illuminate\Database\Eloquent\Model;
  *     title="TblSuperviseur",
  *     required={"nom_sup", "email_sup"},
  *     @OA\Property(
- *         property="id",
- *         type="integer",
- *         format="int64",
- *         description="The unique identifier of the superviseur"
- *     ),
- *     @OA\Property(
- *         property="nom_sup",
+ *         property="role",
  *         type="string",
- *         description="Name of the superviseur"
- *     ),
- *     @OA\Property(
- *         property="email_sup",
- *         type="string",
- *         description="Email of the superviseur"
+ *         enum={"superviseur", "admin", "user"},
+ *         default="superviseur",
+ *         description="Role (superviseur par défaut mais autres rôles possibles)"
  *     )
  * )
  */
-
 class TblSuperviseur extends Model
 {
     use HasFactory;
@@ -38,7 +27,19 @@ class TblSuperviseur extends Model
     protected $fillable = [
         'nom_sup',
         'email_sup',
+        'role' // Champ modifiable manuellement
     ];
+
+    protected $attributes = [
+        'role' => 'superviseur' // Valeur par défaut
+    ];
+
+    public static function availableRoles(): array
+    {
+        return ['superviseur', 'admin', 'user'];
+    }
+
+    // Relations existantes
     public function users()
     {
         return $this->belongsToMany(User::class, 'superviseur_utilisateurs');
@@ -47,5 +48,13 @@ class TblSuperviseur extends Model
     public function projets()
     {
         return $this->belongsToMany(TblProjet::class, 'projet_superviseurs');
+    }
+
+    // Sécurisation des rôles
+    public function setRoleAttribute($value)
+    {
+        $this->attributes['role'] = in_array($value, self::availableRoles()) 
+            ? $value 
+            : 'superviseur'; // Fallback sécurisé
     }
 }

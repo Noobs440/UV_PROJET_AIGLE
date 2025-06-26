@@ -74,7 +74,7 @@ export class SubmitPopupComponent implements OnInit {
     });
     this.collaboratorForm = this.fb.group({
       name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email]]
     });
     this.supervisorForm = this.fb.group({
       name: ['', Validators.required],
@@ -260,7 +260,7 @@ export class SubmitPopupComponent implements OnInit {
       }
      if (this.formType === 'collaborator' && this.collaboratorForm.valid) {
         //this.isLoading=true;
-        this.colService.addCollaborateur(this.collaboratorForm.value.name, this.collaboratorForm.value.email, this.project_id, this.user_id).subscribe({
+        this.colService.addCollaborateur(this.collaboratorForm.value.name, this.collaboratorForm.value.email).subscribe({
         next: value => {
           alert("collaborateur ajouter avec succes");
           this.isLoading=false;

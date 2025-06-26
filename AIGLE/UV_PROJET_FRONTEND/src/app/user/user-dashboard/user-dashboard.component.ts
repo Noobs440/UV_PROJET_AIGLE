@@ -1,19 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { SubmitPopupComponent } from '../user-components/submit-popup/submit-popup.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ListingService } from '../../services/listing.service';
+
 
 @Component({
   selector: 'app-user-dashboard',
   templateUrl: './user-dashboard.component.html',
-  styleUrls: ['./user-dashboard.component.css']  // corrigé styleUrls au pluriel
+  styleUrl: './user-dashboard.component.css'
 })
-export class UserDashboardComponent implements OnInit {
-  token!: string | null;
-  name!: string | null;
-  role!: string | null;
-  id!: string | null;
+export class UserDashboardComponent implements OnInit{
+  token!: string;
+  name!: string;
+  role!: string;
+  id!: any;
   projects: any[] = [];
   selectedProject: any[] = [];
   isLoading = false;
@@ -21,24 +22,16 @@ export class UserDashboardComponent implements OnInit {
   itemsPerPage = 8;
   totalPages = 1;
 
-  constructor(private router: Router, private dialog: MatDialog, private ProjectByIdService: ListingService) { }
+  constructor(private router: Router, private route: ActivatedRoute, private dialog: MatDialog, private ProjectByIdService: ListingService) { }
 
   ngOnInit(): void {
     this.isLoading = true;
-
-    // Récupérer les infos utilisateur depuis localStorage
-    this.token = localStorage.getItem('token');
-    this.name = localStorage.getItem('name');
-    this.role = localStorage.getItem('role');
-    this.id = localStorage.getItem('id');
-
-    // Si pas de token, rediriger vers home (ou login)
-    if (!this.token) {
-      this.router.navigate(['/home']);
-      return;
-    }
-
-    // Charger les projets avec l'id utilisateur
+    this.route.queryParams.subscribe(params => {
+      this.token = params['token'];
+      this.name = params['name'];
+      this.role = params['role'];
+      this.id = params['id'];
+    });
     this.ProjectByIdService.getProjectsById(this.id).subscribe({
       next: (data) => {
         this.projects = data;
@@ -92,10 +85,14 @@ export class UserDashboardComponent implements OnInit {
   openDialog(): void {
     const dialogConfig = new MatDialogConfig();
 
-    dialogConfig.disableClose = true;
-    dialogConfig.width = '400px';
-    dialogConfig.height = '620px';
 
-    this.dialog.open(SubmitPopupComponent, dialogConfig);
+
+    dialogConfig.disableClose = true;
+    dialogConfig.width='400px';
+    dialogConfig.height='620px';
+
+    this.dialog.open(SubmitPopupComponent,dialogConfig );
+
+
   }
 }

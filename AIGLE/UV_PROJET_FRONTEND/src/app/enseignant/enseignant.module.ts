@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { AdminRoutingModule } from './admin-routing.module';
+import { EnseignantRoutingModule } from './enseignant.routing.module';
 
-import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
+import { EnseignantDashboardComponent } from './enseignant-dashboard/enseignant-dashboard.component';
 import { AgGridModule } from 'ag-grid-angular';
-import { TableComponent } from './admin-components/table/table.component';
-import { DetailProjectComponent } from './admin-components/detail-project/detail-project.component';
-import { AgTabComponent } from './admin-components/ag-tab/ag-tab.component';
-import { AdminComponent } from './admin-components/admin/admin.component';
+import { TableComponent } from './enseignant-components/table/table.component';
+import { DetailProjetComponent } from './enseignant-components/detail-projet/detail-projet.component';
+import { AgTabComponent } from './enseignant-components/ag-tab/ag-tab.component';
+import { EnseignantComponent } from './enseignant-components/enseignant/enseignant.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
@@ -20,16 +20,16 @@ import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
-    AdminDashboardComponent,
+    EnseignantDashboardComponent,
     TableComponent,
-    DetailProjectComponent,
+    DetailProjetComponent,
     AgTabComponent,
-    AdminComponent,
+    EnseignantComponent,
   ],
   imports: [
     AgGridModule,
     CommonModule,
-    AdminRoutingModule,
+    EnseignantRoutingModule,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
@@ -39,6 +39,6 @@ import { MatIconModule } from '@angular/material/icon';
 
   ]
 })
-export class AdminModule {
+export class EnseignantModule {
 
 }
