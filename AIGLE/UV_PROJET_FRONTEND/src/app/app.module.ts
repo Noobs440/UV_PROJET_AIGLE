@@ -38,6 +38,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CounterDirective } from './home-components/stats/counter.directive';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
+import { HelpComponent } from './user/user-components/help/help.component';
+import { AdminComponent } from './adminsys/adminsys-components/admin/admin.component';
+import { TableComponent } from './adminsys/adminsys-components/table/table.component';
+import { AdminsysDashboardComponent } from './adminsys/adminsys-dashboard/adminsys-dashboard.component';
 
 
 // AoT requires an exported function for factories
@@ -73,6 +77,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     CounterDirective,
     SafeUrlPipe,
     ConfirmDialogComponent,
+    AdminsysDashboardComponent,
+    AdminComponent,
+    TableComponent,
+    AdminsysDashboardComponent,
   ],
   imports: [
     BrowserModule,

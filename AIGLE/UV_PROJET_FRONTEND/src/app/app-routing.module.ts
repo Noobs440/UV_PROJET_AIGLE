@@ -9,18 +9,27 @@ import { ProjectDetailComponent } from './home-components/project-detail/project
 import { DefaultComponent } from './layouts/default/default.component';
 import { AdminComponent } from './admin/admin-components/admin/admin.component';
 import { UserComponent } from './user/user-components/user/user.component';
-
-
+import { AdminsysDashboardComponent } from './adminsys/adminsys-dashboard/adminsys-dashboard.component';
+import { AuthGuard } from './guards/auth.gard';
+import { HelpComponent } from './user/user-components/help/help.component';
+import { HelpComponentAdmin } from './admin/admin-components/help/help.component';
+import { UserDashboardComponent } from './user/user-dashboard/user-dashboard.component';
 const routes: Routes = [
+
+  { path: 'adminsys', component: AdminsysDashboardComponent },
 
   {
     path: 'admin',
     component: AdminComponent,
     children: [
       { path: '', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
-    ],
+    ]
+    
       //canActivate: [adminGuard]
   },
+   { path: 'helpUser', component: HelpComponent },
+   { path: 'helpAdmin', component: HelpComponentAdmin},
+   { path: 'dashboard', component: HelpComponentAdmin},
   {
     path: 'user',
     component: UserComponent,
