@@ -28,6 +28,7 @@ class User extends Authenticatable
     protected $fillable = [
         'nom_user',
         'email',
+        'matricule',
         'tbl_filiere_id',
         'password',
     ];

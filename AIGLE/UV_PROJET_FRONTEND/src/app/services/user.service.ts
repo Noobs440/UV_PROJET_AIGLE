@@ -13,8 +13,8 @@ export class UserService {
     return this.http.post<any>(`${this.apiUrl}/usecases/auth/connexion` , {email , password});
   }
 
-  inscription(nom_user:string ,email:string, password:string, tbl_filiere_id:string):Observable<any>{
-    return this.http.post<any>(`${this.apiUrl}/usecases/auth/inscription` , {nom_user , email , password,tbl_filiere_id}, { withCredentials: true });
+  inscription(nom_user:string ,email:string, password:string, tbl_filiere_id:string,matricule:string):Observable<any>{
+    return this.http.post<any>(`${this.apiUrl}/usecases/auth/inscription` , {nom_user , email , password,tbl_filiere_id, matricule}, { withCredentials: true });
 
   }
 
