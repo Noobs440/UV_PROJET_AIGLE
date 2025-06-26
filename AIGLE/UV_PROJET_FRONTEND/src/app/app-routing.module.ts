@@ -9,7 +9,11 @@ import { ProjectDetailComponent } from './home-components/project-detail/project
 import { DefaultComponent } from './layouts/default/default.component';
 import { AdminComponent } from './admin/admin-components/admin/admin.component';
 import { UserComponent } from './user/user-components/user/user.component';
-
+import { ProfileComponent } from './components/profile/profile.component';
+import { EditNameComponent } from './components/profile/edit-name.component';
+import { EditEmailComponent } from './components/profile/edit-email.component';
+import { EditPasswordComponent } from './components/profile/edit-password.component';
+import { EditPhotoComponent } from './components/profile/edit-photo.component';
 
 const routes: Routes = [
 
@@ -29,6 +33,19 @@ const routes: Routes = [
     ],
       //canActivate: [userGuard]
   },
+
+    {
+      path: 'profile',
+      component: ProfileComponent,
+      children: [
+        { path: '', redirectTo: 'edit-name', pathMatch: 'full' },
+        { path: 'edit-name', component: EditNameComponent },
+        { path: 'edit-email', component: EditEmailComponent },
+        { path: 'edit-password', component: EditPasswordComponent },
+        { path: 'edit-photo', component: EditPhotoComponent },
+      ]
+    },
+
   {
     path: '',
     component: DefaultComponent,

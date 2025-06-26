@@ -7,62 +7,72 @@ import { Observable, tap, catchError, of } from 'rxjs';
 })
 export class ProjetService {
 
-  constructor(private http:HttpClient){}
+  private API_BASE = 'http://localhost:8000/api';
 
+  constructor(private http: HttpClient) {}
+
+  // ✅ Récupérer tous les projets
   getProjects(): Observable<any> {
-    return this.http.get('http://localhost:8000/api/ressources/projets');
-  }
-  countViews(id:any): Observable<any> {
-    return this.http.get(`http://localhost:8000/api/usecases/addview/${id}`);
+    return this.http.get(`${this.API_BASE}/ressources/projets`);
   }
 
+  // ✅ Incrémenter les vues d’un projet
+  countViews(id: any): Observable<any> {
+    return this.http.get(`${this.API_BASE}/usecases/addview/${id}`);
+  }
+
+  // ✅ Modifier le statut d’un projet
   updateProjectStatus(projectId: number, status: string): Observable<any> {
-    return this.http.patch(`http://localhost:8000/api/usecases/status/projects/${projectId}`, { status });
+    return this.http.patch(`${this.API_BASE}/usecases/status/projects/${projectId}`, { status });
   }
 
-
-
-  // getProjects(): Observable<any[]>{
-  //   return this.http.get<any[]>('http://localhost:8000/api/ressources/projets').pipe(
-  //     tap((response)=>console.table(response)),
-  //     catchError((error) =>{
-  //       console.log(error);
-  //       return of([]);
-  //     })
-  //   )
-  // }
-
-
-
-  getProjectsTypes(): Observable<any[]>{
-    return this.http.get<any[]>('http://localhost:8000/api/usecases/listing/getprojectstype').pipe(
-      tap((response)=>console.table(response)),
-      catchError((error) =>{
-        console.log(error);
+  // ✅ Récupérer les types de projet (Projet, Mémoire, Article, etc.)
+  getProjectsTypes(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_BASE}/usecases/listing/getprojectstype`).pipe(
+      tap((response) => console.table(response)),
+      catchError((error) => {
+        console.error(error);
         return of([]);
       })
-    )
+    );
   }
 
+  // ✅ Ajouter un projet (FormData pour l’upload d’image)
   addProject(formData: FormData): Observable<any> {
-    return this.http.post<any>('http://localhost:8000/api/ressources/projets', formData);
+    return this.http.post<any>(`${this.API_BASE}/ressources/projets`, formData);
   }
 
-  deleteProject(id:number):Observable<any>{
-    return this.http.delete(`http://localhost:8000/api/ressources/projets/${id}`);
+  // ✅ Supprimer un projet
+  deleteProject(id: number): Observable<any> {
+    return this.http.delete(`${this.API_BASE}/ressources/projets/${id}`);
   }
 
-  updateProject(id:string ,titre_projet:string , descript_projet:string , user_id:string, tbl_niveau_id:string, tbl_categorie_id:string):Observable<any>{
-    return this.http.put<any>(`http://localhost:8000/api/ressources/projets/${id}`, {titre_projet , descript_projet , user_id, tbl_niveau_id, tbl_categorie_id});
+  // ✅ Modifier un projet existant
+  updateProject(
+    id: string,
+    titre_projet: string,
+    descript_projet: string,
+    user_id: string,
+    tbl_niveau_id: string,
+    tbl_categorie_id: string
+  ): Observable<any> {
+    return this.http.put<any>(`${this.API_BASE}/ressources/projets/${id}`, {
+      titre_projet,
+      descript_projet,
+      user_id,
+      tbl_niveau_id,
+      tbl_categorie_id
+    });
   }
 
-  countProjectsByStatus(): Observable<any[]>{
-    return this.http.get<any[]>('http://localhost:8000/api/usecases/listing/count').pipe(
-      tap((response)=>console.table(response)),
-      catchError((error) =>{
-        console.log(error);
+  // ✅ Compter les projets par statut (utile pour les stats ou dashboard)
+  countProjectsByStatus(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_BASE}/usecases/listing/count`).pipe(
+      tap((response) => console.table(response)),
+      catchError((error) => {
+        console.error(error);
         return of([]);
       })
-    )
+    );
   }
 }

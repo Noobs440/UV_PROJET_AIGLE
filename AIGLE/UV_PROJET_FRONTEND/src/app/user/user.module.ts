@@ -2,18 +2,17 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
-
 import { UserRoutingModule } from './user-routing.module';
+
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { SubmitPopupComponent } from './user-components/submit-popup/submit-popup.component';
 import { UserComponent } from './user-components/user/user.component';
 import { ProjectDetailComponent } from './user-components/project-detail/project-detail.component';
 import { DocumentPopupComponent } from './user-components/document-popup/document-popup.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialog, MatDialogActions, MatDialogContent } from '@angular/material/dialog';
 import { CompleteDialogComponent } from './user-components/complete-dialog/complete-dialog.component';
 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialogModule } from '@angular/material/dialog'; // ✅ correction ici
 
 @NgModule({
   declarations: [
@@ -30,8 +29,7 @@ import { CompleteDialogComponent } from './user-components/complete-dialog/compl
     FormsModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
-    MatDialogActions,
-    MatDialogContent
+    MatDialogModule // ✅ module correct
   ]
 })
 export class UserModule { }

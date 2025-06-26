@@ -4,13 +4,12 @@ import { SubmitPopupComponent } from '../user-components/submit-popup/submit-pop
 import { ActivatedRoute, Router } from '@angular/router';
 import { ListingService } from '../../services/listing.service';
 
-
 @Component({
   selector: 'app-user-dashboard',
   templateUrl: './user-dashboard.component.html',
-  styleUrl: './user-dashboard.component.css'
+  styleUrls: ['./user-dashboard.component.css']
 })
-export class UserDashboardComponent implements OnInit{
+export class UserDashboardComponent implements OnInit {
   token!: string;
   name!: string;
   role!: string;
@@ -22,42 +21,88 @@ export class UserDashboardComponent implements OnInit{
   itemsPerPage = 8;
   totalPages = 1;
 
-  constructor(private router: Router, private route: ActivatedRoute, private dialog: MatDialog, private ProjectByIdService: ListingService) { }
+  searchQuery: string = '';
+  selectedTypeFilter: string = 'all';
+
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private dialog: MatDialog,
+    private projectByIdService: ListingService
+  ) {}
 
   ngOnInit(): void {
     this.isLoading = true;
+
     this.route.queryParams.subscribe(params => {
       this.token = params['token'];
       this.name = params['name'];
       this.role = params['role'];
       this.id = params['id'];
+
+      this.loadProjects();
     });
-    this.ProjectByIdService.getProjectsById(this.id).subscribe({
+  }
+
+  loadProjects() {
+    this.projectByIdService.getProjectsById(this.id).subscribe({
       next: (data) => {
-        this.projects = data;
-        this.totalPages = Math.ceil(this.projects.length / this.itemsPerPage);
-        this.updateDisplayedProjects();
-      },
-      error: () => {
+        this.projects = data ?? [];
+        this.applyFilters();
         this.isLoading = false;
       },
-      complete: () => {
+      error: () => {
+        this.projects = [];
+        this.selectedProject = [];
         this.isLoading = false;
       }
     });
   }
 
-  updateDisplayedProjects() {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.selectedProject = this.projects.slice(startIndex, endIndex);
+  applyFilters(): void {
+    const query = this.searchQuery.toLowerCase().trim();
+
+    const filtered = this.projects.filter(project => {
+      const matchesSearch =
+        project.titre?.toLowerCase().includes(query) ||
+        project.type?.toLowerCase().includes(query);
+
+      const matchesType =
+        this.selectedTypeFilter === 'all' ||
+        project.type?.toLowerCase() === this.selectedTypeFilter.toLowerCase();
+
+      return matchesSearch && matchesType;
+    });
+
+    this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
+    this.currentPage = 1;
+    this.updateDisplayedProjects(filtered);
   }
 
-  onPageChange(page: number) {
+  updateDisplayedProjects(filteredProjects?: any[]): void {
+    const projectsToPaginate = filteredProjects ?? this.projects;
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.selectedProject = projectsToPaginate.slice(startIndex, endIndex);
+  }
+
+  onPageChange(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
-      this.updateDisplayedProjects();
+      this.applyFilters();  // reapply filters and update displayed projects for pagination
     }
+  }
+
+  onSearchQueryChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchQuery = input.value;
+    this.applyFilters();
+  }
+
+  onTypeFilterChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.selectedTypeFilter = select.value;
+    this.applyFilters();
   }
 
   getProjectQueryParams(project: any) {
@@ -78,21 +123,23 @@ export class UserDashboardComponent implements OnInit{
     };
   }
 
-  getFullImageUrl(projectImage: string) {
-    return `http://localhost:8000${projectImage}`;
+  getFullImageUrl(projectImage: string): string {
+    if (!projectImage) {
+      return '';
+    }
+    if (projectImage.startsWith('http')) {
+      return projectImage;
+    }
+    return `http://localhost:8000${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
   }
 
   openDialog(): void {
     const dialogConfig = new MatDialogConfig();
 
-
-
     dialogConfig.disableClose = true;
-    dialogConfig.width='400px';
-    dialogConfig.height='620px';
+    dialogConfig.width = '400px';
+    dialogConfig.height = '620px';
 
-    this.dialog.open(SubmitPopupComponent,dialogConfig );
-
-
+    this.dialog.open(SubmitPopupComponent, dialogConfig);
   }
 }

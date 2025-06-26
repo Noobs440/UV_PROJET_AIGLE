@@ -28,8 +28,11 @@ class User extends Authenticatable
     protected $fillable = [
         'nom_user',
         'email',
+        'photo',
         'tbl_filiere_id',
         'password',
+        'surname',
+        
     ];
 
     public function filiere()

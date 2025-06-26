@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
 import { Router } from '@angular/router';
 import { DocumentService } from '../../../services/document.service';
+
 @Component({
   selector: 'app-detail-project',
   templateUrl: './detail-project.component.html',

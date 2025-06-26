@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Usecases;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-
 
 class FileUploadController extends Controller
 {
@@ -19,8 +17,7 @@ class FileUploadController extends Controller
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 @OA\Property(property="file", type="string", format="binary", description="Fichier à télécharger"),
-     *                 @OA\Property(property="path", type="string", description="Chemin où le fichier sera stocké")
+     *                 @OA\Property(property="file", type="string", format="binary", description="Fichier à télécharger")
      *             )
      *         )
      *     ),
@@ -28,7 +25,7 @@ class FileUploadController extends Controller
      *         response=200,
      *         description="URL publique du fichier téléchargé",
      *         @OA\JsonContent(
-     *             @OA\Property(property="url", type="string", example="http://example.com/storage/public/path/to/file.txt")
+     *             @OA\Property(property="url", type="string", example="http://example.com/images/project/file.jpg")
      *         )
      *     ),
      *     @OA\Response(
@@ -39,26 +36,31 @@ class FileUploadController extends Controller
      */
     public function uploadFile(Request $request)
     {
-        // Valider la requête pour s'assurer qu'un fichier est présent
+        // Valider la requête
         $request->validate([
             'file' => 'required|file',
-            'path' => 'required|string',
         ]);
 
-        // Récupérer le fichier et le chemin
+        // Récupérer le fichier
         $file = $request->file('file');
-        $path = 'public/' . $request->input('path');
 
-        // Générer un nom de fichier unique pour éviter les conflits
-        $fileName = $file->getClientOriginalName();
+        // Définir le chemin de destination dans public/images/project
+        $destinationPath = public_path('images/project');
 
-        // Sauvegarder le fichier dans le chemin spécifié
-        $finalPath = $file->storeAs($path, $fileName);
+        // Créer le dossier s’il n’existe pas
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
 
-        // Récupérer l'URL publique du fichier
-        $publicUrl = Storage::url($finalPath);
+        // Générer un nom unique pour éviter les collisions
+        $fileName = time() . '_' . $file->getClientOriginalName();
 
-        // Retourner l'URL publique du fichier sous forme de JSON
+        // Déplacer le fichier dans public/images/project
+        $file->move($destinationPath, $fileName);
+
+        // Construire l’URL publique
+        $publicUrl = url('images/project/' . $fileName);
+
         return response()->json(['url' => $publicUrl], 200, [], JSON_UNESCAPED_SLASHES);
     }
 
@@ -70,7 +72,7 @@ class FileUploadController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="path", type="string", description="Chemin du fichier à supprimer")
+     *             @OA\Property(property="filename", type="string", description="Nom du fichier à supprimer")
      *         )
      *     ),
      *     @OA\Response(
@@ -88,17 +90,17 @@ class FileUploadController extends Controller
      */
     public function deleteFile(Request $request)
     {
-        // Valider la requête pour s'assurer que le chemin du fichier est fourni
+        // Valider la requête
         $request->validate([
-            'path' => 'required|string',
+            'filename' => 'required|string',
         ]);
 
-        // Récupérer le chemin du fichier à partir de la requête
-        $path = 'public/' . $request->input('path');
+        // Chemin complet du fichier à supprimer
+        $filePath = public_path('images/project/' . $request->input('filename'));
 
-        // Supprimer le fichier du système de fichiers
-        if (Storage::exists($path)) {
-            Storage::delete($path);
+        // Supprimer le fichier s’il existe
+        if (file_exists($filePath)) {
+            unlink($filePath);
             return response()->json(['message' => 'File deleted successfully.']);
         } else {
             return response()->json(['message' => 'File not found.'], 404);
