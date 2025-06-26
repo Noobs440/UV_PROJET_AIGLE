@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HelpComponent } from './help.component';
+import { HelpComponentAdmin } from './help.component';
 
-describe('HelpComponent', () => {
-  let component: HelpComponent;
-  let fixture: ComponentFixture<HelpComponent>;
+describe('HelpComponentAdmin', () => {
+  let component: HelpComponentAdmin;
+  let fixture: ComponentFixture<HelpComponentAdmin>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [HelpComponent]
+      declarations: [HelpComponentAdmin]
     })
     .compileComponents();
-    
-    fixture = TestBed.createComponent(HelpComponent);
+
+    fixture = TestBed.createComponent(HelpComponentAdmin);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -21,3 +21,4 @@ describe('HelpComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+

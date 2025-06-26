@@ -15,6 +15,7 @@ import { AdminGuard } from './guards/admin.guard';
 import { UserGuard } from './guards/user.guard';
 import { HelpComponent } from './user/user-components/help/help.component';
 import { HelpComponentAdmin } from './admin/admin-components/help/help.component';
+import { UserDashboardComponent } from './user/user-dashboard/user-dashboard.component';
 
 const routes: Routes = [
 
@@ -26,46 +27,37 @@ const routes: Routes = [
     children: [
       { path: '', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
     ],
-    
-    canActivate: [AuthGuard,AdminGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
-   { path: 'helpUser', component: HelpComponent },
-   { path: 'helpAdmin', component: HelpComponentAdmin},
+
+  { path: 'helpUser', component: HelpComponent },
+  { path: 'helpAdmin', component: HelpComponentAdmin },
+  { path: 'dashboard', component: HelpComponentAdmin },
+
   {
     path: 'user',
     component: UserComponent,
     children: [
       { path: '', loadChildren: () => import('./user/user.module').then(m => m.UserModule) },
     ],
-    canActivate: [AuthGuard,UserGuard],
+    canActivate: [AuthGuard, UserGuard],
   },
+
   {
     path: '',
     component: DefaultComponent,
     children: [
-      // { path: '', redirectTo: '/home', pathMatch: 'full' },
-      // { path: 'home', loadChildren: () => import('./home/home.module').then(m => m.HomeModule) },
-      // { path: 'login', component: LoginComponent },
-      {path:"",redirectTo:"home",pathMatch:"full"},
-      // {path:"home/login",component:LoginComponent},
-      // {path:"home/register", component:RegisterComponent},
-      // {path:"admin", component:AdminDashboardComponent},
-      {path:"home/contact", component:ContactComponent},
-      {path:"home/category", component:PopCategoryComponent},
-      {path:"home/projects-listing", component:ProjectsComponent},
-      {path:"home/team", component:TeamComponent},
-      {path:"home/project-detail/:id", component:ProjectDetailComponent},
-      {path:"home",component:HomeComponent},
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'home/contact', component: ContactComponent },
+      { path: 'home/category', component: PopCategoryComponent },
+      { path: 'home/projects-listing', component: ProjectsComponent },
+      { path: 'home/team', component: TeamComponent },
+      { path: 'home/project-detail/:id', component: ProjectDetailComponent },
+      { path: 'home', component: HomeComponent },
     ],
-     //canActivate: [appGuard]
-  },
-  {
-    path: '**', redirectTo: '/home'
   },
 
-  // { path: 'admin', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
-  // { path: 'user', loadChildren: () => import('./user/user.module').then(m => m.UserModule) },
-
+  { path: '**', redirectTo: '/home' },
 ];
 
 @NgModule({
