@@ -32,6 +32,12 @@ export class LoginPopupComponent {
   showSuccessMessage = false;
   successMessage = '';
 
+  // Ajout de la variable pour afficher / masquer le mot de passe
+  showPassword: boolean = false;       // Pour le champ mot de passe du login
+  showNewPassword: boolean = false;    // Pour le nouveau mot de passe (reset)
+  showConfirmPassword: boolean = false; // Pour la confirmation du mot de passe (reset)
+
+
   constructor(
     private router: Router,
     private authService: AuthService,

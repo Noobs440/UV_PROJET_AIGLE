@@ -18,14 +18,20 @@
         <span class="text-danger text-sm" *ngIf="(submitted || loginFormControl['email'].touched) && loginFormControl['email'].errors?.['required']">{{ 'emailRequiredError' | translate }}</span>
         <span class="text-danger" *ngIf="loginFormControl['email'].touched && loginFormControl['email'].errors?.['email']">{{ 'emailInvalidError' | translate }}</span>
       </div>
-      <div class="mb-2">
+
+      <!-- Mot de passe avec bouton œil -->
+      <div class="mb-2 relative">
         <label class="block mb-1 text-sm font-medium text-gray-700" for="password">{{ 'passwordLabel' | translate }}</label>
-        <input placeholder="{{ 'passwordPlaceholder' | translate }}" formControlName="password" type="password" id="password" name="password"
-               [ngClass]="{'custom-outline': (loginFormControl['password'].touched || submitted) && loginFormControl['password'].errors}"
-               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue">
+        <input placeholder="{{ 'passwordPlaceholder' | translate }}" formControlName="password" [type]="showPassword ? 'text' : 'password'"
+               id="password" name="password" [ngClass]="{'custom-outline': (loginFormControl['password'].touched || submitted) && loginFormControl['password'].errors}"
+               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue pr-10">
+        <button type="button" (click)="showPassword = !showPassword" class="absolute top-8 right-3 text-gray-600">
+          <i [ngClass]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+        </button>
         <span class="text-danger" *ngIf="(loginFormControl['password'].touched || submitted) && loginFormControl['password'].errors?.['required']">{{ 'passwordRequiredError' | translate }}</span>
         <span class="text-danger text-sm" *ngIf="loginFormControl['password'].touched && loginFormControl['password'].errors?.['invalidPassword']">{{ 'passwordInvalidError' | translate }}</span>
       </div>
+
       <div class="relative">
         <button [disabled]="isLoading || loginForm.invalid" type="submit"
                 class="disabled:bg-gray-300 disabled:cursor-not-allowed w-full px-4 py-2 text-white rounded-md flex items-center justify-center"
@@ -35,6 +41,7 @@
         </button>
       </div>
     </form>
+
     <p class="text-red-600 text-center text-sm" *ngIf="errorMessage">{{ errorMessage }}</p>
     <div class="mt-4 text-left">
       <a (click)="this.showPasswordReset = true;" class="cursor-pointer block mb-2 -mt-5 text-sm text-black font-bold">{{ 'forgotPassword' | translate }}</a>
@@ -91,22 +98,31 @@
     </form>
   </div>
 
-  <!-- Reset Password Form -->
+  <!-- Reset Password Form avec affichage / masquage mot de passe -->
   <div *ngIf="showResetPasswordForm && !showSuccessMessage">
     <h2 class="mb-2 text-customBlue text-2xl font-bold text-center">{{ 'resetPasswordTitle' | translate }}</h2>
     <form [formGroup]="resetForm" (ngSubmit)="onResetPassword()">
-      <div class="mb-2">
+      <div class="mb-2 relative">
         <label class="block mb-2 mt-2 text-sm font-medium text-gray-700" for="newPassword">{{ 'newPasswordLabel' | translate }}</label>
-        <input placeholder="{{ 'newPasswordPlaceholder' | translate }}" formControlName="newPassword" type="password" id="newPassword" name="newPassword"
+        <input placeholder="{{ 'newPasswordPlaceholder' | translate }}" formControlName="newPassword"
+               [type]="showNewPassword ? 'text' : 'password'" id="newPassword" name="newPassword"
                [ngClass]="{'custom-outline': (resetFormControl['newPassword'].touched || submitted) && resetFormControl['newPassword'].errors}"
-               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-customBlue">
+               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-customBlue pr-10">
+        <button type="button" (click)="showNewPassword = !showNewPassword" class="absolute top-8 right-3 text-gray-600">
+          <i [ngClass]="showNewPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+        </button>
         <span class="text-red-500 text-sm" *ngIf="(resetFormControl['newPassword'].touched || submitted) && resetFormControl['newPassword'].errors?.['required']">{{ 'newPasswordRequiredError' | translate }}</span>
       </div>
-      <div class="mb-2">
+
+      <div class="mb-2 relative">
         <label class="block mb-2 mt-2 text-sm font-medium text-gray-700" for="confirmPassword">{{ 'confirmPasswordLabel' | translate }}</label>
-        <input placeholder="{{ 'confirmPasswordPlaceholder' | translate }}" formControlName="confirmPassword" type="password" id="confirmPassword" name="confirmPassword"
+        <input placeholder="{{ 'confirmPasswordPlaceholder' | translate }}" formControlName="confirmPassword"
+               [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" name="confirmPassword"
                [ngClass]="{'custom-outline': (resetFormControl['confirmPassword'].touched || submitted) && resetFormControl['confirmPassword'].errors}"
-               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-customBlue">
+               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-customBlue pr-10">
+        <button type="button" (click)="showConfirmPassword = !showConfirmPassword" class="absolute top-8 right-3 text-gray-600">
+          <i [ngClass]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+        </button>
         <span class="text-red-500 text-sm" *ngIf="(resetFormControl['confirmPassword'].touched || submitted) && resetFormControl['confirmPassword'].errors?.['required']">{{ 'confirmPasswordRequiredError' | translate }}</span>
         <span class="text-red-500 text-sm" *ngIf="resetFormControl['confirmPassword'].touched && resetFormControl['confirmPassword'].errors?.['passwordMismatch']">{{ 'passwordMismatchError' | translate }}</span>
       </div>

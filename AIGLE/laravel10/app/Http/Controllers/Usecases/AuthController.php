@@ -26,7 +26,8 @@ class AuthController extends Controller
      *             @OA\Property(property="email", type="string", format="email", example="johndoe@example.com"),
      *             @OA\Property(property="password", type="string", format="password", example="password123"),
      *             @OA\Property(property="tbl_filiere_id", type="integer", example="1")
-     *         )
+     *             @OA\Property(property="matricule", type="string", example="CM-UDS24FS0001") // <-- Ajout dans la doc OpenAPI
+     *         )  
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -44,7 +45,9 @@ class AuthController extends Controller
             'nom_user' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email|max:255',
             'password' => 'required|string|min:4',
-            'tbl_filiere_id' => 'required|exists:tbl_filieres,id'
+            'tbl_filiere_id' => 'required|exists:tbl_filieres,id',
+            // ----- AJOUT VALIDATION MATRICULE -----
+            'matricule' => ['required','regex:/^CM-UDS-\d{2}[A-Z]{2,5}\d{4}$/','unique:users,matricule']
         ]);
 
         if ($validator->fails()) {
@@ -52,7 +55,7 @@ class AuthController extends Controller
         }
 
         // Enregistrez les informations de l'utilisateur dans la session avant la vérification de l'e-mail
-        $request->session()->put('user_data', $request->only(['nom_user', 'email', 'password', 'tbl_filiere_id']));
+        $request->session()->put('user_data', $request->only(['nom_user', 'email', 'password', 'tbl_filiere_id','matricule']));
 
         // Envoyez le code de vérification à l'utilisateur
         return $this->sendVerificationCode($request->email);
@@ -131,6 +134,8 @@ class AuthController extends Controller
             'email' => $userData['email'],
             'tbl_filiere_id' => $userData['tbl_filiere_id'],
             'password' => bcrypt($userData['password']), // N'oubliez pas de hacher le mot de passe
+             // ----- AJOUT enregistrement matricule -----
+            'matricule' => $userData['matricule'],
         ]);
 
         // Nettoyez les informations de la session après la création de l'utilisateur

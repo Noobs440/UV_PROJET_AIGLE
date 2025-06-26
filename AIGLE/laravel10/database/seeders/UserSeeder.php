@@ -18,14 +18,17 @@ class UserSeeder extends Seeder
             "email"=>'russeldongmo05@gmail.com',
             'password'=> bcrypt('12345678'),
             'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0559',
             //'role'=>'admin'
         ]);
 
         User::create([
             'nom_user'=>'Dongmo Russel',
-            "email"=>'russeldongmo96@gmail.com',
-            'password'=> bcrypt('12345678'),
+            "email"=>'jorkaelkeumeze@gmail.com',
+            'password'=> bcrypt('123456789'),
             'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0558',
+            'role'=>'admin'
         ]);
 
         User::create([
@@ -35,12 +38,13 @@ class UserSeeder extends Seeder
             'tbl_filiere_id'=>'1',
             'role'=>'admin'
         ]);
-        
+
         User::create([
             'nom_user'=>'jean jack',
             "email"=>'jean@gmail.com',
             'password'=> bcrypt('20056663'),
             'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0557',
         ]);
 
         User::create([
@@ -48,6 +52,7 @@ class UserSeeder extends Seeder
             "email"=>'fossocabrel08@gmail.com',
             'password'=> bcrypt('12345678'),
             'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0553',
         ]);
 
         User::create([
@@ -56,6 +61,7 @@ class UserSeeder extends Seeder
             'password'=> bcrypt('1234'),
             'role'=>'admin',
             'tbl_filiere_id'=>'1',
+            'matricule' =>'CM-UDS-22SCI0552',
         ]);
 
         User::create([
@@ -63,6 +69,8 @@ class UserSeeder extends Seeder
             "email"=>'michelle@gmail.com',
             'password'=> bcrypt('12345678'),
             'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0554',
         ]);
     }
 }
+
