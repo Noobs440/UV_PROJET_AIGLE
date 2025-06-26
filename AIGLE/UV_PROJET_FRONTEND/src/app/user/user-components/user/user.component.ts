@@ -103,24 +103,36 @@ export class UserComponent implements OnInit{
   }
 
 
-  deconnexion(){
-    const result = confirm('voulez vous vous deconnecter');
-    if(result){
+ deconnexion() {
+  const result = confirm('Voulez-vous vous déconnecter ?');
+
+  if (result) {
     this.userService.logout().subscribe({
-      next: value =>{
+      next: (value: any) => {
         console.log(value);
-        alert('deconnexion effectuer');
+        alert('Déconnexion effectuée');
+
+        // Vider complètement le stockage local
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Rediriger proprement et recharger l'app
+        this.router.navigateByUrl('/home', { replaceUrl: true }).then(() => {
+          window.location.reload(); // recharge l'app pour éviter retour au dashboard
+        });
       },
-      error: err=>{
-        console.log(err);
-      },
-      complete: ()=>{
-        localStorage.removeItem('token');
-        this.router.navigate(['/home',]);
-        console.log("success")
+      error: (err: any) => {
+        console.error('Erreur lors de la déconnexion :', err);
+
+        // Même en cas d'erreur, vider et rediriger
+        localStorage.clear();
+        sessionStorage.clear();
+        this.router.navigateByUrl('/home', { replaceUrl: true }).then(() => {
+          window.location.reload();
+        });
       }
     });
-
   }
 }
+
 }

@@ -44,15 +44,18 @@ class TblCollaborateur extends Model
     protected $fillable = [
         'nom_collab',
         'email_collab',
+        'user_id',
+        'tbl_projet_id',
     ];
-    public function users()
+    public function user()
     {
-        return $this->belongsToMany(User::class, 'collaborateur_utilisateur');
+        return $this->belongsTo(User::class);
     }
 
-    public function projets()
+
+    public function projet()
     {
-        return $this->belongsToMany(TblProjet::class, 'collaborateur_projet');
+        return $this->belongsTo(TblProjet::class);
     }
 
     public function toSearchableArray()

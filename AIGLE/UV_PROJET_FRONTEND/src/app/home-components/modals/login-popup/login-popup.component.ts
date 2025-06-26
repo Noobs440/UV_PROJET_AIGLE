@@ -216,7 +216,10 @@ export class LoginPopupComponent {
 
           // Rediriger l'utilisateur en fonction de son rôle
 
-            this.router.navigate([`/${userRole}/dashboard`],{queryParams});
+            this.router.navigateByUrl(
+              this.router.createUrlTree([`/${userRole}/dashboard`]),
+              { replaceUrl: true }
+            );
           // Fermer le modal
           this.dialogRef.close();
         },

@@ -6,6 +6,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dial
 import { DocumentService } from '../../../services/document.service';
 import { SubmitProjectService } from '../../../services/submit-project.service';
 import { ProjetService } from '../../../services/projet.service';
+import { CollaborateurService } from '../../../services/collaborateur.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { CompleteDialogComponent } from '../complete-dialog/complete-dialog.component';
 import { DetailProjectComponent } from '../../../admin/admin-components/detail-project/detail-project.component';
@@ -20,6 +21,7 @@ export class ProjectDetailComponent {
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
   documents: any[] = [];
+  collaborators: any[] = [];
   selectedProjectId!: number;
   selectedProjectTitle!: string;
   projectStatus!: string;
@@ -46,6 +48,7 @@ export class ProjectDetailComponent {
     private router: Router,
     private submitService: SubmitProjectService,
     private documentService: DocumentService,
+    private collaborateurService: CollaborateurService,
     private projetService:ProjetService,
     private projetStatusService: ProjetstatusService,
     //@Inject(MAT_DIALOG_DATA) public data: any
@@ -84,6 +87,9 @@ export class ProjectDetailComponent {
 
     this.documentService.getDocumentsByProject(this.id).subscribe(response => {
       this.documents = response;
+    });
+    this.collaborateurService.getCollaboratorsByProject(this.id).subscribe(response => {
+      this.collaborators = response;
     });
 
     this.actionCellRenderer();

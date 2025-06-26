@@ -44,15 +44,26 @@ sendVerificationCode(email:string):Observable<any>{
     return !!token
   }
 
-  logout():Observable<any>{
-     // Récupère le token Sanctum depuis le localStorage ou d'où tu le stockes
-      const token = localStorage.getItem('token');
-      // Headers avec le token Sanctum
-      const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      });
-      return this.http.post<any>('http://localhost:8000/api/auth/deconnexion', null , {headers});
-  }
+  logout(): Observable<any> {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+
+  return this.http.post<any>('http://localhost:8000/api/auth/deconnexion', null, { headers }).pipe(
+    tap(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    }),
+    catchError(error => {
+      console.error('Erreur de déconnexion :', error);
+      localStorage.clear();
+      sessionStorage.clear();
+      return of(null);
+    })
+  );
+}
+
 }
 
 
