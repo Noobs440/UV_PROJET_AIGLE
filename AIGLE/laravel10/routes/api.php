@@ -171,6 +171,7 @@ Route::prefix('usecases')->group(function () {
     Route::prefix('listing')->controller(ListingController::class)->group(function(){
         Route::get('/categorie/projets/{id}', 'showProjects');
         Route::get('/projet/documents/{id}', 'ShowDocuments');
+        Route::get('/projet/collaborateurs/{id}', 'ShowCollaborators');
         Route::get('/niveau/projets/{id}', 'ShowLevelProjects');
         Route::get('/user/documents/{id}', 'showUserDocuments');
         Route::get('/user/projets/{id}', 'showUserProjects');
