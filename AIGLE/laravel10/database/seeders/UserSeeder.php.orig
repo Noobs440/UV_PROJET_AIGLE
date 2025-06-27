@@ -1,0 +1,80 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class UserSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        User::create([
+            'nom_user'=>'Dongmo Russel',
+            "email"=>'russeldongmo05@gmail.com',
+            'password'=> bcrypt('12345678'),
+            'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0559',
+            //'role'=>'admin'
+        ]);
+
+        User::create([
+            'nom_user'=>'Dongmo Russel',
+<<<<<<< HEAD
+            "email"=>'russeldongmo96@gmail.com',
+=======
+            "email"=>'jorkaelkeumeze@gmail.com',
+>>>>>>> 37cf05a16994897590e6fd21c2ba03f0ed57867c
+            'password'=> bcrypt('123456789'),
+            'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0558',
+            'role'=>'admin'
+        ]);
+
+        User::create([
+            'nom_user'=>'jean',
+            "email"=>'jkeumeze@gmail.com',
+            'password'=> bcrypt('20056663'),
+            'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0557',
+        ]);
+
+        User::create([
+            'nom_user'=>'Fosso Cabrel',
+            "email"=>'fossocabrel08@gmail.com',
+            'password'=> bcrypt('12345678'),
+            'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0553',
+        ]);
+
+        User::create([
+            'nom_user'=>'Gildas Landry',
+            "email"=>'gildas@gmail.com',
+            'password'=> bcrypt('1234'),
+            'role'=>'admin',
+            'tbl_filiere_id'=>'1',
+            'matricule' =>'CM-UDS-22SCI0552',
+        ]);
+
+        User::create([
+            'nom_user'=>' Michele Serena',
+            "email"=>'michelle@gmail.com',
+            'password'=> bcrypt('12345678'),
+            'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0554',
+        ]);
+        User::create([
+            'nom_user'=>' jorkael',
+            "email"=>'jkeumeze@gmail.com',
+            'password'=> bcrypt('123456780'),
+            'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0594',
+            'role'=>'admin'
+        ]);
+        
+    }
+}
