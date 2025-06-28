@@ -1,0 +1,19 @@
+<div class="edit-photo-container">
+  <h3>Modifier la photo de profil</h3>
+
+  <div class="photo-preview">
+    <img
+      [src]="previewUrl ? previewUrl : photoUrl"
+      alt="Photo de profil"
+      class="profile-photo"
+    />
+  </div>
+
+  <input type="file" accept="image/*" (change)="onFileChange($event)" />
+
+  <button (click)="submit()" [disabled]="!selectedFile" class="submit-btn">
+    Enregistrer
+  </button>
+
+  <p *ngIf="message" class="message">{{ message }}</p>
+</div>
