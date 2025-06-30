@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * @OA\Schema(
@@ -12,34 +13,38 @@ use Illuminate\Database\Eloquent\Model;
  *     title="TblSuperviseur",
  *     required={"nom_sup", "email_sup"},
  *     @OA\Property(
- *         property="role",
+ *         property="id",
+ *         type="integer",
+ *         format="int64",
+ *         description="The unique identifier of the superviseur"
+ *     ),
+ *     @OA\Property(
+ *         property="nom_sup",
  *         type="string",
- *         enum={"superviseur", "admin", "user"},
- *         default="superviseur",
- *         description="Role (superviseur par défaut mais autres rôles possibles)"
+ *         description="Name of the superviseur"
+ *     ),
+ *     @OA\Property(
+ *         property="email_sup",
+ *         type="string",
+ *         description="Email of the superviseur"
  *     )
  * )
  */
+
 class TblSuperviseur extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
+
+    
+    public function routeNotificationForMail()
+    {
+        return $this->email_sup;
+    }
 
     protected $fillable = [
         'nom_sup',
         'email_sup',
-        'role' // Champ modifiable manuellement
     ];
-
-    protected $attributes = [
-        'role' => 'superviseur' // Valeur par défaut
-    ];
-
-    public static function availableRoles(): array
-    {
-        return ['superviseur', 'admin', 'user'];
-    }
-
-    // Relations existantes
     public function users()
     {
         return $this->belongsToMany(User::class, 'superviseur_utilisateurs');
@@ -48,13 +53,5 @@ class TblSuperviseur extends Model
     public function projets()
     {
         return $this->belongsToMany(TblProjet::class, 'projet_superviseurs');
-    }
-
-    // Sécurisation des rôles
-    public function setRoleAttribute($value)
-    {
-        $this->attributes['role'] = in_array($value, self::availableRoles()) 
-            ? $value 
-            : 'superviseur'; // Fallback sécurisé
     }
 }

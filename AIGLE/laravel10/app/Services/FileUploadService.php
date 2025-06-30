@@ -3,28 +3,50 @@
 namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 class FileUploadService
 {
-    public function uploadFile(UploadedFile $file, string $path): string
+    /**
+     * Upload un fichier dans le dossier public/images/project ou autre.
+     *
+     * @param UploadedFile $file
+     * @param string $relativePath - Exemple : 'images/project'
+     * @return string URL publique
+     */
+    public function uploadFile(UploadedFile $file, string $relativePath): string
     {
-        $originalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $destinationPath = public_path($relativePath);
+
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
+
+        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $extension = $file->getClientOriginalExtension();
-        $uniqueFileName = $originalFileName . '_' . time() . '_' . uniqid() . '.' . $extension;
-        $finalPath = $file->storeAs($path, $uniqueFileName);
-        return Storage::url($finalPath);
+        $uniqueFileName = $originalName . '_' . time() . '_' . uniqid() . '.' . $extension;
+
+        $file->move($destinationPath, $uniqueFileName);
+
+        // Retourner l'URL publique
+        return url($relativePath . '/' . $uniqueFileName);
     }
 
-    public function deleteFile(string $path): bool
+    /**
+     * Supprime un fichier à partir de son URL publique complète ou chemin relatif
+     *
+     * @param string $publicUrl
+     * @return bool
+     */
+    public function deleteFile(string $publicUrl): bool
     {
-         $fullPath = 'public/' . $path;
+        // Convertir l'URL en chemin absolu
+        $relativePath = str_replace(url('/'), '', $publicUrl);
+        $fullPath = public_path($relativePath);
 
-        if (Storage::exists($fullPath)) {
-            return Storage::delete($fullPath);
+        if (file_exists($fullPath)) {
+            return unlink($fullPath);
         }
 
         return false;
     }
-    
 }

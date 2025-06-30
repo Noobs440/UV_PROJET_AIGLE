@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('nom_sup')->unique();
             $table->string('email_sup')->unique();
-            $table->string('role')->default('superviseur');
             $table->timestamps();
         });
     }
