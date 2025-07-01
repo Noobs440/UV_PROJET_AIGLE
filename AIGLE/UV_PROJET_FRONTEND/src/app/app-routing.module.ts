@@ -14,7 +14,6 @@ import { EditNameComponent } from './components/profile/edit-name.component';
 import { EditEmailComponent } from './components/profile/edit-email.component';
 import { EditPasswordComponent } from './components/profile/edit-password.component';
 import { EditPhotoComponent } from './components/profile/edit-photo.component';
-import { EnseignantComponent } from './enseignant/enseignant-components/enseignant/enseignant.component';
 
 const routes: Routes = [
 
@@ -26,12 +25,6 @@ const routes: Routes = [
     ],
       //canActivate: [adminGuard]
   },
-
-{
-  path: 'enseignant',
-  loadChildren: () => import('./enseignant/enseignant.module').then(m => m.EnseignantModule)
-},
-
   {
     path: 'user',
     component: UserComponent,
@@ -76,6 +69,8 @@ const routes: Routes = [
   {
     path: '**', redirectTo: '/home'
   },
+
+  
 
   // { path: 'admin', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
   // { path: 'user', loadChildren: () => import('./user/user.module').then(m => m.UserModule) },

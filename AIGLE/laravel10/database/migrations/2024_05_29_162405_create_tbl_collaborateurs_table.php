@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('tbl_collaborateurs', function (Blueprint $table) {
             $table->id();
-            $table->string('nom_collab')->unique();
-            $table->string('email_collab')->unique();
+            $table->string('nom_collab');
+            $table->string('email_collab');
             $table->timestamps();
         });
     }

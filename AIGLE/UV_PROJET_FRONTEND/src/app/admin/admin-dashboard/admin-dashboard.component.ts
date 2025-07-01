@@ -63,6 +63,7 @@ export class AdminDashboardComponent {
       });
     }
   }
+  
   getStatusClass(status: string) {
     return {
       'bg-success': status === 'Approved',
@@ -113,6 +114,7 @@ export class AdminDashboardComponent {
     this.paginate(sortedData);
   }
 
+  
   filterTable(status: string): void {
     this.filteredData = this.rowData.filter(row => status === '' || row.status === status);
     this.currentPage = 1;

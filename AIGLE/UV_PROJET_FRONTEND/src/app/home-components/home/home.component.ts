@@ -16,8 +16,7 @@ export class HomeComponent {
       this.isLoading = false;
     }, 300); // 30 seconds
   }
-
-  getFullImageUrl(projectImage: string): string {
+   getFullImageUrl(projectImage: string): string {
     if (!projectImage) {
       return '';
     }

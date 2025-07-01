@@ -1,146 +1,134 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DocumentService } from '../../../services/document.service';
 import { CollaborateurService } from '../../../services/collaborateur.service';
 import { SuperviseurService } from '../../../services/superviseur.service';
-import { DocumentService } from '../../../services/document.service';
 
 @Component({
   selector: 'app-document-popup',
   templateUrl: './document-popup.component.html',
-  styleUrl: './document-popup.component.css'
+  styleUrls: ['./document-popup.component.css']
 })
-export class DocumentPopupComponent {
+export class DocumentPopupComponent implements OnInit {
+
+  formType!: 'document' | 'collaborator' | 'supervisor';
+  projectId!: number;
+
+  documentForm!: FormGroup;
   collaboratorForm!: FormGroup;
   supervisorForm!: FormGroup;
-  documentForm!: FormGroup;
+
+  selectedFile: File | null = null;
   submitted = false;
-  selectedFile!: File;
-  today: any;
-  id: any;
-  user_id: any;
-  formType!:string;
+  userId!: number;
+
   constructor(
-    private dialogRef: MatDialogRef<DocumentPopupComponent>,
     private fb: FormBuilder,
-    private http: HttpClient,
-    private documentService: DocumentService,
-    private route: ActivatedRoute,
-    private colService:CollaborateurService,
-    private supService:SuperviseurService,
+    private dialogRef: MatDialogRef<DocumentPopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
+    private documentService: DocumentService,
+    private collaboratorService: CollaborateurService,
+    private superviseurService: SuperviseurService
+  ) {}
 
-  ) { }
-
-  ngOnInit() {
+  ngOnInit(): void {
     this.formType = this.data.formType;
+    this.projectId = this.data.id;
+
+    // Récupération user_id depuis localStorage (Option 1)
+    this.userId = parseInt(localStorage.getItem('user_id') || '0');
+
+    // Initialisation des formulaires
     this.documentForm = this.fb.group({
-      title: ['', Validators.required],
-      file: ['', Validators.required],
+      title: ['', Validators.required]
+      // Le fichier est géré à part via selectedFile
     });
+
     this.collaboratorForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]]
     });
+
     this.supervisorForm = this.fb.group({
       name: ['', Validators.required],
-      email: ['', Validators.required]
+      email: ['', [Validators.required, Validators.email]]
     });
-
-    this.route.queryParams.subscribe(params => {
-      this.id = params['id'];
-      this.user_id = params['user_id'];
-    });
-
-
   }
 
-  get documentFormControl() {
+  // Getters pour contrôle des erreurs dans le template
+  get documentFormControl(): {[key: string]: AbstractControl} {
     return this.documentForm.controls;
   }
-  get collaboratorFormControl() {
+  get collaboratorFormControl(): {[key: string]: AbstractControl} {
     return this.collaboratorForm.controls;
   }
-  get supervisorFormControl() {
+  get supervisorFormControl(): {[key: string]: AbstractControl} {
     return this.supervisorForm.controls;
   }
 
-  onCancel() {
-    this.dialogRef.close();
+  onFileSelected(event: any): void {
+    if (event.target.files.length > 0) {
+      this.selectedFile = event.target.files[0];
+    }
   }
 
-  onSubmit() {
-    if (this.formType === 'document' && this.documentForm.valid) {
-      this.submitted = true;
-    if (this.documentForm.valid && this.selectedFile) {
-      const formData = new FormData();
-      formData.append('nom_doc', this.documentForm.value.title);
-      formData.append('user_id', this.user_id);
-      formData.append('tbl_projet_id', this.id);
-      formData.append('document', this.selectedFile);
+  onSubmit(): void {
+    this.submitted = true;
 
-      this.documentService.addDocument(formData).subscribe({
-          next: value => {
-            console.log(value);
-            alert("votre document a ete creer avec succes");
+    if (this.formType === 'document') {
+      if (this.documentForm.valid && this.selectedFile) {
+        const formData = new FormData();
+        formData.append('nom_doc', this.documentForm.value.title);
+        formData.append('fichier', this.selectedFile);
+        formData.append('tbl_projet_id', this.projectId.toString());
+        formData.append('user_id', this.userId.toString()); // Ajout user_id
 
+        this.documentService.addDocument(formData).subscribe({
+          next: () => {
+            alert('Document ajouté avec succès !');
+            this.dialogRef.close(true);
           },
-          error: err => {
-            console.log(err);
-            alert("erreur l'ors de la creation");
-          },
-          complete: () => {
-            this.dialogRef.close(this.documentForm.value);
-            //window.location.reload();
-
+          error: (err) => {
+            console.error(err);
+            alert('Erreur lors de l\'ajout du document : ' + (err.error?.message || 'Erreur inconnue'));
           }
         });
-    } else {
-      console.error('Form is invalid or image not selected');
+      } else {
+        alert('Veuillez sélectionner un fichier et renseigner le titre.');
+      }
     }
-    } else if (this.formType === 'collaborator' && this.collaboratorForm.valid) {
-      this.colService.addCollaborateur(this.collaboratorForm.value.name, this.collaboratorForm.value.email).subscribe({
-        next: value => {
-          alert("collaborateur ajouter avec succes");
-        },
-        error: err=>{
-          console.log(err);
-          alert("erreur l'ors de l'ajout");
-        },
-        complete: ()=>{
-          this.dialogRef.close(this.collaboratorForm.value);
-          window.location.reload();
-
-        }
-      });
-
-
-    } else if (this.formType === 'supervisor' && this.supervisorForm.valid) {
-      this.supService.addSuperviseur(this.supervisorForm.value.name, this.supervisorForm.value.email).subscribe({
-        next: value => {
-          alert("superviseur ajouter avec succes");
-        },
-        error: err=>{
-          console.log(err);
-          alert("erreur l'ors de l'ajout");
-        },
-        complete: ()=>{
-          this.dialogRef.close(this.supervisorForm.value);
-          window.location.reload();
-        }
-      });
+    else if (this.formType === 'collaborator') {
+      if (this.collaboratorForm.valid) {
+        const { name, email } = this.collaboratorForm.value;
+        this.collaboratorService.addCollaborateurToProject(this.projectId, { nom: name, email }).subscribe({
+          next: () => {
+            alert('Collaborateur ajouté avec succès au projet !');
+            this.dialogRef.close(true);
+          },
+          error: () => alert('Erreur lors de l\'ajout du collaborateur au projet.')
+        });
+      } else {
+        alert('Veuillez remplir correctement le formulaire collaborateur.');
+      }
+    }
+    else if (this.formType === 'supervisor') {
+      if (this.supervisorForm.valid) {
+        const { name, email } = this.supervisorForm.value;
+        this.superviseurService.addSuperviseurToProject(this.projectId, { nom: name, email }).subscribe({
+          next: () => {
+            alert('Superviseur ajouté avec succès au projet !');
+            this.dialogRef.close(true);
+          },
+          error: () => alert('Erreur lors de l\'ajout du superviseur au projet.')
+        });
+      } else {
+        alert('Veuillez remplir correctement le formulaire superviseur.');
+      }
     }
   }
 
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
-    if (this.selectedFile) {
-      this.documentForm.patchValue({
-        file: this.selectedFile.name
-      });
-    }
+  onCancel(): void {
+    this.dialogRef.close(false);
   }
-
 }

@@ -175,7 +175,7 @@ export class ProjectsComponent implements OnInit {
     this.applyFilters();
   }
 
-  getFullImageUrl(projectImage: string): string {
+   getFullImageUrl(projectImage: string): string {
     if (!projectImage) {
       return '';
     }
