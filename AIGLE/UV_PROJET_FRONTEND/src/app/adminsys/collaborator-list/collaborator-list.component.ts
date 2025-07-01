@@ -32,7 +32,7 @@ export class CollaboratorListComponent implements OnInit {
   }
 
   loadCollaborators(): void {
-    this.collaborateurService.geCollaborateurs().subscribe(data => {
+    this.collaborateurService.getCollaborateurs().subscribe(data => {
       this.collaborators = data;
       this.applyFilters();
     });
