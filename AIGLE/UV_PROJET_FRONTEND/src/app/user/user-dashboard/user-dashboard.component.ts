@@ -33,15 +33,11 @@ export class UserDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isLoading = true;
-
-    // Récupérer infos utilisateur depuis localStorage
     this.token = localStorage.getItem('token');
     this.name = localStorage.getItem('name');
     this.role = localStorage.getItem('role');
     this.id = localStorage.getItem('id');
 
-    // Rediriger si non connecté
     if (!this.token) {
       this.router.navigate(['/home']);
       return;
@@ -83,8 +79,6 @@ export class UserDashboardComponent implements OnInit {
     });
 
     this.totalPages = Math.max(1, Math.ceil(filtered.length / this.itemsPerPage));
-
-    // Ajuster currentPage si hors bornes
     this.currentPage = Math.min(this.currentPage, this.totalPages);
     this.currentPage = Math.max(this.currentPage, 1);
 
