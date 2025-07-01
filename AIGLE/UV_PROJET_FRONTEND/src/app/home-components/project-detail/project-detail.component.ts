@@ -132,7 +132,7 @@ export class ProjectDetailComponent implements OnInit{
     this.isExpanded = !this.isExpanded;
   }
 
-   getFullImageUrl(projectImage: string): string {
+    getFullImageUrl(projectImage: string): string {
     if (!projectImage) {
       return '';
     }

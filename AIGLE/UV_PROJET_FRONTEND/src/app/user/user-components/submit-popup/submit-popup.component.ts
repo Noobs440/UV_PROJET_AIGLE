@@ -23,36 +23,31 @@ export class SubmitPopupComponent implements OnInit {
   collaboratorForm!: FormGroup;
   supervisorForm!: FormGroup;
   selectedFile!: File;
-  selectedFileD: any;
-  imagePreview: string | ArrayBuffer | null = null;
+  selectedFileD!: File;
   today: any;
   token!: string;
   name!: string;
   role!: string;
   id: any;
   user_id: any;
-
-  categories: any[] = [];
-  niveaux: any[] = [];
-  categories_name: any[] = [];
-  categories_id: any[] = [];
-  niveaux_name: any[] = [];
-  niveaux_id: any[] = [];
-  projets: any[] = [];
-  projet: any[] = [];
-  projets_type: any[] = [];
-
   isLoading = false;
   ErrorMessage = "";
   submitted = false;
   formType = 'project';
-
+  currentStep = 1;
   saveD = false;
   saveC = false;
   saveS = false;
   project_id: any;
 
-  currentStep = 1;
+  categories: any[] = [];
+  niveaux: any[] = [];
+  projets: any[] = [];
+  projet: any[] = [];
+  categories_name: any[] = [];
+  categories_id: any[] = [];
+  niveaux_name: any[] = [];
+  niveaux_id: any[] = [];
 
   constructor(
     private supService: SuperviseurService,
@@ -66,7 +61,7 @@ export class SubmitPopupComponent implements OnInit {
     private route: ActivatedRoute,
     private categoryService: CategoryService,
     private niveauService: NiveauService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.creationForm = this.fb.group({
@@ -105,17 +100,17 @@ export class SubmitPopupComponent implements OnInit {
 
     this.categoryService.getCategories().subscribe(data => {
       this.categories = data;
-      this.categories.forEach(cat => {
-        this.categories_id.push(cat.id);
-        this.categories_name.push(cat.nom_cat);
+      this.categories.forEach(c => {
+        this.categories_id.push(c.id);
+        this.categories_name.push(c.nom_cat);
       });
     });
 
     this.niveauService.getNiveaux().subscribe(data => {
       this.niveaux = data;
-      this.niveaux.forEach(niv => {
-        this.niveaux_id.push(niv.id);
-        this.niveaux_name.push(niv.code_niv);
+      this.niveaux.forEach(n => {
+        this.niveaux_id.push(n.id);
+        this.niveaux_name.push(n.code_niv);
       });
     });
 
@@ -128,20 +123,33 @@ export class SubmitPopupComponent implements OnInit {
     });
   }
 
-  get creationFormControl() { return this.creationForm.controls; }
-  get documentFormControl() { return this.documentForm.controls; }
-  get collaboratorFormControl() { return this.collaboratorForm.controls; }
-  get supervisorFormControl() { return this.supervisorForm.controls; }
+  get creationFormControl() {
+    return this.creationForm.controls;
+  }
+
+  get documentFormControl() {
+    return this.documentForm.controls;
+  }
+
+  get collaboratorFormControl() {
+    return this.collaboratorForm.controls;
+  }
+
+  get supervisorFormControl() {
+    return this.supervisorForm.controls;
+  }
 
   nextStep() {
-    if (this.currentStep < 6) this.currentStep++;
+    if (this.currentStep < 6) {
+      this.currentStep++;
+    }
   }
 
   previousStep() {
     if (this.currentStep > 1) {
-      if (this.currentStep == 4) this.formType = 'project';
-      if (this.currentStep == 5) this.formType = 'document';
-      if (this.currentStep == 6) this.formType = 'collaborator';
+      if (this.currentStep === 4) this.formType = 'project';
+      if (this.currentStep === 5) this.formType = 'document';
+      if (this.currentStep === 6) this.formType = 'collaborator';
       this.currentStep--;
     }
   }
@@ -149,6 +157,20 @@ export class SubmitPopupComponent implements OnInit {
   onCancel() {
     this.dialogRef.close();
     window.location.reload();
+  }
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+    if (this.selectedFile) {
+      this.creationForm.patchValue({ file: this.selectedFile.name });
+    }
+  }
+
+  onFileSelectedD(event: any) {
+    this.selectedFileD = event.target.files[0];
+    if (this.selectedFileD) {
+      this.documentForm.patchValue({ file: this.selectedFileD.name });
+    }
   }
 
   onSubmit() {
@@ -160,25 +182,23 @@ export class SubmitPopupComponent implements OnInit {
       formData.append('titre_projet', this.creationForm.value.title);
       formData.append('descript_projet', this.creationForm.value.summary);
       formData.append('tbl_niveau_id', this.creationForm.value.niveau);
-      formData.append('user_id', this.id);
+      formData.append('user_id', this.user_id);
       formData.append('tbl_categorie_id', this.creationForm.value.category);
       formData.append('image', this.selectedFile);
       formData.append('type', this.creationForm.value.type);
 
       this.projetService.addProject(formData).subscribe({
         next: value => {
-          this.projets.push(value);
           this.project_id = value.id;
-          this.creationForm.reset();
-          this.isLoading = false;
           alert("Projet créé avec succès !");
         },
         error: err => {
-          console.log(err);
-          this.ErrorMessage = "Erreur lors de la création. Vérifiez le formulaire.";
-          this.isLoading = false;
+          console.error(err);
+          this.ErrorMessage = "Erreur lors de la création du projet.";
         },
         complete: () => {
+          this.isLoading = false;
+          this.creationForm.reset();
           this.formType = 'document';
           this.currentStep++;
           this.submitted = false;
@@ -192,23 +212,22 @@ export class SubmitPopupComponent implements OnInit {
     if (this.formType === 'document' && this.documentForm.valid && this.selectedFileD) {
       const formData = new FormData();
       formData.append('nom_doc', this.documentForm.value.title);
-      formData.append('user_id', this.id);
+      formData.append('user_id', this.user_id);
       formData.append('tbl_projet_id', this.project_id);
       formData.append('document', this.selectedFileD);
 
       this.documentService.addDocument(formData).subscribe({
-        next: value => {
+        next: () => {
           alert("Document ajouté avec succès !");
-          this.isLoading = false;
+          this.saveD = true;
         },
         error: err => {
-          console.log(err);
-          alert("Erreur lors de l'ajout du document");
-          this.isLoading = false;
+          console.error(err);
+          alert("Erreur lors de l'ajout du document.");
         },
         complete: () => {
+          this.isLoading = false;
           this.documentForm.reset();
-          this.saveD = true;
         }
       });
     }
@@ -221,14 +240,15 @@ export class SubmitPopupComponent implements OnInit {
         this.user_id
       ).subscribe({
         next: () => {
-          alert("Collaborateur ajouté !");
+          alert("Collaborateur ajouté et notification envoyée !");
           this.saveC = true;
           this.collaboratorForm.reset();
-          this.isLoading = false;
         },
         error: err => {
-          console.log(err);
-          alert("Erreur ajout collaborateur");
+          console.error(err);
+          alert("Erreur lors de l'ajout du collaborateur.");
+        },
+        complete: () => {
           this.isLoading = false;
         }
       });
@@ -243,35 +263,17 @@ export class SubmitPopupComponent implements OnInit {
           alert("Superviseur ajouté !");
           this.saveS = true;
           this.supervisorForm.reset();
-          this.isLoading = false;
         },
         error: err => {
-          console.log(err);
-          alert("Erreur ajout superviseur");
+          console.error(err);
+          alert("Erreur lors de l'ajout du superviseur.");
+        },
+        complete: () => {
           this.isLoading = false;
         }
       });
     }
   }
 
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
-    if (this.selectedFile) {
-      this.creationForm.patchValue({ file: this.selectedFile.name });
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result;
-      };
-      reader.readAsDataURL(this.selectedFile);
-    }
-  }
-
-  onFileSelectedD(event: any) {
-    this.selectedFileD = event.target.files[0];
-    if (this.selectedFileD) {
-      this.documentForm.patchValue({
-        file: this.selectedFileD.name
-      });
-    }
-  }
+ 
 }

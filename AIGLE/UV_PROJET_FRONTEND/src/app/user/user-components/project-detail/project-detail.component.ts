@@ -149,17 +149,22 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     this.isExpanded = !this.isExpanded;
   }
 
-  openDialog(formType: string): void {
-    const dialogRef = this.dialog.open(DocumentPopupComponent, {
-      width: '400px',
-      height: '550px',
-      data: { formType }
-    });
+ openDialog(formType: string): void {
+  const dialogRef = this.dialog.open(DocumentPopupComponent, {
+    width: '400px',
+    height: '550px',
+    data: {
+      formType,
+      id: this.id,           // ✅ Ajout de l'ID du projet
+      user_id: this.user_id  // (optionnel, utile pour les documents)
+    }
+  });
 
-    dialogRef.afterClosed().subscribe(() => {
-      console.log('The dialog was closed');
-    });
-  }
+  dialogRef.afterClosed().subscribe(() => {
+    console.log('The dialog was closed');
+  });
+}
+
 
   openDeleteDialog(templateRef: TemplateRef<any>): void {
     this.dialog.open(templateRef, {

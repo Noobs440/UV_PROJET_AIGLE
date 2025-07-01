@@ -62,8 +62,11 @@ export class DetailProjectComponent {
   }
 
 
-  getFullImageUrl(imagePath: string): string {
-    return `${'http://localhost:8000'}${imagePath}`;
+  getFullImageUrl(projectImage: string): string {
+    if (!projectImage) {
+      return '';
+    }
+    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
   }
 
   actionCellRenderer() {

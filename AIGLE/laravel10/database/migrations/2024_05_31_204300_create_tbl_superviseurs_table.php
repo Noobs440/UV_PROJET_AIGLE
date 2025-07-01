@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('tbl_superviseurs', function (Blueprint $table) {
             $table->id();
-            $table->string('nom_sup')->unique();
-            $table->string('email_sup')->unique();
+            $table->string('nom');
+            $table->string('prenom')->nullable();
+            $table->string('email')->unique();
+            $table->string('telephone')->nullable();
+            $table->string('specialite')->nullable();
+            $table->string('image')->nullable(); // chemin de la photo du superviseur
             $table->timestamps();
         });
     }

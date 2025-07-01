@@ -76,7 +76,10 @@ export class RecentPostComponent implements OnInit {
     }
   }
 
-  getFullImageUrl(imagePath: string): string {
-    return `${this.baseUrl}${imagePath}`;
+  getFullImageUrl(projectImage: string): string {
+    if (!projectImage) {
+      return '';
+    }
+    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
   }
 }
