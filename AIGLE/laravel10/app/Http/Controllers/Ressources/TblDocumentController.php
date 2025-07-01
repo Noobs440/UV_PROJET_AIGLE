@@ -158,8 +158,6 @@ class TblDocumentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nom_doc' => 'required|unique:tbl_documents,nom_doc|max:255',
-            'type_doc' => ['required', 'in:PDF,WORD,POWERPOINT'],
-            'resume' => 'required',
             'tbl_projet_id' => 'required|exists:tbl_projets,id',
             'document' => 'nullable|file|mimes:pdf,doc,docx',
             'user_id' => 'required|exists:users,id',
@@ -185,10 +183,8 @@ class TblDocumentController extends Controller
         }
     
         $document->nom_doc = $request->nom_doc;
-        $document->type_doc = $request->type_doc;
-        $document->resume = $request->resume;
         $document->tbl_projet_id = $request->tbl_projet_id;
-        $document->tbl_user_id = $request->user_id;
+        $document->user_id = $request->user_id;
         $document->save();
     
         return response()->json($document);

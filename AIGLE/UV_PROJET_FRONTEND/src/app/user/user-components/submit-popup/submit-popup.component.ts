@@ -85,7 +85,7 @@ export class SubmitPopupComponent implements OnInit {
 
     this.collaboratorForm = this.fb.group({
       name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
     });
 
     this.supervisorForm = this.fb.group({
@@ -184,6 +184,9 @@ export class SubmitPopupComponent implements OnInit {
           this.submitted = false;
         }
       });
+    } else if (this.formType === 'project') {
+      this.ErrorMessage = "Erreur lors de la création. Rassurez-vous d’avoir bien rempli les champs du formulaire.";
+      this.isLoading = false;
     }
 
     if (this.formType === 'document' && this.documentForm.valid && this.selectedFileD) {
@@ -211,7 +214,12 @@ export class SubmitPopupComponent implements OnInit {
     }
 
     if (this.formType === 'collaborator' && this.collaboratorForm.valid) {
-      this.colService.addCollaborateur(this.collaboratorForm.value.name, this.collaboratorForm.value.email).subscribe({
+      this.colService.addCollaborateur(
+        this.collaboratorForm.value.name,
+        this.collaboratorForm.value.email,
+        this.project_id,
+        this.user_id
+      ).subscribe({
         next: () => {
           alert("Collaborateur ajouté !");
           this.saveC = true;
@@ -227,7 +235,10 @@ export class SubmitPopupComponent implements OnInit {
     }
 
     if (this.formType === 'supervisor' && this.supervisorForm.valid) {
-      this.supService.addSuperviseur(this.supervisorForm.value.name, this.supervisorForm.value.email).subscribe({
+      this.supService.addSuperviseur(
+        this.supervisorForm.value.name,
+        this.supervisorForm.value.email
+      ).subscribe({
         next: () => {
           alert("Superviseur ajouté !");
           this.saveS = true;
@@ -247,7 +258,6 @@ export class SubmitPopupComponent implements OnInit {
     this.selectedFile = event.target.files[0];
     if (this.selectedFile) {
       this.creationForm.patchValue({ file: this.selectedFile.name });
-
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview = reader.result;

@@ -50,9 +50,22 @@ class TblCollaborateurController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nom_collab'=>'required|unique:tbl_collaborateurs,nom_collab|max:255',
-            'email_collab'=>'required|unique:tbl_collaborateurs,email_collab|max:255'
+            'nom_collab'=>'required|max:255',
+            'email_collab'=>'required|email|max:255',
+            'tbl_projet_id' => 'required|exists:tbl_projets,id',
+            'user_id' => 'required|exists:users,id',
         ]);
+
+        $exists = TblCollaborateur::where('nom_collab', $request->nom_collab)
+            ->where('email_collab', $request->email_collab)
+            ->where('tbl_projet_id', $request->tbl_projet_id)
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['error' => 'Ce collaborateur existe déjà pour ce projet.'], 400);
+        }
+
+
         if($validator->fails()){
             return response()->json(['errors' => $validator->errors()], 400);
         }
@@ -60,6 +73,8 @@ class TblCollaborateurController extends Controller
         $collaborateur = TblCollaborateur::create([
             'nom_collab' => $request->nom_collab,
             "email_collab" => $request->email_collab,
+            'tbl_projet_id' => $request->tbl_projet_id,
+            'user_id' => $request->user_id,
         ]);
         return response()->json($collaborateur, 201);
     }
@@ -127,6 +142,8 @@ class TblCollaborateurController extends Controller
         $validator = Validator::make($request->all(), [
             'nom_collab' => 'required|max:255',
             'email_collab' => 'required|email|max:255',
+            'tbl_projet_id' => 'required|exists:tbl_projets,id',
+            'user_id' => 'required|exists:users,id',
         ]);
         if($validator->fails()){
             return response()->json(['errors' => $validator->errors()], 400);
@@ -135,6 +152,8 @@ class TblCollaborateurController extends Controller
         $collaborateur = TblCollaborateur::where('id', $id)->firstOrFail();
         $collaborateur->nom_collab = $request->nom_collab;
         $collaborateur->email_collab = $request->email_collab;
+        $collaborateur->tbl_projet_id = $request->tbl_projet_id;
+        $collaborateur->user_id = $request->user_id;
         $collaborateur->save();
 
         return response()->json($collaborateur);

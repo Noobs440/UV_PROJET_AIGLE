@@ -15,8 +15,17 @@ import { EditEmailComponent } from './components/profile/edit-email.component';
 import { EditPasswordComponent } from './components/profile/edit-password.component';
 import { EditPhotoComponent } from './components/profile/edit-photo.component';
 import { EnseignantComponent } from './enseignant/enseignant-components/enseignant/enseignant.component';
+import { AdminsysModule } from './adminsys/adminsys.module';
+import { AuthGuard } from './guards/auth.gard';
+import { AdminGuard } from './guards/admin.guard';
+import { UserGuard } from './guards/user.guard';
+import { HelpComponent } from './user/user-components/help/help.component';
+import { HelpComponentAdmin } from './admin/admin-components/help/help.component';
 
 const routes: Routes = [
+
+  { path: 'adminsys', loadChildren: () => import('./adminsys/adminsys.module').then(m => m.AdminsysModule) },
+  { path: '', redirectTo: 'adminsys', pathMatch: 'full' },
 
   {
     path: 'admin',
@@ -24,7 +33,8 @@ const routes: Routes = [
     children: [
       { path: '', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
     ],
-      //canActivate: [adminGuard]
+    
+    canActivate: [AuthGuard,AdminGuard]
   },
 
 {
@@ -32,13 +42,15 @@ const routes: Routes = [
   loadChildren: () => import('./enseignant/enseignant.module').then(m => m.EnseignantModule)
 },
 
+   { path: 'helpUser', component: HelpComponent },
+   { path: 'helpAdmin', component: HelpComponentAdmin},
   {
     path: 'user',
     component: UserComponent,
     children: [
       { path: '', loadChildren: () => import('./user/user.module').then(m => m.UserModule) },
     ],
-      //canActivate: [userGuard]
+    canActivate: [AuthGuard,UserGuard],
   },
 
     {
