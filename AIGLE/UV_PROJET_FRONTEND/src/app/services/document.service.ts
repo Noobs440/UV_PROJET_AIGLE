@@ -32,6 +32,14 @@ export class DocumentService {
     return this.http.put<any>(`http://localhost:8000/api/ressources/documents/${id}`, {nom_doc , lien_doc , type_doc, resume, tbl_projet_id, user_id});
   }
 
+  addDocumentMultipart(formData: FormData) {
+  return this.http.post<any>('http://localhost:8000/api/ressources/documents', formData);
+}
+
+updateDocumentMultipart(id: number, formData: FormData) {
+  formData.append('_method', 'PUT'); // important !
+  return this.http.post<any>(`http://localhost:8000/api/ressources/documents/${id}`, formData);
+}
   getDocumentsByProject(id:number): Observable<any[]>{
     return this.http.get<any[]>(`http://localhost:8000/api/usecases/listing/projet/documents/${id}`).pipe(
       tap((response)=>console.table(response)),

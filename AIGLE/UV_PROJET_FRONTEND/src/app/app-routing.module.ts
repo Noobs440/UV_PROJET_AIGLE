@@ -9,6 +9,7 @@ import { ProjectDetailComponent } from './home-components/project-detail/project
 import { DefaultComponent } from './layouts/default/default.component';
 import { AdminComponent } from './admin/admin-components/admin/admin.component';
 import { UserComponent } from './user/user-components/user/user.component';
+import { AdminsysModule } from './adminsys/adminsys.module';
 import { AuthGuard } from './guards/auth.gard';
 import { AdminGuard } from './guards/admin.guard';
 import { UserGuard } from './guards/user.guard';
@@ -17,6 +18,8 @@ import { HelpComponentAdmin } from './admin/admin-components/help/help.component
 
 const routes: Routes = [
 
+  { path: 'adminsys', loadChildren: () => import('./adminsys/adminsys.module').then(m => m.AdminsysModule) },
+  { path: '', redirectTo: 'adminsys', pathMatch: 'full' },
 
   {
     path: 'admin',

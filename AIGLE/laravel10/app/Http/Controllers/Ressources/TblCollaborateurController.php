@@ -153,7 +153,7 @@ class TblCollaborateurController extends Controller
         $collaborateur->nom_collab = $request->nom_collab;
         $collaborateur->email_collab = $request->email_collab;
         $collaborateur->tbl_projet_id = $request->tbl_projet_id;
-        $collaborateur->tbl_user_id = $request->user_id;
+        $collaborateur->user_id = $request->user_id;
         $collaborateur->save();
 
         return response()->json($collaborateur);
