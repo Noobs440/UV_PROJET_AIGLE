@@ -6,6 +6,8 @@ import { SubmitProjectService } from '../../../services/submit-project.service';
 import { ProjetService } from '../../../services/projet.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DocumentPopupComponent } from '../document-popup/document-popup.component';
+import { CollaborateurService } from '../../../services/collaborateur.service';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { CompleteDialogComponent } from '../complete-dialog/complete-dialog.component';
 import { Subscription } from 'rxjs';
 
@@ -18,6 +20,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
 
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
+  collaborators:any[]=[];
   documents: any[] = [];
   selectedProjectId = 0;
   selectedProjectTitle = '';
@@ -50,7 +53,8 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     private submitService: SubmitProjectService,
     private documentService: DocumentService,
     private projetService: ProjetService,
-    private projetStatusService: ProjetstatusService
+    private projetStatusService: ProjetstatusService,
+    private collaborateurService: CollaborateurService,
   ) {}
 
   ngOnInit(): void {
@@ -85,6 +89,9 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
 
     this.documentService.getDocumentsByProject(this.id).subscribe(response => {
       this.documents = response;
+    });
+    this.collaborateurService.getCollaboratorsByProject(this.id).subscribe(response => {
+      this.collaborators = response;
     });
 
     this.actionCellRenderer();

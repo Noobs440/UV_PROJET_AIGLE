@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { SubmitPopupComponent } from '../user-components/submit-popup/submit-popup.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ListingService } from '../../services/listing.service';
 
 @Component({
@@ -10,10 +10,11 @@ import { ListingService } from '../../services/listing.service';
   styleUrls: ['./user-dashboard.component.css']
 })
 export class UserDashboardComponent implements OnInit {
-  token!: string;
-  name!: string;
-  role!: string;
-  id!: any;
+  token!: string | null;
+  name!: string | null;
+  role!: string | null;
+  id!: string | null;
+
   projects: any[] = [];
   selectedProject: any[] = [];
   isLoading = false;
@@ -32,19 +33,22 @@ export class UserDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isLoading = true;
+    this.token = localStorage.getItem('token');
+    this.name = localStorage.getItem('name');
+    this.role = localStorage.getItem('role');
+    this.id = localStorage.getItem('id');
 
-    this.route.queryParams.subscribe(params => {
-      this.token = params['token'];
-      this.name = params['name'];
-      this.role = params['role'];
-      this.id = params['id'];
+    if (!this.token) {
+      this.router.navigate(['/home']);
+      return;
+    }
 
-      this.loadProjects();
-    });
+    this.loadProjects();
   }
 
   loadProjects() {
+    if (!this.id) return;
+
     this.projectByIdService.getProjectsById(this.id).subscribe({
       next: (data) => {
         this.projects = data ?? [];
@@ -74,15 +78,9 @@ export class UserDashboardComponent implements OnInit {
       return matchesSearch && matchesType;
     });
 
-    this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
-
-    // Vérifie que currentPage est dans les limites
-    if (this.currentPage > this.totalPages) {
-      this.currentPage = this.totalPages;
-    }
-    if (this.currentPage < 1) {
-      this.currentPage = 1;
-    }
+    this.totalPages = Math.max(1, Math.ceil(filtered.length / this.itemsPerPage));
+    this.currentPage = Math.min(this.currentPage, this.totalPages);
+    this.currentPage = Math.max(this.currentPage, 1);
 
     this.updateDisplayedProjects(filtered);
   }
@@ -104,14 +102,14 @@ export class UserDashboardComponent implements OnInit {
   onSearchQueryChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.searchQuery = input.value;
-    this.currentPage = 1; // retour page 1
+    this.currentPage = 1;
     this.applyFilters();
   }
 
   onTypeFilterChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.selectedTypeFilter = select.value;
-    this.currentPage = 1; // retour page 1
+    this.currentPage = 1;
     this.applyFilters();
   }
 
@@ -134,13 +132,10 @@ export class UserDashboardComponent implements OnInit {
   }
 
   getFullImageUrl(projectImage: string): string {
-    if (!projectImage) {
-      return '';
-    }
-    if (projectImage.startsWith('http')) {
-      return projectImage;
-    }
-    return `http://localhost:8000${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
+    if (!projectImage) return '';
+    return projectImage.startsWith('http')
+      ? projectImage
+      : `http://localhost:8000${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
   }
 
   openDialog(): void {

@@ -60,14 +60,22 @@ export class DocumentService {
     );
   }
 
-  getDocumentsByProject(id: number | string): Observable<Document[]> {
-    const url = `http://localhost:8000/api/usecases/listing/projet/documents/${id}`;
-    return this.http.get<Document[]>(url).pipe(
-      tap(response => console.table(response)),
-      catchError(this.handleError<Document[]>('getDocumentsByProject', []))
-    );
-  }
+  addDocumentMultipart(formData: FormData) {
+  return this.http.post<any>('http://localhost:8000/api/ressources/documents', formData);
+}
 
+updateDocumentMultipart(id: number, formData: FormData) {
+  formData.append('_method', 'PUT'); // important !
+  return this.http.post<any>(`http://localhost:8000/api/ressources/documents/${id}`, formData);
+}
+  getDocumentsByProject(id:number): Observable<any[]>{
+    return this.http.get<any[]>(`http://localhost:8000/api/usecases/listing/projet/documents/${id}`).pipe(
+      tap((response)=>console.table(response)),
+      catchError((error) =>{
+        console.log(error);
+        return of([]);
+      })
+    )}
   // Gestion générique des erreurs
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: HttpErrorResponse): Observable<T> => {

@@ -28,27 +28,24 @@ export class CollaborateurService {
     );
   }
 
-  addCollaborateur(nom_collab: string, email_collab: string): Observable<Collaborateur> {
-    return this.http.post<Collaborateur>(this.apiUrl, { nom_collab, email_collab });
+  addCollaborateur(nom_collab:string , email_collab:string, tbl_projet_id:string, user_id:string):Observable<any>{
+    return this.http.post<any>('http://localhost:8000/api/ressources/collaborateurs', {nom_collab , email_collab, tbl_projet_id, user_id});
   }
 
   deleteCollaborateur(id: number | string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  updateCollaborateur(id: number | string, nom_collab: string, email_collab: string): Observable<Collaborateur> {
-    return this.http.put<Collaborateur>(`${this.apiUrl}/${id}`, { nom_collab, email_collab });
+  updateCollaborateur(id:string ,nom_collab:string , email_collab:string, tbl_projet_id:string, user_id:string):Observable<any>{
+    return this.http.put<any>(`http://localhost:8000/api/ressources/collaborateurs/${id}`, {nom_collab , email_collab, tbl_projet_id, user_id});
   }
-
-  // ✅ Nouvelle méthode pour ajouter un collaborateur à un projet et envoyer un email
-  addCollaborateurToProject(projectId: number, data: { nom: string; email: string }): Observable<any> {
-    const url = `http://localhost:8000/api/collaborateurs/add-to-project/${projectId}`;
-    return this.http.post<any>(url, data).pipe(
-      tap(response => console.log('Collaborateur ajouté au projet avec succès:', response)),
-      catchError(error => {
-        console.error('Erreur lors de l’ajout du collaborateur au projet:', error);
-        return of(error);
+   getCollaboratorsByProject(id:number): Observable<any[]>{
+    return this.http.get<any[]>(`http://localhost:8000/api/usecases/listing/projet/collaborateurs/${id}`).pipe(
+      tap((response)=>console.table(response)),
+      catchError((error) =>{
+        console.log(error);
+        return of([]);
       })
-    );
+    )
   }
 }

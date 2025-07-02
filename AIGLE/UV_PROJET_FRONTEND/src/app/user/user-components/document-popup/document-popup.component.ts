@@ -28,21 +28,18 @@ export class DocumentPopupComponent implements OnInit {
     private dialogRef: MatDialogRef<DocumentPopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private documentService: DocumentService,
-    private collaboratorService: CollaborateurService,
-    private superviseurService: SuperviseurService
+    private colService: CollaborateurService, // ✅ corrigé ici
+    private supService: SuperviseurService    // ✅ corrigé ici
   ) {}
 
   ngOnInit(): void {
     this.formType = this.data.formType;
     this.projectId = this.data.id;
 
-    // Récupération user_id depuis localStorage (Option 1)
     this.userId = parseInt(localStorage.getItem('user_id') || '0');
 
-    // Initialisation des formulaires
     this.documentForm = this.fb.group({
       title: ['', Validators.required]
-      // Le fichier est géré à part via selectedFile
     });
 
     this.collaboratorForm = this.fb.group({
@@ -56,14 +53,15 @@ export class DocumentPopupComponent implements OnInit {
     });
   }
 
-  // Getters pour contrôle des erreurs dans le template
-  get documentFormControl(): {[key: string]: AbstractControl} {
+  get documentFormControl(): { [key: string]: AbstractControl } {
     return this.documentForm.controls;
   }
-  get collaboratorFormControl(): {[key: string]: AbstractControl} {
+
+  get collaboratorFormControl(): { [key: string]: AbstractControl } {
     return this.collaboratorForm.controls;
   }
-  get supervisorFormControl(): {[key: string]: AbstractControl} {
+
+  get supervisorFormControl(): { [key: string]: AbstractControl } {
     return this.supervisorForm.controls;
   }
 
@@ -82,7 +80,7 @@ export class DocumentPopupComponent implements OnInit {
         formData.append('nom_doc', this.documentForm.value.title);
         formData.append('fichier', this.selectedFile);
         formData.append('tbl_projet_id', this.projectId.toString());
-        formData.append('user_id', this.userId.toString()); // Ajout user_id
+        formData.append('user_id', this.userId.toString());
 
         this.documentService.addDocument(formData).subscribe({
           next: () => {
@@ -97,34 +95,44 @@ export class DocumentPopupComponent implements OnInit {
       } else {
         alert('Veuillez sélectionner un fichier et renseigner le titre.');
       }
-    }
-    else if (this.formType === 'collaborator') {
-      if (this.collaboratorForm.valid) {
-        const { name, email } = this.collaboratorForm.value;
-        this.collaboratorService.addCollaborateurToProject(this.projectId, { nom: name, email }).subscribe({
-          next: () => {
-            alert('Collaborateur ajouté avec succès au projet !');
-            this.dialogRef.close(true);
-          },
-          error: () => alert('Erreur lors de l\'ajout du collaborateur au projet.')
-        });
-      } else {
-        alert('Veuillez remplir correctement le formulaire collaborateur.');
-      }
-    }
-    else if (this.formType === 'supervisor') {
-      if (this.supervisorForm.valid) {
-        const { name, email } = this.supervisorForm.value;
-        this.superviseurService.addSuperviseurToProject(this.projectId, { nom: name, email }).subscribe({
-          next: () => {
-            alert('Superviseur ajouté avec succès au projet !');
-            this.dialogRef.close(true);
-          },
-          error: () => alert('Erreur lors de l\'ajout du superviseur au projet.')
-        });
-      } else {
-        alert('Veuillez remplir correctement le formulaire superviseur.');
-      }
+
+    } else if (this.formType === 'collaborator' && this.collaboratorForm.valid) {
+      this.colService.addCollaborateur(
+        this.collaboratorForm.value.name,
+        this.collaboratorForm.value.email,
+        (this.projectId).toString(),
+        (this.userId).toString()
+      ).subscribe({
+        next: () => {
+          alert("Collaborateur ajouté avec succès !");
+        },
+        error: (err) => {
+          console.error(err);
+          alert("Erreur lors de l'ajout du collaborateur.");
+        },
+        complete: () => {
+          this.dialogRef.close(this.collaboratorForm.value);
+          window.location.reload();
+        }
+      });
+
+    } else if (this.formType === 'supervisor' && this.supervisorForm.valid) {
+      this.supService.addSuperviseur(
+        this.supervisorForm.value.name,
+        this.supervisorForm.value.email
+      ).subscribe({
+        next: () => {
+          alert("Superviseur ajouté avec succès !");
+        },
+        error: (err) => {
+          console.error(err);
+          alert("Erreur lors de l'ajout du superviseur.");
+        },
+        complete: () => {
+          this.dialogRef.close(this.supervisorForm.value);
+          window.location.reload();
+        }
+      });
     }
   }
 
