@@ -19,7 +19,6 @@ import { HelpComponentAdmin } from './admin/admin-components/help/help.component
 const routes: Routes = [
 
   { path: 'adminsys', loadChildren: () => import('./adminsys/adminsys.module').then(m => m.AdminsysModule) },
-  { path: '', redirectTo: 'adminsys', pathMatch: 'full' },
 
   {
     path: 'admin',

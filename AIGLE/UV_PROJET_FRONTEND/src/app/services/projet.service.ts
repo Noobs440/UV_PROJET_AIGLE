@@ -56,6 +56,13 @@ export class ProjetService {
     return this.http.put<any>(`http://localhost:8000/api/ressources/projets/${id}`, {titre_projet , descript_projet , user_id, tbl_niveau_id, tbl_categorie_id});
   }
 
+  updateProjectMultipart(id: string, formData: FormData): Observable<any> {
+  formData.append('_method', 'PUT');
+  return this.http.post<any>(`http://localhost:8000/api/ressources/projets/${id}`, formData);
+}
+
+
+
   countProjectsByStatus(): Observable<any[]>{
     return this.http.get<any[]>('http://localhost:8000/api/usecases/listing/count').pipe(
       tap((response)=>console.table(response)),

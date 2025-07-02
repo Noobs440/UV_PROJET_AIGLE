@@ -9,6 +9,7 @@ import { CollaboratorListComponent } from './collaborator-list/collaborator-list
 import { FacultyListComponent } from './faculty-list/faculty-list.component';
 import { FiliereListComponent } from './filiere-list/filiere-list.component';
 import { NiveauListComponent } from './niveau-list/niveau-list.component';
+import { ProjectListComponent } from './project-list/project-list.component';
 // autres composants à ajouter ici
 
 @NgModule({
@@ -20,6 +21,7 @@ import { NiveauListComponent } from './niveau-list/niveau-list.component';
     FacultyListComponent,
     FiliereListComponent,
     NiveauListComponent,
+    ProjectListComponent,
     // autres composants
   ],
   imports: [

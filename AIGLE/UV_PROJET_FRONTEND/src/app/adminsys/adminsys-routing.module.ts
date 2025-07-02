@@ -7,12 +7,14 @@ import { CollaboratorListComponent } from './collaborator-list/collaborator-list
 import { FacultyListComponent } from './faculty-list/faculty-list.component';
 import { FiliereListComponent } from './filiere-list/filiere-list.component';
 import { NiveauListComponent } from './niveau-list/niveau-list.component';
+import { ProjectListComponent } from './project-list/project-list.component';
 
 const routes: Routes = [
   {
     path: '',
     component: AdminsysComponent,
     children: [
+      { path: 'projets', component: ProjectListComponent},
       { path: 'niveaux', component: NiveauListComponent },
       { path: 'filieres', component: FiliereListComponent },
       { path: 'facultes', component: FacultyListComponent },

@@ -1,0 +1,162 @@
+<div class="project-list">
+
+  <div class="controls">
+    <input
+      type="text"
+      placeholder="Recherche par titre"
+      [(ngModel)]="searchTerm"
+      (input)="onSearchChange()"
+    />
+
+    <button (click)="toggleSort()">
+      Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
+    </button>
+
+    <button (click)="openAddModal()">Ajouter un projet</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Titre</th>
+        <th>Description</th>
+        <th>Id Niveau</th>
+        <th>Id Catégorie</th>
+        <th>Id Utilisateur</th>
+        <th>Vues</th>
+        <th>Image</th>
+        <th>Status</th>
+        <th>Type</th>
+        <th>Soumis</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let proj of filteredProjects">
+        <td>{{ proj.titre_projet }}</td>
+        <td>{{ proj.descript_projet }}</td>
+        <td>{{ proj.tbl_niveau_id }}</td>
+        <td>{{ proj.tbl_categorie_id }}</td>
+        <td>{{ proj.nom_utilisateur }}</td>
+        <td>{{ proj.views }}</td>
+        <td>
+          <img
+            *ngIf="proj.image"
+            [src]="
+              proj.image.startsWith('http')
+                ? proj.image
+                : 'http://localhost:8000' + (proj.image.startsWith('/') ? '' : '/') + proj.image
+            "
+            alt="Image projet"
+            width="60"
+            height="40"
+          />
+        </td>
+        <td>{{ proj.status }}</td>
+        <td>{{ proj.type }}</td>
+        <td>{{ proj.soumis ? 'Oui' : 'Non' }}</td>
+        <td>
+          <button (click)="openEditModal(proj)">Modifier</button>
+          <button (click)="deleteProject(proj.id)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+      Précédent
+    </button>
+    <span>Page {{ currentPage }} / {{ totalPages }}</span>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+      Suivant
+    </button>
+  </div>
+
+  <!-- Modal d'ajout/modification -->
+  <div class="modal" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3>{{ isEditMode ? 'Modifier projet' : 'Ajouter projet' }}</h3>
+
+      <label>
+        Titre:
+        <input type="text" [(ngModel)]="currentProject.titre_projet" />
+      </label>
+
+      <label>
+        Description:
+        <textarea [(ngModel)]="currentProject.descript_projet"></textarea>
+      </label>
+
+      <label>
+        Id Niveau:
+        <input type="number" [(ngModel)]="currentProject.tbl_niveau_id" />
+      </label>
+
+      <label>
+        Id Catégorie:
+        <input type="number" [(ngModel)]="currentProject.tbl_categorie_id" />
+      </label>
+
+      <label>
+        Id Utilisateur:
+        <input type="number" [(ngModel)]="currentProject.user_id" />
+      </label>
+
+      <label>
+        Vues:
+        <input type="number" [(ngModel)]="currentProject.views" />
+      </label>
+
+      <label>
+        Image:
+        <input type="file" (change)="onFileSelected($event)" />
+        <div *ngIf="currentProject.image && !selectedImageFile" style="margin-top:5px;">
+          Image actuelle:
+          <img
+            [src]="
+              currentProject.image.startsWith('http')
+                ? currentProject.image
+                : 'http://localhost:8000' + (currentProject.image.startsWith('/') ? '' : '/') + currentProject.image
+            "
+            alt="Image actuelle"
+            width="100"
+            height="60"
+          />
+        </div>
+      </label>
+
+      <label>
+        Status:
+        <select [(ngModel)]="currentProject.status">
+          <option>Not Submitted</option>
+          <option>Pending</option>
+          <option>Approved</option>
+          <option>Rejected</option>
+        </select>
+      </label>
+
+      <label>
+        Type:
+        <select [(ngModel)]="currentProject.type">
+          <option>Projet</option>
+          <option>Memoire</option>
+          <option>Article</option>
+        </select>
+      </label>
+
+      <label>
+        Soumis:
+        <input type="checkbox" [(ngModel)]="currentProject.soumis" />
+      </label>
+
+      <div class="modal-actions">
+        <button (click)="saveProject()">
+          {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
+        </button>
+        <button (click)="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+</div>
