@@ -34,6 +34,8 @@ export class ProjectDetailComponent {
   email!: string;
   id!: number;
   Submitted = false;
+  nom_collab:any;
+  email_collab:any;
   user_id: any;
   user_role: any;
   user_name: any;
@@ -52,6 +54,7 @@ export class ProjectDetailComponent {
   ) {}
 
   ngOnInit(): void {
+    this.nom_collab = localStorage.getItem('nom_collab');
     this.user_id = localStorage.getItem('id');
     this.user_role = localStorage.getItem('role');
     this.user_name = localStorage.getItem('name');
@@ -106,13 +109,14 @@ export class ProjectDetailComponent {
     this.isExpanded = !this.isExpanded;
   }
 
-  openDialog(formType: any, collaborator: any = null) {
+  openDialog(formType: any) {
     const dialogRef = this.dialog.open(DocumentPopupComponent, {
       width: '400px',
       height: '550px',
       data: {
         formType,
-        collaborator,
+       nom_collab:this.nom_collab,
+       email_collab:this.email_collab,
         id: this.id,
         user_id: this.user_id
       }
@@ -206,8 +210,9 @@ export class ProjectDetailComponent {
       width: '450px',
       data: {
         collaborator,
-        projectId: this.id,
-        userId: this.user_id
+      tbl_projet_id: this.id,
+      user_id: this.user_id
+
       }
     }).afterClosed().subscribe(result => {
       if (result) {

@@ -40,18 +40,32 @@ export class CollaborateurEditPopupComponent implements OnInit {
     if (this.editForm.invalid) return;
 
     const { name, email } = this.editForm.value;
-    const { id } = this.data.collaborator;
-    const projectId = this.data.projectId;
-    const userId = this.data.userId;
+    const id = this.data.collaborator.id;
+    const nom_collab= this.data.name;
+    const email_collab= this.data.email;
+    const tbl_projet_id = this.data.tbl_projet_id;
+    const tbl_user_id = this.data.user_id;
 
-    this.collaborateurService.updateCollaborateur(id, name, email, projectId, userId).subscribe({
+    const updateData = {
+      nom_collab: name,
+      email_collab: email,
+    };
+
+    this.collaborateurService.updateCollaborateur(id, nom_collab,email_collab,tbl_projet_id,tbl_user_id).subscribe({
       next: () => alert('Collaborateur modifié avec succès'),
       error: err => {
-        console.error(err);
-        alert('Erreur lors de la modification');
+        console.error('Erreur API complète:', err);
+        if (err.error?.errors) {
+          const messages = Object.values(err.error.errors).flat().join('\n');
+          alert('Erreur lors de la modification :\n' + messages);
+        } else if (err.error?.message) {
+          alert('Message : ' + err.error.message);
+        } else {
+          alert('Erreur inconnue lors de la modification.');
+        }
       },
       complete: () => {
-        this.dialogRef.close(true); // indique qu'il faut recharger
+        this.dialogRef.close(true);
       }
     });
   }

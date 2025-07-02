@@ -28,9 +28,10 @@ export class CollaborateurService {
     return this.http.delete(`http://localhost:8000/api/ressources/collaborateurs/${id}`);
   }
 
-  updateCollaborateur(id:string ,nom_collab:string , email_collab:string, tbl_projet_id:string, user_id:string):Observable<any>{
-    return this.http.put<any>(`http://localhost:8000/api/ressources/collaborateurs/${id}`, {nom_collab , email_collab, tbl_projet_id, user_id});
-  }
+updateCollaborateur(id: number, nom_collab:string, email_collab:string, tbl_projet_id:number, user_id:number): Observable<any> {
+  return this.http.put<any>(`http://localhost:8000/api/ressources/collaborateurs/${id}`,{nom_collab,email_collab,tbl_projet_id,user_id });
+}
+
    getCollaborateursByProject(id:number): Observable<any[]>{
     return this.http.get<any[]>(`http://localhost:8000/api/usecases/listing/projet/collaborateurs/${id}`).pipe(
       tap((response)=>console.table(response)),
