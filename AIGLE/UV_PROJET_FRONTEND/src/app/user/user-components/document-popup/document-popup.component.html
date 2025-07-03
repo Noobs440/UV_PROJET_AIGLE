@@ -1,95 +1,116 @@
-<div class="w-full contain-content h-full max-w-lg p-6 pt-2 bg-white rounded-lg shadow-lg">
+<div class="w-full contain-content h-full max-w-lg p-6 pt-2 bg-white rounded-lg shadow-lg relative">
   <button (click)="onCancel()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
-    <i class="fas fa-times text-l"></i>
+    <i class="fas fa-times text-lg"></i>
   </button>
 
-  <!-- Document Form -->
-  <h2 *ngIf="formType === 'document'" class="mb-2 text-3xl font-bold text-center text-customBlue poppins-bold">Créer un document</h2>
-  <form *ngIf="formType === 'document'" class="space-y-1" [formGroup]="documentForm" (ngSubmit)="onSubmit()">
+  <!-- ====== Document Form ====== -->
+  <h2 *ngIf="formType === 'document'" class="mb-2 text-3xl font-bold text-center text-customBlue poppins-bold">
+    Créer un Document
+  </h2>
+  <form *ngIf="formType === 'document'" class="space-y-3" [formGroup]="documentForm" (ngSubmit)="onSubmit()">
     <div class="flex justify-center mb-4">
-      <img src="assets/img/docImage.png" alt="Header Image" class="w-full h-48 bg-cover object-cover">
+      <img src="assets/img/docImage.png" alt="Document" class="w-full h-48 object-cover rounded-md" />
     </div>
-    <div class="form-group mb-1">
-      <label class="mb-1" for="title">Nom du document</label>
-      <input formControlName="title" type="text" id="title" name="title" placeholder="Nom du Document"
-             [ngClass]="{'custom-outline': (documentFormControl['title'].touched || submitted) && documentFormControl['title'].errors}"
-             class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue">
-      <span class="text-red-600 text-sm" *ngIf="(documentFormControl['title'].touched || submitted) && documentFormControl['title'].errors?.['required']">
-        Nom du document requis !
-      </span>
+
+    <div>
+      <label class="block mb-1">Nom du document</label>
+      <input formControlName="title" type="text" placeholder="Nom du document"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submitted && documentFormControl['title'].invalid}" />
+      <small class="text-red-600" *ngIf="submitted && documentFormControl['title'].errors?.['required']">
+        Champ requis
+      </small>
     </div>
-    <div class="form-group mb-1">
-      <label class="mb-1" for="file">Fichier</label>
-      <input type="file" id="file" (change)="onFileSelected($event)" placeholder="Selectionner votre document"
-             [ngClass]="{'custom-outline': (documentFormControl['file'].touched || submitted) && documentFormControl['file'].errors}"
-             class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue">
-      <span class="text-red-600 text-sm" *ngIf="(documentFormControl['file'].touched || submitted) && documentFormControl['file'].errors?.['required']">
-        Fichier requis !
-      </span>
+
+    <div>
+      <label class="block mb-1">Fichier</label>
+      <input type="file" (change)="onFileSelected($event)"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submitted && documentFormControl['file'].invalid}" />
+      <small class="text-red-600" *ngIf="submitted && documentFormControl['file'].errors?.['required']">
+        Champ requis
+      </small>
     </div>
-    <div class="step">
-      <button type="submit" class="w-full mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark disabled:bg-gray-300 disabled:cursor-not-allowed" [disabled]="documentForm.invalid">Créer</button>
-    </div>
+
+    <button type="submit" class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700"
+            [disabled]="documentForm.invalid">
+      Ajouter
+    </button>
   </form>
 
-  <!-- Collaborator Form -->
-  <h2 *ngIf="formType === 'collaborator'" class="mb-2 text-2xl font-bold text-center text-customBlue poppins-bold">Ajouter un Collaborateur</h2>
-  <form *ngIf="formType === 'collaborator'" class="space-y-1" [formGroup]="collaboratorForm" (ngSubmit)="onSubmit()">
+  <!-- ====== Collaborator Form ====== -->
+  <h2 *ngIf="formType === 'collaborator'" class="mb-2 text-2xl font-bold text-center text-customBlue">
+    {{ isEditMode ? 'Modifier un Collaborateur' : 'Ajouter un Collaborateur' }}
+  </h2>
+  <form *ngIf="formType === 'collaborator'" class="space-y-3" [formGroup]="collaboratorForm" (ngSubmit)="onSubmit()">
     <div class="flex justify-center mb-4">
-      <img src="assets/img/colImage2.jpg" alt="Header Image" class="w-full h-52 bg-cover object-cover">
+      <img src="assets/img/colImage2.jpg" alt="Collaborateur" class="w-full h-52 object-cover rounded-md" />
     </div>
-    <div class="form-group mb-1">
-      <label class="mb-1" for="name">Nom du Collaborateur</label>
-      <input formControlName="name" type="text" id="name" name="name" placeholder="Nom du Collaborateur"
-             [ngClass]="{'custom-outline': (collaboratorFormControl['name'].touched || submitted) && collaboratorFormControl['name'].errors}"
-             class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue">
-      <span class="text-red-600 text-sm" *ngIf="(collaboratorFormControl['name'].touched || submitted) && collaboratorFormControl['name'].errors?.['required']">
-        Nom du collaborateur requis !
-      </span>
+
+    <div>
+      <label class="block mb-1">Nom</label>
+      <input formControlName="name" type="text" placeholder="Nom du collaborateur"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submitted && collaboratorFormControl['name'].invalid}" />
+      <small class="text-red-600" *ngIf="submitted && collaboratorFormControl['name'].errors?.['required']">
+        Champ requis
+      </small>
     </div>
-    <div class="form-group mb-1">
-      <label class="mb-1" for="email">Email du Collaborateur</label>
-      <input formControlName="email" type="email" id="email" name="email" placeholder="Email du Collaborateur"
-             [ngClass]="{'custom-outline': (collaboratorFormControl['email'].touched || submitted) && collaboratorFormControl['email'].errors}"
-             class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue">
-      <span class="text-red-600 text-sm" *ngIf="(collaboratorFormControl['email'].touched || submitted) && collaboratorFormControl['email'].errors?.['required']">
-        Email requis !
-      </span>
-      <span class="text-red-600 text-sm" *ngIf="(collaboratorFormControl['email'].touched || submitted) && collaboratorFormControl['email'].errors?.['email']">
-        Email invalide !
-      </span>
+
+    <div>
+      <label class="block mb-1">Email</label>
+      <input formControlName="email" type="email" placeholder="Email"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submitted && collaboratorFormControl['email'].invalid}" />
+      <small class="text-red-600" *ngIf="submitted && collaboratorFormControl['email'].errors?.['required']">
+        Champ requis
+      </small>
+      <small class="text-red-600" *ngIf="submitted && collaboratorFormControl['email'].errors?.['email']">
+        Email invalide
+      </small>
     </div>
-    <div class="step">
-      <button type="submit" class="w-full mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark disabled:bg-gray-300 disabled:cursor-not-allowed" [disabled]="collaboratorForm.invalid">Ajouter</button>
-    </div>
+
+    <button type="submit" class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700"
+            [disabled]="collaboratorForm.invalid">
+      {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+    </button>
   </form>
 
-  <!-- Supervisor Form -->
-  <h2 *ngIf="formType === 'supervisor'" class="mb-2 text-2xl font-bold text-center text-customBlue poppins-bold">Ajouter un Superviseur</h2>
-  <form *ngIf="formType === 'supervisor'" class="space-y-1" [formGroup]="supervisorForm" (ngSubmit)="onSubmit()">
+  <!-- ====== Supervisor Form ====== -->
+  <h2 *ngIf="formType === 'supervisor'" class="mb-2 text-2xl font-bold text-center text-customBlue">
+    Ajouter un Superviseur
+  </h2>
+  <form *ngIf="formType === 'supervisor'" class="space-y-3" [formGroup]="supervisorForm" (ngSubmit)="onSubmit()">
     <div class="flex justify-center mb-4">
-      <img src="assets/img/supervisor.jpg" alt="Header Image" class="w-full h-52 bg-cover object-cover">
+      <img src="assets/img/supervisor.jpg" alt="Superviseur" class="w-full h-52 object-cover rounded-md" />
     </div>
-    <div class="form-group mb-1">
-      <label class="mb-1" for="name">Nom du Superviseur</label>
-      <input formControlName="name" type="text" id="name" name="name" placeholder="Nom du Superviseur"
-             [ngClass]="{'custom-outline': (supervisorFormControl['name'].touched || submitted) && supervisorFormControl['name'].errors}"
-             class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue">
-      <span class="text-red-600 text-sm" *ngIf="(supervisorFormControl['name'].touched || submitted) && supervisorFormControl['name'].errors?.['required']">
-        Nom du superviseur requis !
-      </span>
+
+    <div>
+      <label class="block mb-1">Nom</label>
+      <input formControlName="name" type="text" placeholder="Nom du superviseur"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submitted && supervisorFormControl['name'].invalid}" />
+      <small class="text-red-600" *ngIf="submitted && supervisorFormControl['name'].errors?.['required']">
+        Champ requis
+      </small>
     </div>
-    <div class="form-group mb-1">
-      <label class="mb-1" for="email">Email</label>
-      <input formControlName="email" type="text" id="department" name="department" placeholder="Entre votre adresse email"
-             [ngClass]="{'custom-outline': (supervisorFormControl['email'].touched || submitted) && supervisorFormControl['email'].errors}"
-             class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue">
-      <span class="text-red-600 text-sm" *ngIf="(supervisorFormControl['email'].touched || submitted) && supervisorFormControl['email'].errors?.['required']">
-        Email requis !
-      </span>
+
+    <div>
+      <label class="block mb-1">Email</label>
+      <input formControlName="email" type="email" placeholder="Email"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submitted && supervisorFormControl['email'].invalid}" />
+      <small class="text-red-600" *ngIf="submitted && supervisorFormControl['email'].errors?.['required']">
+        Champ requis
+      </small>
+      <small class="text-red-600" *ngIf="submitted && supervisorFormControl['email'].errors?.['email']">
+        Email invalide
+      </small>
     </div>
-    <div class="step">
-      <button type="submit" class="w-full mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark disabled:bg-gray-300 disabled:cursor-not-allowed" [disabled]="supervisorForm.invalid">Ajouter</button>
-    </div>
+
+    <button type="submit" class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700"
+            [disabled]="supervisorForm.invalid">
+      Ajouter
+    </button>
   </form>
 </div>

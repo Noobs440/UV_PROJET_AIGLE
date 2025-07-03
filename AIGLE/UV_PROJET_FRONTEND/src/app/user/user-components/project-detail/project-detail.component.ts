@@ -115,8 +115,6 @@ export class ProjectDetailComponent {
       height: '550px',
       data: {
         formType,
-       nom_collab:this.nom_collab,
-       email_collab:this.email_collab,
         id: this.id,
         user_id: this.user_id
       }
@@ -205,7 +203,7 @@ export class ProjectDetailComponent {
     });
   }
 
-  editCollaborator(collaborator: any) {
+  /*editCollaborator(collaborator: any) {
     this.dialog.open(CollaborateurEditPopupComponent, {
       width: '450px',
       data: {
@@ -221,5 +219,24 @@ export class ProjectDetailComponent {
         });
       }
     });
-  }
+  }*/
+ editCollaborator(collaborator: any) {
+  const dialogRef = this.dialog.open(DocumentPopupComponent, {
+    width: '450px',
+    data: {
+      formType: 'collaborator',
+      id: this.id,
+      user_id: this.user_id,
+      editMode: true,
+      collaborator: collaborator  // ← on envoie les données à pré-remplir
+    }
+  });
+
+  dialogRef.afterClosed().subscribe(() => {
+    this.collaborateurService.getCollaborateursByProject(this.id).subscribe(res => {
+      this.collaborators = res;
+    });
+  });
+}
+
 }
