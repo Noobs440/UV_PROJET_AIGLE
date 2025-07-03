@@ -82,6 +82,9 @@ export class DocumentPopupComponent implements OnInit {
       this.documentForm.patchValue({ file: this.selectedFile.name });
     }
   }
+  onCancel(): void {
+  this.dialogRef.close();
+}
 
   onSubmit() {
     this.submitted = true;
