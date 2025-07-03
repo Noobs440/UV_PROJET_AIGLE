@@ -19,9 +19,8 @@ import { AdminsysModule } from './adminsys/adminsys.module';
 import { AuthGuard } from './guards/auth.gard';
 import { AdminGuard } from './guards/admin.guard';
 import { UserGuard } from './guards/user.guard';
-import { HelpComponent } from './user/user-components/help/help.component';
 import { HelpComponentAdmin } from './admin/admin-components/help/help.component';
-
+import { HelpComponent } from './user/user-components/help/help.component';
 const routes: Routes = [
 
   { path: 'adminsys', loadChildren: () => import('./adminsys/adminsys.module').then(m => m.AdminsysModule) },
@@ -32,8 +31,7 @@ const routes: Routes = [
     children: [
       { path: '', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
     ],
-    
-    canActivate: [AuthGuard,AdminGuard]
+      //canActivate: [adminGuard]
   },
 
 {
@@ -49,10 +47,11 @@ const routes: Routes = [
     children: [
       { path: '', loadChildren: () => import('./user/user.module').then(m => m.UserModule) },
     ],
-    canActivate: [AuthGuard,UserGuard],
+      //canActivate: [userGuard]
   },
-
-    {
+   { path: 'helpUser', component: HelpComponent },
+   { path: 'helpAdmin', component: HelpComponentAdmin},
+  {
       path: 'profile',
       component: ProfileComponent,
       children: [

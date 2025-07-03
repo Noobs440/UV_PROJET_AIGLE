@@ -4,6 +4,7 @@ import { SubmitPopupComponent } from '../user-components/submit-popup/submit-pop
 import { Router, ActivatedRoute } from '@angular/router';
 import { ListingService } from '../../services/listing.service';
 
+
 @Component({
   selector: 'app-user-dashboard',
   templateUrl: './user-dashboard.component.html',
@@ -144,6 +145,13 @@ export class UserDashboardComponent implements OnInit {
     dialogConfig.width = '400px';
     dialogConfig.height = '620px';
 
-    this.dialog.open(SubmitPopupComponent, dialogConfig);
+
+    dialogConfig.disableClose = true;
+    dialogConfig.width='400px';
+    dialogConfig.height='620px';
+
+    this.dialog.open(SubmitPopupComponent,dialogConfig );
+
+
   }
 }

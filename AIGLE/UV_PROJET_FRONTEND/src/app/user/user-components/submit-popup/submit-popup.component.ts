@@ -22,19 +22,23 @@ export class SubmitPopupComponent implements OnInit {
   documentForm!: FormGroup;
   collaboratorForm!: FormGroup;
   supervisorForm!: FormGroup;
+
   selectedFile!: File;
   selectedFileD!: File;
   today: any;
+
   token!: string;
   name!: string;
   role!: string;
   id: any;
   user_id: any;
+
   isLoading = false;
   ErrorMessage = "";
   submitted = false;
   formType = 'project';
   currentStep = 1;
+
   saveD = false;
   saveC = false;
   saveS = false;
@@ -61,7 +65,7 @@ export class SubmitPopupComponent implements OnInit {
     private route: ActivatedRoute,
     private categoryService: CategoryService,
     private niveauService: NiveauService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.creationForm = this.fb.group({
@@ -80,7 +84,7 @@ export class SubmitPopupComponent implements OnInit {
 
     this.collaboratorForm = this.fb.group({
       name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email]]
     });
 
     this.supervisorForm = this.fb.group({
@@ -205,7 +209,7 @@ export class SubmitPopupComponent implements OnInit {
         }
       });
     } else if (this.formType === 'project') {
-      this.ErrorMessage = "Erreur lors de la création. Rassurez-vous d’avoir bien rempli les champs du formulaire.";
+      this.ErrorMessage = "Erreur lors de la création. Vérifiez les champs.";
       this.isLoading = false;
     }
 
@@ -240,7 +244,7 @@ export class SubmitPopupComponent implements OnInit {
         this.user_id
       ).subscribe({
         next: () => {
-          alert("Collaborateur ajouté et notification envoyée !");
+          alert("Collaborateur ajouté !");
           this.saveC = true;
           this.collaboratorForm.reset();
         },
@@ -274,6 +278,4 @@ export class SubmitPopupComponent implements OnInit {
       });
     }
   }
-
- 
 }

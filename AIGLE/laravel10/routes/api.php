@@ -36,6 +36,13 @@ use App\Http\Controllers\Ressources\{
 | Routes API accessibles via /api/...
 |
 */
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [ProfileController::class, 'getUserProfile']);
+    Route::put('/user/update-name', [ProfileController::class, 'updateName']);
+    Route::put('/user/email', [ProfileController::class, 'updateEmail']);
+    Route::put('/user/update-password', [ProfileController::class, 'updatePassword']);
+    Route::post('/user/photo', [ProfileController::class, 'updatePhoto']);
+});
 
 // Route spécifique pour ajouter un superviseur à un projet (hors préfixe 'ressources' pour cohérence)
 Route::post('superviseurs/add-to-project/{projectId}', [TblSuperviseurController::class, 'addToProject']);
@@ -113,7 +120,7 @@ Route::prefix('usecases')->group(function () {
     Route::prefix('listing')->controller(ListingController::class)->group(function () {
         Route::get('/categorie/projets/{id}', 'showProjects');
         Route::get('/projet/documents/{id}', 'ShowDocuments');
-        Route::get('/projet/collaborateurs/{id}', 'ShowCollaborators');
+        Route::get('/projet/collaborateurs/{id}', 'ShowCollaborateurs');
         Route::get('/niveau/projets/{id}', 'ShowLevelProjects');
         Route::get('/user/documents/{id}', 'showUserDocuments');
         Route::get('/user/projets/{id}', 'showUserProjects');

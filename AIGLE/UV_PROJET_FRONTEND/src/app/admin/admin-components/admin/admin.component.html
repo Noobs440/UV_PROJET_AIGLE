@@ -136,27 +136,33 @@
         </a>
       </li><!-- End Dashboard Nav -->
 
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Projects</span><i class="bi bi-chevron-down ms-auto"></i>
+     <li class="nav-item">
+        <a class="nav-link d-flex justify-content-between align-items-center pe-3" (click)="toggleProjects()"
+          [class.collapsed]="isProjectsCollapsed">
+
+          <div class="d-flex align-items-center">
+            <i class="bi bi-menu-button-wide me-2"></i>
+            <span class="fw-medium">Projects</span>
+          </div>
+
+          <i class="bi transition-all" [class.bi-chevron-down]="isProjectsCollapsed"
+            [class.bi-chevron-up]="!isProjectsCollapsed">
+          </i>
         </a>
-        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li *ngFor="let project of projects">
-            <a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" [routerLink]="['/admin/dashboard/project-detail', project.id]" [queryParams]="getProjectQueryParams(project)">
-              <i class="bi bi-circle"></i><span>{{project.titre_projet}}</span>
+
+        <ul id="components-nav" class="nav-content" [class.collapse]="true" [class.show]="!isProjectsCollapsed">
+
+          <li *ngFor="let project of projects" class="py-1">
+            <a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+              [routerLink]="['/admin/dashboard/project-detail', project.id]"
+              [queryParams]="getProjectQueryParams(project)"
+              class="d-flex align-items-center ps-4 py-2 text-decoration-none">
+              <i class="bi bi-circle-fill me-2" style="font-size: 0.4rem;"></i>
+              <span class="text-truncate">{{project.titre_projet}}</span>
             </a>
           </li>
         </ul>
       </li>
-      <li class="nav-heading">Pages</li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="users-profile.html">
-          <i class="bi bi-person"></i>
-          <span>Profile</span>
-        </a>
-      </li><!-- End Profile Page Nav -->
-
     </ul>
 
   </aside><!-- End Sidebar-->
@@ -173,5 +179,3 @@
   </footer><!-- End Footer -->
 
 </div>
-
-zz

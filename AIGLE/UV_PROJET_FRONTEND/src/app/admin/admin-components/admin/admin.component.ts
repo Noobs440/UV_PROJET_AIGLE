@@ -26,6 +26,10 @@ export class AdminComponent implements OnInit {
     private projetService: ProjetService,
     private notificationService: NotificationService
   ) {}
+  isProjectsCollapsed: boolean = true;
+  toggleProjects() {
+    this.isProjectsCollapsed = !this.isProjectsCollapsed;
+  }
 
   ngOnInit(): void {
     this.getAllProjects();

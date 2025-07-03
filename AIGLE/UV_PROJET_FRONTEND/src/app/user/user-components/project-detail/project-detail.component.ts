@@ -1,27 +1,26 @@
-import { Component, OnInit, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
+import { DocumentPopupComponent } from '../document-popup/document-popup.component';
+import { MatDialog } from '@angular/material/dialog';
 import { DocumentService } from '../../../services/document.service';
 import { SubmitProjectService } from '../../../services/submit-project.service';
 import { ProjetService } from '../../../services/projet.service';
-import { MatDialog } from '@angular/material/dialog';
-import { DocumentPopupComponent } from '../document-popup/document-popup.component';
 import { CollaborateurService } from '../../../services/collaborateur.service';
-import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { CompleteDialogComponent } from '../complete-dialog/complete-dialog.component';
-import { Subscription } from 'rxjs';
+import { CollaborateurEditPopupComponent } from '../../collaborateur-edit-popup/collaborateur-edit-popup.component'
 
 @Component({
   selector: 'app-project-detail',
   templateUrl: './project-detail.component.html',
   styleUrls: ['./project-detail.component.css']
 })
-export class ProjectDetailComponent implements OnInit, OnDestroy {
-
+export class ProjectDetailComponent implements OnInit {
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
-  collaborators:any[]=[];
+  collaborators: any[] = [];
   documents: any[] = [];
+
   selectedProjectId = 0;
   selectedProjectTitle = '';
   projectStatus = '';
@@ -36,15 +35,14 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   email = '';
   id = 0;
   Submitted = false;
-
-  user_id: string | null = null;
-  user_role: string | null = null;
-  user_name: string | null = null;
-  user_token: string | null = null;
-  confirm_message = '';
+  nom_collab: any;
+  email_collab: any;
+  user_id: any;
+  user_role: any;
+  user_name: any;
+  user_token: any;
+  confirm_message = "";
   isExpanded = false;
-
-  private queryParamsSub?: Subscription;
 
   constructor(
     private dialog: MatDialog,
@@ -52,96 +50,60 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     private submitService: SubmitProjectService,
     private documentService: DocumentService,
+    private collaborateurService: CollaborateurService,
     private projetService: ProjetService,
     private projetStatusService: ProjetstatusService,
-    private collaborateurService: CollaborateurService,
   ) {}
 
   ngOnInit(): void {
+    this.nom_collab = localStorage.getItem('nom_collab');
     this.user_id = localStorage.getItem('id');
     this.user_role = localStorage.getItem('role');
     this.user_name = localStorage.getItem('name');
     this.user_token = localStorage.getItem('token');
 
-    this.selectedProjectId = Number(this.route.snapshot.paramMap.get('id')) || 0;
+    this.selectedProjectId = +this.route.snapshot.paramMap.get('id')!;
 
-    this.queryParamsSub = this.route.queryParams.subscribe(params => {
-      this.id = Number(params['id']) || 0;
-      this.selectedProjectTitle = params['title'] || '';
-      this.projectStatus = params['status'] || '';
-      this.projectImage = params['image'] || '';
-      this.description = params['description'] || '';
-      this.author = params['author'] || '';
-      this.category = params['category'] || '';
-      this.level = params['level'] || '';
-      this.type = params['type'] || '';
-      this.date = params['date'] || '';
-      this.views = Number(params['views']) || 0;
-      this.email = params['email'] || '';
-    });
-
-    this.projetService.countViews(this.id).subscribe({
-      next: value => {
-        console.log('Count views response:', value);
-      },
-      error: () => {}
+    this.route.queryParams.subscribe(params => {
+      this.id = params['id'];
+      this.selectedProjectTitle = params['title'];
+      this.projectStatus = params['status'];
+      this.projectImage = params['image'];
+      this.description = params['description'];
+      this.author = params['author'];
+      this.category = params['category'];
+      this.level = params['level'];
+      this.type = params['type'];
+      this.date = params['date'];
+      this.views = params['views'];
+      this.email = params['email'];
     });
 
-    this.documentService.getDocumentsByProject(this.id).subscribe(response => {
-      this.documents = response;
-    });
-    this.collaborateurService.getCollaboratorsByProject(this.id).subscribe(response => {
-      this.collaborators = response;
-    });
+    this.projetService.countViews(this.id).subscribe();
+
+    this.documentService.getDocumentsByProject(this.id).subscribe(res => this.documents = res);
+    this.collaborateurService.getCollaborateursByProject(this.id).subscribe(res => this.collaborators = res);
 
     this.actionCellRenderer();
   }
 
-  ngOnDestroy(): void {
-    this.queryParamsSub?.unsubscribe();
-  }
-
-  deleteProject(Projectid: number): void {
+  deleteProject(Projectid: any) {
     this.projetService.deleteProject(Projectid).subscribe({
-      next: () => {
-        this.openCompleteDialog("Project deleted completely.");
-      },
-      error: err => {
-        alert(`Erreur : ${err.status}`);
-      },
-      complete: () => {
-        this.dialog.closeAll();
-        const queryParams = {
-          token: this.user_token,
-          name: this.user_name,
-          role: this.user_role,
-          id: this.user_id
-        };
-        // Décommente la ligne suivante si tu veux rediriger après suppression
-        // this.router.navigate([`/${this.user_role}/dashboard`], { queryParams });
-      }
+      next: () => this.openCompleteDialog("Project deleted completely."),
+      error: err => alert(err.status),
+      complete: () => this.dialog.closeAll()
     });
   }
 
-  openDocument(link: string): void {
-    const fullPath = this.getFullImageUrl(link);
-    if (fullPath) {
-      window.open(fullPath, '_blank', 'noopener,noreferrer');
-    } else {
-      alert("Aucune image disponible");
-    }
+  openDocument(link: any) {
+    window.open(`${link}`, '_blank', 'noopener,noreferrer');
   }
 
-  submitProject(): void {
+  submitProject() {
     this.submitService.submitProject(this.id).subscribe({
-      next: () => {
-        alert("Votre projet a été soumis");
-        this.Submitted = true;
-      },
-      error: err => {
-        alert("Votre projet doit contenir au moins un document");
-        console.error(err);
-      }
+      next: () => alert("Votre projet a été soumis"),
+      error: err => alert("Votre projet doit contenir au moins un document"),
+      complete: () => this.Submitted = true
     });
   }
 
@@ -149,24 +111,23 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     this.isExpanded = !this.isExpanded;
   }
 
- openDialog(formType: string): void {
-  const dialogRef = this.dialog.open(DocumentPopupComponent, {
-    width: '400px',
-    height: '550px',
-    data: {
-      formType,
-      id: this.id,           // ✅ Ajout de l'ID du projet
-      user_id: this.user_id  // (optionnel, utile pour les documents)
-    }
-  });
+  openDialog(formType: any) {
+    const dialogRef = this.dialog.open(DocumentPopupComponent, {
+      width: '400px',
+      height: '550px',
+      data: {
+        formType,
+        id: this.id,
+        user_id: this.user_id
+      }
+    });
 
-  dialogRef.afterClosed().subscribe(() => {
-    console.log('The dialog was closed');
-  });
-}
+    dialogRef.afterClosed().subscribe(() => {
+      this.collaborateurService.getCollaborateursByProject(this.id).subscribe(res => this.collaborators = res);
+    });
+  }
 
-
-  openDeleteDialog(templateRef: TemplateRef<any>): void {
+  openDeleteDialog(templateRef: TemplateRef<any>) {
     this.dialog.open(templateRef, {
       width: '350px',
       height: '200px',
@@ -174,7 +135,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  openCompleteDialog(message: string): void {
+  openCompleteDialog(message: string) {
     this.dialog.open(CompleteDialogComponent, {
       width: '350px',
       height: '200px',
@@ -188,33 +149,78 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   }
 
   getFullImageUrl(projectImage: string): string {
-    if (!projectImage) {
-      return '';
-    }
-    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
+    if (!projectImage) return '';
+    return projectImage.startsWith('http')
+      ? projectImage
+      : `http://localhost:8000${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
   }
 
   actionCellRenderer(): string {
     let status = this.projectStatus;
-    let actionButtons = `
-      <i class="view-button fas fa-eye text-primary" 
-         style="border-radius: 50%; box-shadow: white; padding: 7px; font-size: 20px; background-color: #f6f6fe; cursor: pointer;"></i>
-    `;
+    let actionButtons = `<i class="view-button fas fa-eye text-primary" style="..."></i>`;
 
     if (status === 'Pending') {
-      actionButtons += `
-        <i class="fas fa-check text-success" 
-           style="border-radius: 50%; box-shadow: white; padding: 7px; font-size: 20px; background-color: #e0f8e9; cursor: pointer;"></i>
-        <i class="fas fa-trash-alt text-danger" 
-           style="background-color: #ffecdf; border-radius: 50%; box-shadow: white; padding: 7px; font-size: 20px; cursor: pointer;"></i>
-      `;
+      actionButtons += `<i class="fas fa-check text-success" style="..."></i>
+                        <i class="fas fa-trash-alt text-danger" style="..."></i>`;
     } else if (status === 'Approved') {
-      actionButtons += `
-        <i class="fas fa-times text-danger" 
-           style="background-color: #ffecdf; border-radius: 50%; box-shadow: white; padding: 7px; font-size: 20px; cursor: pointer;"></i>
-      `;
+      actionButtons += `<i class="fas fa-times text-danger" style="..."></i>`;
     }
 
     return actionButtons;
+  }
+
+  confirmDeleteDocument(document: any) {
+    const confirmed = window.confirm(`Voulez-vous vraiment supprimer le document "${document.nom_doc}" ?`);
+    if (confirmed) this.deleteDocumentByid(document.id);
+  }
+
+  deleteDocumentByid(id: string) {
+    this.documentService.deleteDocument(id).subscribe({
+      next: () => {
+        this.documents = this.documents.filter(doc => doc.id !== id);
+        this.openCompleteDialog("Votre document a été supprimé avec succès.");
+      },
+      error: err => {
+        console.error("Erreur lors de la suppression", err);
+        alert("Erreur lors de la suppression du document.");
+      }
+    });
+  }
+
+  confirmDeleteCollaborator(collaborator: any) {
+    const confirmed = window.confirm(`Supprimer le collaborateur "${collaborator.nom_collab}" ?`);
+    if (confirmed) this.deleteCollaboratorById(collaborator.id);
+  }
+
+  deleteCollaboratorById(id: string) {
+    this.collaborateurService.deleteCollaborateur(id).subscribe({
+      next: () => {
+        this.collaborators = this.collaborators.filter(c => c.id !== id);
+        this.openCompleteDialog("Le collaborateur a été supprimé avec succès.");
+      },
+      error: err => {
+        console.error("Erreur suppression collaborateur", err);
+        alert("Erreur lors de la suppression.");
+      }
+    });
+  }
+
+  editCollaborator(collaborator: any) {
+    const dialogRef = this.dialog.open(DocumentPopupComponent, {
+      width: '450px',
+      data: {
+        formType: 'collaborator',
+        id: this.id,
+        user_id: this.user_id,
+        editMode: true,
+        collaborator: collaborator
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.collaborateurService.getCollaborateursByProject(this.id).subscribe(res => {
+        this.collaborators = res;
+      });
+    });
   }
 }

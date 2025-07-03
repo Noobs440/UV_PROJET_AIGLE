@@ -23,20 +23,11 @@ class TblCollaborateurController extends Controller
         $validator = Validator::make($request->all(), [
             'nom_collab'=>'required|max:255',
             'email_collab'=>'required|email|max:255',
+
             'tbl_projet_id' => 'required|exists:tbl_projets,id',
+
             'user_id' => 'required|exists:users,id',
         ]);
-
-        $exists = TblCollaborateur::where('nom_collab', $request->nom_collab)
-            ->where('email_collab', $request->email_collab)
-            ->where('tbl_projet_id', $request->tbl_projet_id)
-            ->exists();
-
-        if ($exists) {
-            return response()->json(['error' => 'Ce collaborateur existe déjà pour ce projet.'], 400);
-        }
-
-
         if($validator->fails()){
             return response()->json(['errors' => $validator->errors()], 400);
         }

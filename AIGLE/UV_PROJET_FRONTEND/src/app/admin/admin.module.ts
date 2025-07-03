@@ -15,7 +15,6 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { HelpComponentAdmin } from './admin-components/help/help.component';
 
 
 
@@ -26,7 +25,6 @@ import { HelpComponentAdmin } from './admin-components/help/help.component';
     DetailProjectComponent,
     AgTabComponent,
     AdminComponent,
-    HelpComponentAdmin,
   ],
   imports: [
     AgGridModule,

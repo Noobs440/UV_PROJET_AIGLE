@@ -31,15 +31,14 @@ class TblCollaborateur extends Model
         'user_id',
         'tbl_projet_id',
     ];
-    public function user()
+    public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(User::class, 'collaborateur_utilisateur');
     }
 
-
-    public function projet()
+    public function projets()
     {
-        return $this->belongsTo(TblProjet::class);
+        return $this->belongsToMany(TblProjet::class, 'collaborateur_projet');
     }
 
     public function toSearchableArray()

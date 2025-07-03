@@ -22,6 +22,8 @@ export class LoginPopupComponent {
   errorMessage = '';
   resetForm!: FormGroup;
   showPasswordReset = false;
+  showPassword = false;
+  showConfirmPassword = false;
   submitted3 = false;
   isLoading: boolean = false;
   resetRequestForm!: FormGroup;
@@ -40,7 +42,7 @@ export class LoginPopupComponent {
     private fb: FormBuilder,
     private customValidator: CustomvalidationService,
     private userService: UserService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.resetRequestForm = this.fb.group({
@@ -58,12 +60,12 @@ export class LoginPopupComponent {
 
     this.resetForm = this.fb.group({
       newPassword: ['', Validators.required],
-      confirmPassword: ['', [Validators.required, ]]
+      confirmPassword: ['', [Validators.required,]]
     },
-    {
-      validator: this.customValidator.MatchPassword('newPassword', 'confirmPassword'),
-    }
-  );
+      {
+        validator: this.customValidator.MatchPassword('newPassword', 'confirmPassword'),
+      }
+    );
   }
 
   get loginFormControl() {
@@ -191,15 +193,15 @@ export class LoginPopupComponent {
           console.log(value)
 
 
-          const queryParams={
-           token:value.access_token,
-           name:value.username,
-           role : value.role,
-           id:value.id,
-           isLoggedOut:false
+          const queryParams = {
+            token: value.access_token,
+            name: value.username,
+            role: value.role,
+            id: value.id,
+            isLoggedOut: false
           }
-          const userRole=value.role;
-          const token=value.access_token;
+          const userRole = value.role;
+          const token = value.access_token;
           const name = value.username;
           const role = value.role;
           const id = value.id;
@@ -207,7 +209,7 @@ export class LoginPopupComponent {
           localStorage.setItem('token', token);
           localStorage.setItem('name', name);
           localStorage.setItem('role', role);
-          localStorage.setItem('id',id);
+          localStorage.setItem('id', id);
           localStorage.setItem('user', JSON.stringify(value.user)); // Stocker les informations de l'utilisateur
 
           //alert(`Bienvenue sur votre page d'utilisateur, ${name}`);

@@ -28,7 +28,7 @@ export class CollaborateurService {
     );
   }
 
-  addCollaborateur(nom_collab:string , email_collab:string, tbl_projet_id:string, user_id:string):Observable<any>{
+  addCollaborateur(nom_collab:string , email_collab:string,tbl_projet_id:string, user_id:string):Observable<any>{
     return this.http.post<any>('http://localhost:8000/api/ressources/collaborateurs', {nom_collab , email_collab, tbl_projet_id, user_id});
   }
 
@@ -36,10 +36,11 @@ export class CollaborateurService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  updateCollaborateur(id:string ,nom_collab:string , email_collab:string, tbl_projet_id:string, user_id:string):Observable<any>{
-    return this.http.put<any>(`http://localhost:8000/api/ressources/collaborateurs/${id}`, {nom_collab , email_collab, tbl_projet_id, user_id});
-  }
-   getCollaboratorsByProject(id:number): Observable<any[]>{
+updateCollaborateur(id: number, nom_collab:string, email_collab:string, tbl_projet_id:number, user_id:number): Observable<any> {
+  return this.http.put<any>(`http://localhost:8000/api/ressources/collaborateurs/${id}`,{nom_collab,email_collab,tbl_projet_id,user_id });
+}
+
+   getCollaborateursByProject(id:number): Observable<any[]>{
     return this.http.get<any[]>(`http://localhost:8000/api/usecases/listing/projet/collaborateurs/${id}`).pipe(
       tap((response)=>console.table(response)),
       catchError((error) =>{

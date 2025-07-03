@@ -141,4 +141,11 @@ export class RegisterComponent {
       console.log('The dialog was closed');
     });
   }
+  openLoginDialog(): void {
+  this.dialogRef.close();
+  this.dialog.open(LoginPopupComponent, {
+    width: '400px',
+    disableClose: true
+  });
+}
 }

@@ -82,6 +82,7 @@ export class UserComponent implements OnInit {
         error: () => {
           this.photo = 'assets/img/default.png';
         }
+
       });
     });
 
@@ -172,6 +173,24 @@ export class UserComponent implements OnInit {
       this.loadNotifications();
     });
   }
+ loadUserProfilePhoto(): void {
+    this.userService.getUserProfile().subscribe({
+      next: (userData) => {
+        if (userData.photo) {
+          this.photo = userData.photo.startsWith('http')
+            ? userData.photo
+            : `http://localhost:8000/${userData.photo}`;
+        } else {
+          this.photo = 'assets/img/default.png';
+        }
+      },
+      error: (err) => {
+        console.error('Erreur chargement photo:', err);
+        this.photo = 'assets/img/default.png';
+      }
+    });
+  }
+
 
   getProjectQueryParams(project: any): any {
     return {
