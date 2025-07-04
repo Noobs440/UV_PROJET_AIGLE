@@ -31,7 +31,7 @@ const routes: Routes = [
     children: [
       { path: '', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
     ],
-      //canActivate: [adminGuard]
+    canActivate: [AdminGuard,AuthGuard]
   },
 
 {
@@ -47,7 +47,7 @@ const routes: Routes = [
     children: [
       { path: '', loadChildren: () => import('./user/user.module').then(m => m.UserModule) },
     ],
-      //canActivate: [userGuard]
+    canActivate: [UserGuard, AuthGuard]
   },
    { path: 'helpUser', component: HelpComponent },
    { path: 'helpAdmin', component: HelpComponentAdmin},
@@ -79,9 +79,8 @@ const routes: Routes = [
       {path:"home/projects-listing", component:ProjectsComponent},
       {path:"home/team", component:TeamComponent},
       {path:"home/project-detail/:id", component:ProjectDetailComponent},
-      {path:"home",component:HomeComponent},
+      {path:"home",component:HomeComponent,},
     ],
-     //canActivate: [appGuard]
   },
   {
     path: '**', redirectTo: '/home'
