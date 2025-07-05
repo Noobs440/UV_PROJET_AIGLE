@@ -54,13 +54,8 @@ export class UserService {
     );
   }
 
-  inscription(nom_user: string, email: string, password: string, tbl_filiere_id: string): Observable<any> {
-    return this.http.post<any>(
-      `${this.apiUrl}/usecases/auth/inscription`,
-      { nom_user, email, password, tbl_filiere_id },
-      { withCredentials: true }
-    );
-  }
+  inscription(nom_user:string ,email:string, password:string, tbl_filiere_id:string,matricule:string):Observable<any>{
+    return this.http.post<any>(`${this.apiUrl}/usecases/auth/inscription` , {nom_user , email , password,tbl_filiere_id, matricule}, { withCredentials: true });}
 
   logout(): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/deconnexion`, null, this.getAuthHeaders());

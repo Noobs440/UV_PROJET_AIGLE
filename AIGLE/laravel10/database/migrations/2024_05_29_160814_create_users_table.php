@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('nom_user');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('matricule')->unique()->nullable(false);
             $table->foreignIdFor(TblFiliere::class)->constrained();
             $table->string('password');
             $table->string('role')->default('user');
