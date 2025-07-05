@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { RegisterComponent } from '../register-popup/register-popup.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { CustomvalidationService } from '../../../services/customvalidation.service';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
+import { RegisterComponent } from '../register-popup/register-popup.component';
 import { ForgetPasswordComponent } from '../forget-password/forget-password.component';
-import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-login-popup',
@@ -14,25 +13,20 @@ import { UserService } from '../../../services/user.service';
   styleUrls: ['./login-popup.component.css']
 })
 export class LoginPopupComponent {
-  password !: string;
-  email !: string;
-  user: any;
   loginForm!: FormGroup;
-  codeForm!: FormGroup;
-  errorMessage = '';
   resetForm!: FormGroup;
-  showPasswordReset = false;
-  showPassword = false;
-  showConfirmPassword = false;
-  submitted3 = false;
-  isLoading: boolean = false;
-  resetRequestForm!: FormGroup;
-  verificationForm!: FormGroup;
+
   submitted = false;
-  showVerification = false;
-  showResetPasswordForm = false;
-  showSuccessMessage = false;
-  successMessage = '';
+  isLoading = false;
+  errorMessage = '';
+
+  // Propriétés booléennes manquantes pour le template
+  showPasswordReset: boolean = false;
+  showVerification: boolean = false;
+  showSuccessMessage: boolean = false;
+  showResetPasswordForm: boolean = false;
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   constructor(
     private router: Router,
@@ -40,17 +34,10 @@ export class LoginPopupComponent {
     private dialogRef: MatDialogRef<LoginPopupComponent>,
     public dialog: MatDialog,
     private fb: FormBuilder,
-    private customValidator: CustomvalidationService,
-    private userService: UserService
-  ) { }
+    private customValidator: CustomvalidationService
+  ) {}
 
   ngOnInit() {
-    this.resetRequestForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
-    });
-    this.verificationForm = this.fb.group({
-      verificationCode: ['', Validators.required]
-    });
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.compose([Validators.required, this.customValidator.patternValidator()])]
@@ -60,123 +47,19 @@ export class LoginPopupComponent {
 
     this.resetForm = this.fb.group({
       newPassword: ['', Validators.required],
-      confirmPassword: ['', [Validators.required,]]
-    },
-      {
-        validator: this.customValidator.MatchPassword('newPassword', 'confirmPassword'),
-      }
-    );
+      confirmPassword: ['', Validators.required]
+    }, {
+      validator: this.customValidator.MatchPassword('newPassword', 'confirmPassword')
+    });
   }
 
-  get loginFormControl() {
-    return this.loginForm.controls;
-  }
-
-  get resetRequestFormControl() {
-    return this.resetRequestForm.controls;
-  }
-
-  get verificationFormControl() {
-    return this.verificationForm.controls;
-  }
-
+  // Getter pour utiliser dans le template (ex: resetFormControl['newPassword'])
   get resetFormControl() {
     return this.resetForm.controls;
   }
 
-  onResetPassword() {
-    this.submitted = true;
-    if (this.resetForm.invalid) {
-      return;
-    }
-    this.isLoading = true;
-    const email = this.resetRequestForm.value.email;
-    const newPassword = this.resetForm.value.newPassword;
-    const verificationCode = this.verificationForm.value.verificationCode;
-
-    this.userService.resetPassword(email, newPassword, verificationCode).subscribe({
-      next: () => {
-        this.showSuccessMessage = true;
-        this.successMessage = 'Votre mot de passe a été réinitialisé avec succès.';
-      },
-      error: err => {
-        console.error(err);
-        this.isLoading = false;
-        this.errorMessage = 'Aucun utilisateur trouver avec cette adresse email';
-        alert(this.errorMessage);
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
-    });
-  }
-
-  onVerifyCode() {
-    this.submitted = true;
-    if (this.verificationForm.invalid) {
-      return;
-    }
-
-    this.isLoading = true;
-    const email = this.resetRequestForm.value.email;
-    const verificationCode = this.verificationForm.value.verificationCode;
-
-    this.userService.verifyResetcode(email, verificationCode).subscribe({
-      next: () => {
-        this.showResetPasswordForm = true;
-      },
-      error: err => {
-        console.error(err);
-        this.isLoading = false;
-        this.errorMessage = 'Code de vérification invalide.';
-        alert(this.errorMessage);
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
-    });
-  }
-
-  onSendVerificationCode() {
-    this.submitted = true;
-    if (this.resetRequestForm.invalid) {
-      return;
-    }
-
-    this.isLoading = true;
-    const email = this.resetRequestForm.value.email;
-
-    this.userService.sendVerificationCode(email).subscribe({
-      next: () => {
-        this.showVerification = true;
-      },
-      error: err => {
-        console.error(err);
-        this.isLoading = true;
-        this.errorMessage = 'Erreur lors de l\'envoi du code de vérification.';
-        alert(this.errorMessage);
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
-    });
-  }
-
-  mustMatch(controlName: string) {
-    return (formGroup: FormGroup) => {
-      const control = formGroup.controls[controlName];
-      const matchingControl = formGroup.controls['confirmPassword'];
-
-      if (matchingControl.errors && !matchingControl.errors['mustMatch']) {
-        return;
-      }
-
-      if (control.value !== matchingControl.value) {
-        matchingControl.setErrors({ mustMatch: true });
-      } else {
-        matchingControl.setErrors(null);
-      }
-    };
+  get loginFormControl() {
+    return this.loginForm.controls;
   }
 
   onSubmit() {
@@ -186,82 +69,83 @@ export class LoginPopupComponent {
       return;
     }
 
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      this.userService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
-        next: value => {
-          console.log(value)
+    this.isLoading = true;
 
+    const email = this.loginForm.value.email;
+    const password = this.loginForm.value.password;
 
-          const queryParams = {
-            token: value.access_token,
-            name: value.username,
-            role: value.role,
-            id: value.id,
-            isLoggedOut: false
+    // 1. Init CSRF cookie
+    this.authService.initCsrf().subscribe({
+      next: () => {
+        // 2. Login avec Laravel
+        this.authService.login(email, password).subscribe({
+          next: (user) => {
+            if (user) {
+              // Auth réussie, on ferme le modal et redirige selon rôle
+              this.dialogRef.close();
+              this.router.navigate([`/${user.role}/dashboard`]);
+            } else {
+              this.errorMessage = 'Identifiants invalides';
+            }
+          },
+          error: (err) => {
+            console.error(err);
+            this.errorMessage = 'Adresse email ou mot de passe invalide';
+            this.isLoading = false;
+          },
+          complete: () => {
+            this.isLoading = false;
           }
-          const userRole = value.role;
-          const token = value.access_token;
-          const name = value.username;
-          const role = value.role;
-          const id = value.id;
-
-          localStorage.setItem('token', token);
-          localStorage.setItem('name', name);
-          localStorage.setItem('role', role);
-          localStorage.setItem('id', id);
-          localStorage.setItem('user', JSON.stringify(value.user)); // Stocker les informations de l'utilisateur
-
-          //alert(`Bienvenue sur votre page d'utilisateur, ${name}`);
-
-
-
-          // Rediriger l'utilisateur en fonction de son rôle
-
-            this.router.navigate([`/${userRole}/dashboard`],{queryParams});
-          // Fermer le modal
-          this.dialogRef.close();
-        },
-        error: err => {
-          console.error(err);
-          this.isLoading = false;
-          this.errorMessage = "Addresse email ou mot de passe invalide";
-        },
-        complete: () => {
-          this.isLoading = false;
-          //this.router.navigate(['']);
-        }
-      });
-    }
+        });
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération du CSRF cookie', err);
+        this.errorMessage = 'Erreur interne, merci de réessayer plus tard.';
+        this.isLoading = false;
+      }
+    });
   }
+  
 
   onCancel() {
     this.dialogRef.close();
   }
 
+  
+
   openRegisterDialog(): void {
-    this.dialogRef.close(); // Close the current dialog
+    this.dialogRef.close();
 
     const dialogRef2 = this.dialog.open(RegisterComponent, {
       width: '387px',
       height: '600px',
     });
 
-    dialogRef2.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+    dialogRef2.afterClosed().subscribe(() => {
+      // Optionnel : actions après fermeture du registre
     });
   }
 
   openForgetPasswordDialog(): void {
-    this.dialogRef.close(); // Close the current dialog
+    this.dialogRef.close();
 
     const dialogRef3 = this.dialog.open(ForgetPasswordComponent, {
       width: '400px',
       height: '500px'
     });
 
-    dialogRef3.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+    dialogRef3.afterClosed().subscribe(() => {
+      // Optionnel : actions après fermeture du reset
     });
   }
+  onResetPassword() {
+  this.submitted = true;
+
+  if (this.resetForm.invalid) {
+    return;
+  }
+}
+
+  // Si tu utilises dans le template des méthodes comme onResetPassword,
+  // pense à les définir ici pour éviter des erreurs similaires
 }

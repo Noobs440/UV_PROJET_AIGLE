@@ -56,7 +56,7 @@ Route::prefix('ressources')->group(function () {
     Route::apiResource('superviseurs', TblSuperviseurController::class);
     Route::apiResource('niveaux', TblNiveauController::class);
     Route::apiResource('categories', TblCategorieController::class);
-    Route::apiResource('projets', TblProjetController::class);
+    Route::middleware('auth:sanctum')->get('/project/{id}', [TblProjetController::class, 'show']);
     Route::apiResource('documents', TblDocumentController::class);
 });
 

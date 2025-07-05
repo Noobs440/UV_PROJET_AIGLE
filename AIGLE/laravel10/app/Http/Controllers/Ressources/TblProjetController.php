@@ -7,6 +7,7 @@ use App\Models\TblProjet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Services\FileUploadService;
+use Illuminate\Http\JsonResponse;
 
 class TblProjetController extends Controller
 {
@@ -75,10 +76,15 @@ class TblProjetController extends Controller
         return response()->json($projet, 201);
     }
 
-    public function show(string $id)
+   public function show($id): JsonResponse
     {
-        $projet = TblProjet::where('id', $id)->firstOrFail();
-        return response()->json($projet);
+        $project = TblProjet::find($id);
+
+        if (!$project) {
+            return response()->json(['message' => 'Projet non trouvé'], 404);
+        }
+
+        return response()->json($project);
     }
 
     public function update(Request $request, string $id)
