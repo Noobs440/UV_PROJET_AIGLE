@@ -1,10 +1,15 @@
 import { Component, ElementRef, HostListener, ViewChild, inject } from '@angular/core';
+// ...existing code...
+import { MatDialog } from '@angular/material/dialog';
+import { PopupCommComponent } from '../popup-comm/popup-comm.component';
+import { getProjectId } from '../../shared/utils/projetId';
 import { Overlay, OverlayRef, ScrollDispatcher } from '@angular/cdk/overlay';
 import { SearchbarService } from '../../services/searchbar.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { AcceuilService } from '../../services/acceuil.service';
 import { CategoryService } from '../../services/category.service';
 import { ProjetService } from '../../services/projet.service';
+import { RechercheService } from '../../services/recherche.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -55,7 +60,20 @@ export class HeroSectionComponent {
               private acceuilService: AcceuilService,
               private categoryService: CategoryService,
               private projetService: ProjetService,
-              private router: Router) {}
+              private rec: RechercheService,
+              private router: Router,
+              private dialog: MatDialog) {}
+  // Méthode pour ouvrir la popup commentaire de façon générique
+  openCommentPopup(project: any) {
+    const projetId = getProjectId(project);
+    if (!projetId) {
+      alert('Impossible de récupérer l\'id du projet.');
+      return;
+    }
+    this.dialog.open(PopupCommComponent, {
+      data: { projetId }
+    });
+  }
 
   ngOnInit(): void {
     this.isLoading = true;
@@ -115,10 +133,27 @@ export class HeroSectionComponent {
     this.preventBlur = true;
     this.searchValue = value;
     this.overlayVisible = false;
+    
   }
 
   onSubmitSearch() {
-    this.router.navigate(['/home/projects-listing'], { queryParams: { search: this.searchValue } });
+    // Appelle le service de recherche et traite la réponse
+    this.rec.searchProjects(this.searchValue).subscribe(response => {
+      this.filteredProjects = response.results;
+      // Récupère les ids des projets filtrés
+      const projectIds = this.filteredProjects
+        .map(project => getProjectId(project))
+        .filter(id => id !== undefined);
+
+      //console.log('IDs des projets filtrés:', projectIds);
+
+      this.router.navigate(['/home/projects-listing'], {
+        queryParams: {
+          search: this.searchValue,
+          ids: projectIds.join(',') // envoie les ids sous forme de chaîne séparée par des virgules
+        }
+      });
+    });
   }
 
 

@@ -27,3 +27,25 @@ a{
   height:130px;
   width: 100%;
 }
+
+
+.moi_seul {
+  border: none;
+  padding: 20px;
+  border-radius: 15px;
+  display: flex;                  /* Pour aligner les éléments sur la même ligne */
+  justify-content: center;
+}
+.moi_seul img {
+  height: 24px;       /* Taille réduite */
+  width: 24px;
+  object-fit: contain;
+
+}
+.moi_seul:hover{
+  background-color: #06BBCC;
+}
+.moi_seul:active{
+  background-color: aqua;
+  transform: scale(0.9);
+}

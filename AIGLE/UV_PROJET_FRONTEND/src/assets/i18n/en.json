@@ -141,7 +141,5 @@
   "confirmPasswordRequiredError": "Confirmation of the password is required",
   "passwordMismatchError": "Passwords must match",
   "resetButton": "Reset",
-  "okButton": "OK",
-  "MATRICULE": "Matricule",
-  "MATRICULE_FORMAT_INVALID": "Invalid matricule format. Example: CM-UDS-24FS0001"
+  "okButton": "OK"
 }

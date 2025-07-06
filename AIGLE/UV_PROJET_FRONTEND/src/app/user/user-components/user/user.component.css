@@ -709,15 +709,12 @@ a{
   background: #f6f9ff;
   padding: 10px 15px;
   border-radius: 4px;
-  padding: 0.5rem 1rem;
 }
 
 .sidebar-nav .nav-link i {
   font-size: 16px;
   margin-right: 10px;
   color: #368fa5;
-  padding: 0.5rem 1.5rem;
-
 }
 
 .sidebar-nav .nav-link.collapsed {
@@ -738,14 +735,12 @@ a{
   color: #06BBCC;
 }
 
-.sidebar-nav .nav-link .bi-chevron-down .bi-chevron-up {
+.sidebar-nav .nav-link .bi-chevron-down {
   margin-right: 0;
-  transition: transform 0.2s ease;
   transition: transform 0.2s ease-in-out;
-  margin-left: auto;
 }
 
-.sidebar-nav .nav-link:not(.collapsed) .bi-chevron-down .bi-chevron-up {
+.sidebar-nav .nav-link:not(.collapsed) .bi-chevron-down {
   transform: rotate(180deg);
 }
 

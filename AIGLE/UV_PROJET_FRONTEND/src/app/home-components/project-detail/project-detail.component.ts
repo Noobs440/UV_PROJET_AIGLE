@@ -5,6 +5,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ProjetService } from '../../services/projet.service';
 import { DocumentService } from '../../services/document.service';
 import { ListingService } from '../../services/listing.service';
+import { CommentaireService } from '../../services/commentaire.service';
 @Component({
   selector: 'app-project-detail',
   templateUrl: './project-detail.component.html',
@@ -36,12 +37,19 @@ export class ProjectDetailComponent implements OnInit{
   email!:string;
   id!:number;
   user_id:any;
+  commentaires: string[]=[];
+  nameU:any;
+  idU:any;
+  proprio=false;
+  
+
   constructor(
     private route:ActivatedRoute,
     private sanitizer: DomSanitizer,
     private projetService:ProjetService,
     private documentService: DocumentService,
-    private projectByIdService:ListingService
+    private projectByIdService:ListingService,
+    private com:CommentaireService
 
   ){}
 
@@ -66,7 +74,14 @@ export class ProjectDetailComponent implements OnInit{
       this.type=params['type'];
       this.date=params['date'];
       this.views=params['views'];
-      this.email=params['email']
+      this.email=params['email'];
+      if(params['name'] && params['id']){
+        this.nameU = params['nameU'];
+        this.idU = params['idU'];
+      }else{
+        this.nameU = null
+        this.idU = null;
+      }
     });
     this.projetService.countViews(this.id).subscribe({
       next:(value)=>{
@@ -93,6 +108,13 @@ export class ProjectDetailComponent implements OnInit{
     this.documentService.getDocumentsByProject(this.id).subscribe(response => {
       this.documents = response;
     });
+    this.com.getAllcommentsByprojects(this.id).subscribe(
+      response => {
+        this.commentaires = response.map((c: any) => c.texte);
+        //this.commentaires = response.map((c: any) => c.date);
+      // Si besoin, garde aussi response complet dans un autre tableau
+        console.log(this.commentaires); }
+    );
   }
   updateProjectDetails(project:any){
     this.id = project.id;
@@ -132,11 +154,8 @@ export class ProjectDetailComponent implements OnInit{
     this.isExpanded = !this.isExpanded;
   }
 
-    getFullImageUrl(projectImage: string): string {
-    if (!projectImage) {
-      return '';
-    }
-    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
+  getFullImageUrl(imagePath: string): string {
+    return `${'http://localhost:8000'}${imagePath}`;
   }
   getFullDocument(documentPath:string){
     return `${'http://localhost:8000'}${documentPath}`;

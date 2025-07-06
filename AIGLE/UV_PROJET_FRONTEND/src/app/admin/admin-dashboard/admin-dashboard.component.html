@@ -2,16 +2,16 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Admin Dashboard</h1>
+      <h1>Admin Dashboard <span *ngIf="userName">- {{ userName }}</span></h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a [routerLink]="['/home']">Home</a></li>
+          <li class="breadcrumb-item"><a [routerLink]="['/homec']" [queryParams]="{ name: userName, id: userId }">Home</a></li>
           <li class="breadcrumb-item active">Admin Dashboard</li>
           <!-- <li class="breadcrumb-item active">{{ selectedProjectTitle }}</li> -->
         </ol>
       </nav>
     </div><!-- End Page Title -->
-
+ 
     <section class="section dashboard">
       <div class="row">
         <!-- Left side columns -->

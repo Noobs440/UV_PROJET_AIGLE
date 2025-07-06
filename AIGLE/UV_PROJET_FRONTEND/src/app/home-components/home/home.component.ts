@@ -16,10 +16,5 @@ export class HomeComponent {
       this.isLoading = false;
     }, 300); // 30 seconds
   }
-   getFullImageUrl(projectImage: string): string {
-    if (!projectImage) {
-      return '';
-    }
-    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
-  }
+  
 }

@@ -6,31 +6,35 @@ import { UserService } from '../../../services/user.service';
 import { Router } from '@angular/router';
 import { ProjetService } from '../../../services/projet.service';
 import { ListingService } from '../../../services/listing.service';
+import { UserDataService } from '../../../services/user-data.service';
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
   styleUrl: './user.component.css'
 })
 export class UserComponent implements OnInit{
-  constructor(private ProjectByIdService:ListingService, private projetService:ProjetService, private route:ActivatedRoute, private router:Router, private userService: UserService ,private renderer: Renderer2, private el: ElementRef,private notificationService:NotificationService) {}
+  constructor(
+    private ProjectByIdService:ListingService, 
+    private userDataService:UserDataService, 
+    private projetService:ProjetService, 
+    private route:ActivatedRoute, 
+    private router:Router, 
+    private userService: UserService,
+    private renderer: Renderer2, 
+    private el: ElementRef,
+    private notificationService:NotificationService
+  ) {}
 
   token!:string;
   user_name!:string;
-   photo: string = 'assets/img/default.png'; // image par défaut
   role!:string;
   id:any;
-   user: any = {}; // Stocke les infos utilisateur
   notifications: any[] =[];
   projects:any[]=[];
-isProjectsCollapsed: boolean = true;
-   projectsMenuOpen: boolean = false;
-     toggleProjectsMenu(): void {
-    this.projectsMenuOpen = !this.projectsMenuOpen;
-  }
+
 
   ngOnInit(): void {
     this.loadNotifications();
-    this.loadUserProfilePhoto();
     this.route.queryParams.subscribe(params => {
       this.token=params['token'];
       this.user_name=params['name'];
@@ -57,30 +61,15 @@ isProjectsCollapsed: boolean = true;
         complete: () => {
          // this.isLoading = false;
         }
-
       });
 
+      this.sendData();
       this.getProjectQueryParams(this.projects)
   }
- loadUserProfilePhoto(): void {
-    this.userService.getUserProfile().subscribe({
-      next: (userData) => {
-        if (userData.photo) {
-          this.photo = userData.photo.startsWith('http')
-            ? userData.photo
-            : `http://localhost:8000/${userData.photo}`;
-        } else {
-          this.photo = 'assets/img/default.png';
-        }
-      },
-      error: (err) => {
-        console.error('Erreur chargement photo:', err);
-        this.photo = 'assets/img/default.png';
-      }
-    });
-  }
 
-
+  sendData(){
+  this.userDataService.setUserData({ name: this.user_name, id: this.id });
+}
   getProjectQueryParams(project: any): any {
     return {
       id: project.id,
@@ -129,17 +118,6 @@ isProjectsCollapsed: boolean = true;
   }
 
 
-get photoUrl(): string {
-    if (!this.user.photo) {
-      return 'assets/img/default.png'; // image par défaut locale
-    }
-    // Retourne l'URL complète si c'est une URL, sinon construit le chemin complet
-    if (this.user.photo.startsWith('http')) {
-      return this.user.photo;
-    }
-    return `http://localhost:8000/${this.user.photo}`; // exemple: 'images/nomfichier.jpg'
-  }
-
   deconnexion(){
     const result = confirm('voulez vous vous deconnecter');
     if(result){
@@ -160,6 +138,4 @@ get photoUrl(): string {
 
   }
 }
-
-
 }

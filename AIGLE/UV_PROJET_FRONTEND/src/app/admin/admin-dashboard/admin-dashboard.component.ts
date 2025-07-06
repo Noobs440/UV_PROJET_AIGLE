@@ -1,53 +1,77 @@
 import { Component, inject, Input } from '@angular/core';
+import { UserService } from '../../services/user.service';
 import { ScriptLoaderService } from '../../services/script.service';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { Router } from '@angular/router';
 import { ProjetService } from '../../services/projet.service';
+import { UserDataService } from '../../services/user-data.service';
+
 
 
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
-  styleUrl: './admin-dashboard.component.css'
+  styleUrls: ['./admin-dashboard.component.css']
 })
 export class AdminDashboardComponent {
-  constructor(private router:Router, private projetService:ProjetService){}
-
+  userName: string | null = '';
+  userId: string = '';
   projectStatus: ProjectStatus = {
     Approved: 0,
     Pending: 0,
     Rejected: 0
   };
-
   selectedProjectId!: number ;
   approvedProjects!: number;
   pendingProjects!: number;
   rejectedProjects!: number;
   selectedProjectTitle: string | null = null;
   showDetailProject: boolean = false;
-  data: any[]=[];
-  // ngOnInit(): void {
-  //   this.scriptLoader.loadScript('assets/assets/js/main.js');
-  // }
+  data: any[] = [];
 
-
-  ngOnInit() {
-    this.paginate(this.filteredData);
-    this.projetService.countProjectsByStatus().subscribe(projets => {
-      this.data = projets;
-      this.approvedProjects = this.data[0].Approved;
-      this.pendingProjects = this.data[0].Pending;
-      this.rejectedProjects = this.data[0].Rejected;
-      
-
-    });
-  }
-
-
-
+  rowData: RowData[] = [
+    { sn: 1, title: 'Brandon Jacob', author: 'At praesentium minu', image: 'https://via.placeholder.com/50', status: 'Approved' },
+    { sn: 2, title: 'Bridie Kessler', author: 'Blanditiis dolor omnis similique', image: 'https://via.placeholder.com/50', status: 'Pending' },
+    { sn: 3, title: 'Ashleigh Langosh', author: 'At recusandae consectetur', image: 'https://via.placeholder.com/50', status: 'Approved' },
+    { sn: 4, title: 'Angus Grady', author: 'Ut voluptatem id earum et', image: 'https://via.placeholder.com/50', status: 'Rejected' },
+    { sn: 5, title: 'Raheem Lehner', author: 'Sunt similique distinctio', image: 'https://via.placeholder.com/50', status: 'Approved' }
+  ];
+  filteredData: RowData[] = [...this.rowData];
+  paginatedData: RowData[] = [];
+  currentPage = 1;
+  rowsPerPage = 2;
+  totalPages: number[] = [];
   isSidebarCollapsed = true;
-
   rowSelection = 'single';
+
+  constructor(
+    private router: Router,
+    private projetService: ProjetService,
+    private userService: UserService,
+    private userDataService:UserDataService
+  ) {}
+
+ngOnInit() {
+  // Récupération des queryParams depuis l'URL (Angular way)
+  const urlParams = new URLSearchParams(window.location.search);
+  const nameParam = urlParams.get('name');
+  const idParam = urlParams.get('id');
+  this.userName = nameParam ?? this.userService.getUserName() ?? '';
+  this.userId = idParam ?? this.userService.getUserId() ?? '';
+  this.paginate(this.filteredData);
+  this.projetService.countProjectsByStatus().subscribe(projets => {
+    this.data = projets;
+    this.approvedProjects = this.data[0].Approved;
+    this.pendingProjects = this.data[0].Pending;
+    this.rejectedProjects = this.data[0].Rejected;
+  });
+  this.sendData(); 
+  console.log("nameParam & idParam", nameParam, idParam);
+}
+
+sendData(){
+  this.userDataService.setUserData({ name: this.userName, id: this.userId });
+}
 
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
@@ -62,8 +86,7 @@ export class AdminDashboardComponent {
         sidebar.classList.toggle('collapsed');
       });
     }
-  }
-  
+  } 
   getStatusClass(status: string) {
     return {
       'bg-success': status === 'Approved',
@@ -71,20 +94,13 @@ export class AdminDashboardComponent {
       'bg-danger': status === 'Rejected'
     };
   }
-  rowData: RowData[] = [
+ /* rowData: RowData[] = [
     { sn: 1, title: 'Brandon Jacob', author: 'At praesentium minu', image: 'https://via.placeholder.com/50', status: 'Approved' },
     { sn: 2, title: 'Bridie Kessler', author: 'Blanditiis dolor omnis similique', image: 'https://via.placeholder.com/50', status: 'Pending' },
     { sn: 3, title: 'Ashleigh Langosh', author: 'At recusandae consectetur', image: 'https://via.placeholder.com/50', status: 'Approved' },
     { sn: 4, title: 'Angus Grady', author: 'Ut voluptatem id earum et', image: 'https://via.placeholder.com/50', status: 'Rejected' },
     { sn: 5, title: 'Raheem Lehner', author: 'Sunt similique distinctio', image: 'https://via.placeholder.com/50', status: 'Approved' }
-  ];
-
-  filteredData: RowData[] = [...this.rowData];
-  paginatedData: RowData[] = [];
-  currentPage = 1;
-  rowsPerPage = 2;
-  totalPages: number[] = [];
-
+  ];*/
 
   renderActionButtons(status: string): string {
     let actionButtons = `
@@ -114,7 +130,6 @@ export class AdminDashboardComponent {
     this.paginate(sortedData);
   }
 
-  
   filterTable(status: string): void {
     this.filteredData = this.rowData.filter(row => status === '' || row.status === status);
     this.currentPage = 1;

@@ -36,7 +36,6 @@ export class RegisterComponent {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       username: ['', [Validators.required], ],
-      matricule: ['',[Validators.required,Validators.pattern(/^CM-UDS-\d{2}[A-Z]{2,5}\d{4}$/)]],
       password: ['', Validators.compose([Validators.required, this.customValidator.patternValidator()])],
       confirmPassword: ['', [Validators.required]],
       filiere: ['', [Validators.required]],
@@ -87,7 +86,7 @@ export class RegisterComponent {
     this.submitted = true;
     this.isLoading = true;
     if (this.registerForm.valid) {
-      this.userService.inscription(this.registerForm.value.username, this.registerForm.value.email, this.registerForm.value.password, this.registerForm.value.filiere,this.registerForm.value.matricule).subscribe({
+      this.userService.inscription(this.registerForm.value.username, this.registerForm.value.email, this.registerForm.value.password, this.registerForm.value.filiere).subscribe({
         next: value => {
           console.log(value);
         },
@@ -142,11 +141,4 @@ export class RegisterComponent {
       console.log('The dialog was closed');
     });
   }
-  openLoginDialog(): void {
-  this.dialogRef.close();
-  this.dialog.open(LoginPopupComponent, {
-    width: '400px',
-    disableClose: true
-  });
-}
 }

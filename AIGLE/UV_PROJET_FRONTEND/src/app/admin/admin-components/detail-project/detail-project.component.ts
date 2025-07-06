@@ -1,8 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
 import { Router } from '@angular/router';
 import { DocumentService } from '../../../services/document.service';
+import { UserDataService } from '../../../services/user-data.service';;
+import { PopupCommComponent } from '../../../home-components/popup-comm/popup-comm.component';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { CommentaireService } from '../../../services/commentaire.service';
 
 @Component({
   selector: 'app-detail-project',
@@ -25,7 +29,21 @@ export class DetailProjectComponent {
   date!:string;
   email!:string;
   id!:number;
-  constructor(private route: ActivatedRoute,private router:Router,private documentService:DocumentService, private projetStatusService:ProjetstatusService) {}
+  name!:string;
+  id1!:number;
+  commentaires: string[]=[];
+  proprio=false;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router:Router,
+    private documentService:DocumentService, 
+    private projetStatusService:ProjetstatusService,
+    private userDataService: UserDataService,
+    private dialog: MatDialog,
+    private com:CommentaireService,
+    //@Inject(MAT_DIALOG_DATA) public data: any,
+  ) {}
 
   ngOnInit(): void {
 
@@ -46,15 +64,37 @@ export class DetailProjectComponent {
        this.date=params['date'];
        this.views=params['views'];
        this.email=params['email']
+
      });
+     this.userDataService.userData$.subscribe(data => {
+      if (data) {
+        console.log('Nom reçu :', data.name );
+        console.log('ID reçu :', data.id );
+        this.name = data.name;
+        this.id1 = data.id;
+      }
+    });
+
+    this.com.getAllcommentsByprojects(this.id).subscribe(
+      response => {
+        this.commentaires = response.map((c: any) => c.texte);
+        //this.commentaires = response.map((c: any) => c.date);
+        // Si besoin, garde aussi response complet dans un autre tableau
+        console.log(this.commentaires);
+      });
 
      this.documentService.getDocumentsByProject(this.id).subscribe(response => {
       this.documents = response;
     });
 
      this.actionCellRenderer();
+     this.sendData();
   }
 
+  sendData() {
+    this.userDataService.setUserData({ name: this.name , id: this.id1 });
+  }
+  onchat(){}
   isExpanded = false;
 
   toggleExpand() {
@@ -62,11 +102,8 @@ export class DetailProjectComponent {
   }
 
 
-  getFullImageUrl(projectImage: string): string {
-    if (!projectImage) {
-      return '';
-    }
-    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
+  getFullImageUrl(imagePath: string): string {
+    return `${'http://localhost:8000'}${imagePath}`;
   }
 
   actionCellRenderer() {
@@ -159,5 +196,39 @@ export class DetailProjectComponent {
       }
     }
   }
+
+    open(){
+      const projetId = this.id;
+      const userId = this.id1;
+      const nm = this.name;
+  
+        const dialogRef = this.dialog.open(PopupCommComponent, {
+          width: '387px',
+          height: '600px',
+          data: { projetId, userId, nm },
+          
+        });
+        console.log("projet ", projetId);
+        console.log("username ", userId);
+        console.log("userid ", nm);
+        dialogRef.afterClosed().subscribe((result: any) => {
+          // Si le commentaire a été envoyé, on redirige vers le détail du projet
+          if (result && result.commentSent) {
+            // On récupère les queryParams actuels de l'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const name = urlParams.get('name');
+            const id = urlParams.get('id');
+            
+            console.log('name:', name);
+            console.log('id:', id);
+            let queryParams: any = {};
+            if (name && id) {
+              queryParams = { name, id };
+            }
+            // Rediriger vers la page de détail du projet avec queryParams si présents
+            window.location.href = `/homec/project-detail/${projetId}` + (Object.keys(queryParams).length ? `?name=${name}&id=${id}` : '');
+          }
+        });
+    }
 
 }

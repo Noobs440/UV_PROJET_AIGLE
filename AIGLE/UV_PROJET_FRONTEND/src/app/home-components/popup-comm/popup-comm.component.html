@@ -1,0 +1,18 @@
+<!--Zone des commentaires-->
+<div class="popup">
+    <div class="popup-header">
+        <button class="close" (click)="closep()">⪪</button>
+        <h2>Commentaires</h2>
+    </div>
+    <div class="liste">
+        <!--liste des commentaires existant-->
+        <div *ngFor="let com of commentaires; let last = last" class="commentaire" [ngClass]="{'last-comment': last}">
+            <img src="/assets/navi.png" alt="">
+            <p>{{com}}</p>
+        </div>
+    </div>
+    <div class="newCom">
+        <textarea [(ngModel)]="newComm" placeholder="Commenter en tant que ..."></textarea>
+        <button (click)="addcom()">Envoyer</button>
+    </div>
+</div>

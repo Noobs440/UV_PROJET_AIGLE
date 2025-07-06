@@ -1,18 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 
-import { ProfileComponent } from './components/profile/profile.component';
-import { EditNameComponent } from './components/profile/edit-name.component';
-import { EditEmailComponent } from './components/profile/edit-email.component';
-import { EditPasswordComponent } from './components/profile/edit-password.component';
-import { EditPhotoComponent } from './components/profile/edit-photo.component';
-
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home-components/home/home.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { NavComponent } from './shared/nav/nav.component';
+import { NavComponentConn } from './shared/navConn/nav.component';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -21,7 +15,7 @@ import { RegisterComponent } from './home-components/modals/register-popup/regis
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatDialogModule } from '@angular/material/dialog';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { AboutComponent } from './home-components/about/about.component';
 import { ContactComponent } from './home-components/contact/contact.component';
 import { TeamComponent } from './home-components/team/team.component';
@@ -37,6 +31,7 @@ import { ProjectDetailComponent } from './home-components/project-detail/project
 import { PopularProjectComponent } from './home-components/popular-project/popular-project.component';
 import { LoaderComponent } from './shared/loader/loader.component';
 import { DefaultComponent } from './layouts/default/default.component';
+import{ Default1Component } from './layouts/default1/default1.component';
 import { LoginPopupComponent } from './home-components/modals/login-popup/login-popup.component';
 import { OverlayOptionsComponent } from './home-components/overlay-options/overlay-options.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
@@ -45,9 +40,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CounterDirective } from './home-components/stats/counter.directive';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
+import { AdminsysComponent } from './adminsys/adminsys.component';
 import { HelpComponent } from './user/user-components/help/help.component';
-
-
+import { PopupCommComponent } from './home-components/popup-comm/popup-comm.component';
 
 
 // AoT requires an exported function for factories
@@ -61,6 +56,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HomeComponent,
     FooterComponent,
     NavComponent,
+    NavComponentConn,
     RegisterComponent,
     AboutComponent,
     ContactComponent,
@@ -78,22 +74,16 @@ export function HttpLoaderFactory(http: HttpClient) {
     LoaderComponent,
     LoginPopupComponent,
     DefaultComponent,
+    Default1Component,
     OverlayOptionsComponent,
     CounterDirective,
     CounterDirective,
     SafeUrlPipe,
     ConfirmDialogComponent,
-    EditEmailComponent,
-    
+    AdminsysComponent,
+    PopupCommComponent,
   ],
   imports: [
-
-     ProfileComponent,
-    EditNameComponent,
-    
-    EditPasswordComponent,
-    EditPhotoComponent,
-
     BrowserModule,
     BrowserAnimationsModule ,
     AppRoutingModule,

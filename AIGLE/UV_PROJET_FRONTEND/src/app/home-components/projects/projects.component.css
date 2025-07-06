@@ -112,3 +112,31 @@ a{
   height:130px;
   width: 100%;
 }
+.chat1 {
+  display: flex;                  /* Pour aligner les éléments sur la même ligne */
+  justify-content: center;       /* Pour centrer les boutons horizontalement */
+  gap: 10px;                      /* Espace entre les boutons */
+  margin-top: 10px;
+  padding: 10px;
+}
+.moi_seul {
+  background-color: gainsboro;
+  border: none;
+  padding: 20px;
+  border-radius: 15px;
+  display: flex;                  /* Pour aligner les éléments sur la même ligne */
+  justify-content: center;
+}
+.moi_seul img {
+  height: 24px;       /* Taille réduite */
+  width: 24px;
+  object-fit: contain;
+
+}
+.moi_seul:hover{
+  background-color: #06BBCC;
+}
+.moi_seul:active{
+  background-color: aqua;
+  transform: scale(0.9);
+}

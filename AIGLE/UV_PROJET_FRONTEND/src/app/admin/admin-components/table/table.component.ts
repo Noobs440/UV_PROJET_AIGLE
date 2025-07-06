@@ -7,10 +7,11 @@ import { ProjetService } from '../../../services/projet.service';
 
 interface Project {
   sn: number;
-  titre_projet: string;
+  title: string;
   author: string;
   image: string;
   status: string;
+  action: string;
 }
 
 @Component({
@@ -22,7 +23,7 @@ export class TableComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = ['sn', 'title', 'author', 'image', 'status', 'action'];
   dataSource = new MatTableDataSource<Project>([]);
-
+  
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -50,17 +51,7 @@ export class TableComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getFullImageUrl(imagePath: string): string {
-    if (!imagePath) {
-      return 'assets/default-image.png'; // image par défaut si vide
-    }
-    if (imagePath.startsWith('http')) {
-      return imagePath;
-    }
-    return `http://localhost:8000/${imagePath.replace(/^\/+/, '')}`;
-  }
-
   showDetail(element: Project) {
-    this.router.navigate(['/admin/dashboard/project-detail', element.sn], { queryParams: { title: element.titre_projet } });
+    this.router.navigate(['/admin/dashboard/project-detail', element.sn], { queryParams: { title: element.title } });
   }
 }

@@ -15,6 +15,9 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { HelpComponentAdmin } from './admin-components/help/help.component';
+import { ChatAdminComponent } from './admin-components/chat-admin/chat-admin.component';
+import { ListchatAdminComponent } from './admin-components/listchat-admin/listchat-admin.component';
 
 
 
@@ -25,6 +28,9 @@ import { MatIconModule } from '@angular/material/icon';
     DetailProjectComponent,
     AgTabComponent,
     AdminComponent,
+    HelpComponentAdmin,
+    ChatAdminComponent,
+    ListchatAdminComponent,
   ],
   imports: [
     AgGridModule,

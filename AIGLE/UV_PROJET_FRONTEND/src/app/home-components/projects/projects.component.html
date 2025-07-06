@@ -1,4 +1,4 @@
-<section id="recent-posts" class="recent-posts section" [ngStyle]="{'background-color': bgColor}">
+<section id="recent-posts" class="recent-posts section" [ngStyle]="{'background-color': bgColor}" >
   <!-- Titre de la section -->
   <div class="con1 container section-title" [ngStyle]="{'padding-top': pad, 'color': fColor}" [@fadeUp]>
     <h2>{{ 'CONSULT_PROJECTS' | translate }}</h2>
@@ -84,9 +84,9 @@
           <div class="project-img">
             <img [src]="getFullImageUrl(post.image)" alt="" class="img-fluid">
           </div>
-          <p class="project-category">{{ post.nom_categorie }}</p>
+          <p class="project-category">{{ post.nom_categorie }}</p> 
           <h2 class="title">
-            <a [routerLink]="['/home/project-detail', post.id]" [queryParams]="getProjectQueryParams(post)">{{ post.titre_projet }}</a>
+            <a [routerLink]="getRoute(post)" [queryParams]="getProjectQueryParams(post)">{{ post.titre_projet }}</a><!--[routerLink]="['/home/project-detail', post.id]"-->
           </h2>
           <div class="d-flex align-items-center">
             <!-- <img [src]="getFullImageUrl(post.image_utilisateur)" alt="" class="img-fluid user-avatar"> -->
@@ -96,6 +96,9 @@
                 <time datetime="2020-01-01">{{ post.date }}</time>
               </p>
             </div>
+          </div>
+          <div class="chat1">
+            <button class="moi_seul" (click)="open(post)"><img src="/assets/img/1751287817517.jpg" alt="comm"><p>texte</p></button>
           </div>
         </article>
       </div>

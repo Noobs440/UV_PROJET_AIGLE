@@ -1,0 +1,147 @@
+.popup {
+    background-color: rgb(252, 249, 249);
+    width: 35rem;
+    height: 60rem;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+    box-sizing: border-box;
+}
+
+.popup h2 {
+    text-align: center;
+    margin: 0 0 1.5rem 0;
+    font-size: 2rem;
+    font-weight: bold;
+    width: 100%;
+}
+
+.liste {
+    background-color: black;
+    border-radius: 10px;
+    width: 60%;
+    max-height: 30rem;
+    overflow-y: auto;
+    margin-bottom: 2rem;
+    padding: 0.5rem;
+}
+img{
+     width: 1.4rem;
+     height: 1.4rem;
+     border-radius: 50%;
+     object-fit: cover;
+     background: #e0e0e0;
+     margin-right: 0.5rem;    
+}
+
+.commentaire {
+    display: block;
+    padding: 8px 12px;
+    margin: 0.5rem 0;
+    background: whitesmoke;
+    border-radius: 6px;
+}
+
+.newCom {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    bottom: 1.5rem;
+    left: 0;
+    padding: 0 1.5rem;
+    box-sizing: border-box;
+}
+
+.newCom textarea {
+    flex: 0 0 150px;
+    height: 2rem;
+    min-height: 2rem;
+    max-height: 2rem;
+    resize: none;
+    margin-right: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    padding: 0.3rem 0.5rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+    width: 150px;
+    max-width: 60%;
+}
+.newCom button {
+    height: 2.5rem;
+    margin-left: 0.5rem;
+    margin-right: 0;
+    border-radius: 6px;
+    background: #06BBCC;
+    color: white;
+    border: none;
+    padding: 0 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+}
+.newCom button:hover {
+    background: #0499a8;
+}
+.popup-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+.popup-header .close {
+  margin-right: 1rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.popup-header h2 {
+  margin: 0;
+  flex: 1;
+  text-align: left;
+  font-size: 2rem;
+  font-weight: bold;
+}
+.commentaire {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 10px 14px;
+    margin: 0.5rem 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: background 0.2s;
+}
+.commentaire.last-comment {
+    background: #e0f7fa;
+    border: 1px solid #06BBCC;
+}
+.commentaire .avatar {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #e0e0e0;
+    margin-top: 0.2rem;
+}
+.commentaire .comment-content {
+    flex: 1;
+    display: block;
+    margin-left: 0.7rem;
+}
+.commentaire .comment-content p {
+    margin: 0;
+    font-size: 1.08rem;
+    color: #222;
+    word-break: break-word;
+}

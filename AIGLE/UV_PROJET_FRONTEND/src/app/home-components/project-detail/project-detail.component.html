@@ -27,21 +27,38 @@
             <li><i class="fas fa-eye"></i> <span>{{views}} Views {{projectStatus}}</span></li>
           </ul>
         </div>
-
-        <div class="col-lg-4" [@fadeUp]>
-          <div class="service-box">
-            <h4>Documents Related</h4>
-            <div class="download-catalog">
-              <a *ngFor="let document of documents | slice:0:(isExpanded ? documents.length : 4)" href="#">
-                <i class="bi bi-filetype-pdf"></i><span (click)="previewDocument(document.lien_doc)">{{ document.nom_doc }}</span>
-              </a>
+        <div>
+          <div class="col-lg-4" [@fadeUp]>
+            <div class="service-box">
+              <h4>Documents Related</h4>
+              <div class="download-catalog">
+                <a *ngFor="let document of documents | slice:0:(isExpanded ? documents.length : 4)" href="#">
+                  <i class="bi bi-filetype-pdf"></i><span (click)="previewDocument(document.lien_doc)">{{ document.nom_doc }}</span>
+                </a>
+              </div>
+              <div *ngIf="documents.length > 4" class="show-more" (click)="toggleExpand()">
+                <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                <span>{{ isExpanded ? 'Show Less' : 'Show More' }}</span>
+              </div>
             </div>
-            <div *ngIf="documents.length > 4" class="show-more" (click)="toggleExpand()">
-              <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-              <span>{{ isExpanded ? 'Show Less' : 'Show More' }}</span>
+          </div>
+          <div class="col-lg-4" [@fadeUp]>
+            <div class="service-box">
+              <h4>Commentaires <button class="comment" >Commenter</button></h4>
+              <div class="download-catalog">
+                <a *ngFor=" let comm of commentaires | slice:0:(isExpanded ? documents.length : 4)" href="#">
+                  <p class="proprio" *ngIf="proprio">proprietaire</p>
+                  <i class="bi bi-filetype-pdf"></i><span>{{comm }}</span>
+                </a>
+              </div>
+              <div *ngIf="documents.length > 4" class="show-more" (click)="toggleExpand()">
+                <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                <span>{{ isExpanded ? 'Show Less' : 'Show More' }}</span>
+              </div>
             </div>
           </div>
         </div>
+        
 
         <div class="col-lg-4" [@fadeUp]>
           <div class="service-box">
