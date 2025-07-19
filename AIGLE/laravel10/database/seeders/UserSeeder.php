@@ -51,6 +51,13 @@ class UserSeeder extends Seeder
             'tbl_filiere_id'=>'1',
         ]);
 
+         User::create([
+            'nom_user'=>'fozing lise',
+            "email"=>'fozinglise@gmail.com',
+            'password'=> bcrypt('4321'),
+            'tbl_filiere_id'=>'1',
+        ]);
+
         User::create([
             'nom_user'=>' Michele Serena',
             "email"=>'michelle@gmail.com',
