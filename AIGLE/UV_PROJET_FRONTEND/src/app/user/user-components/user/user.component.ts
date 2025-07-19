@@ -6,6 +6,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HostListener } from '@angular/core';
 import {
   trigger,
   state,
@@ -38,9 +39,12 @@ export class UserComponent implements OnInit {
 
   photo: string = 'assets/img/default.png';
 
+   showProfileDropdown = false;
+   isProjectsOpen = false;
+
   notifications: any[] = [];
   dismissedNotificationIds: number[] = [];
-
+  userProfile: any = {};
   projects: any[] = [];
   filteredProjects: any[] = [];
   searchQuery: string = '';
@@ -70,20 +74,22 @@ export class UserComponent implements OnInit {
       this.role = params['role'];
       this.id = params['id'];
 
+      this.userService.userSubject.next({
+    name: this.user_name,
+    id: this.id,
+    token: this.token,
+    role: this.role,
+    photo: this.photo
+  });
+
       if (this.id) this.loadProjects();
 
       this.userService.loadUserProfile();
-      this.userService.getUserProfile().subscribe({
-        next: (userData) => {
-          this.photo = userData?.photo?.startsWith('http')
-            ? userData.photo
-            : `http://localhost:8000/${userData?.photo}` || 'assets/img/default.png';
-        },
-        error: () => {
-          this.photo = 'assets/img/default.png';
-        }
-
-      });
+      this.userService.getUserProfile().subscribe(profile => {
+    if (profile) {
+      this.userProfile = profile;
+    }
+  });
     });
 
     this.loadNotifications();
@@ -142,9 +148,21 @@ export class UserComponent implements OnInit {
     this.selectedTypeFilter = 'all';
     this.applyCombinedFilter();
   }
-
+  toggleProjects() {
+    this.isProjectsOpen = !this.isProjectsOpen;
+  }
   toggleSidebar(): void {
     this.sidebar.nativeElement.classList.toggle('toggle-sidebar');
+  }
+   toggleProfileDropdown() {
+    this.showProfileDropdown = !this.showProfileDropdown;
+  }
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.nav-profile-dropdown')) {
+      this.showProfileDropdown = false;
+    }
   }
 
   loadNotifications(): void {

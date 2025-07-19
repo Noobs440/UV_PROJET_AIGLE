@@ -11,7 +11,7 @@ export class UserService {
   private apiUrl = environment.backendUrl;
 
   // Stocke et diffuse les infos utilisateur actuelles
-  private userSubject = new BehaviorSubject<any>(null);
+  public userSubject = new BehaviorSubject<any>(null);
 
   constructor(private http: HttpClient) {}
   inscription(nom_user:string ,email:string, password:string, tbl_filiere_id:string,matricule:string):Observable<any>{

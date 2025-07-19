@@ -19,20 +19,24 @@
         <span class="text-danger" *ngIf="loginFormControl['email'].touched && loginFormControl['email'].errors?.['email']">{{ 'emailInvalidError' | translate }}</span>
       </div>
 
-      <!-- Password Field with Eye Icon -->
-      <div class="mb-2 relative">
-        <label class="block mb-1 text-sm font-medium text-gray-700" for="password">{{ 'passwordLabel' | translate }}</label>
-        <input placeholder="{{ 'passwordPlaceholder' | translate }}"
-               [type]="showPassword ? 'text' : 'password'"
-               formControlName="password" id="password" name="password"
-               [ngClass]="{'custom-outline': (loginFormControl['password'].touched || submitted) && loginFormControl['password'].errors}"
-               class="w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue">
-        <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
-           (click)="showPassword = !showPassword"
-           class="absolute top-[38px] right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"></i>
-        <span class="text-danger" *ngIf="(loginFormControl['password'].touched || submitted) && loginFormControl['password'].errors?.['required']">{{ 'passwordRequiredError' | translate }}</span>
-        <span class="text-danger text-sm" *ngIf="loginFormControl['password'].touched && loginFormControl['password'].errors?.['invalidPassword']">{{ 'passwordInvalidError' | translate }}</span>
-      </div>
+<!-- Password Field with Eye Icon using Angular Material -->
+<div class="mb-2 relative">
+  <label class="block mb-1 text-sm font-medium text-gray-700" for="password">{{ 'passwordLabel' | translate }}</label>
+  <input placeholder="{{ 'passwordPlaceholder' | translate }}"
+         [type]="showPassword ? 'text' : 'password'"
+         formControlName="password" id="password" name="password"
+         [ngClass]="{'custom-outline': (loginFormControl['password'].touched || submitted) && loginFormControl['password'].errors}"
+         class="w-full px-3 py-2 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue">
+  <button mat-icon-button type="button"
+          (click)="showPassword = !showPassword"
+          tabindex="-1"
+          style="position:absolute; top:70%; right:0.5rem; transform:translateY(-50%);"
+          class="text-gray-500 cursor-pointer">
+    <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+  </button>
+  <span class="text-danger" *ngIf="(loginFormControl['password'].touched || submitted) && loginFormControl['password'].errors?.['required']">{{ 'passwordRequiredError' | translate }}</span>
+  <span class="text-danger text-sm" *ngIf="loginFormControl['password'].touched && loginFormControl['password'].errors?.['invalidPassword']">{{ 'passwordInvalidError' | translate }}</span>
+</div>
 
       <div class="relative">
         <button [disabled]="isLoading || loginForm.invalid" type="submit"
