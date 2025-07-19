@@ -28,7 +28,8 @@ class UserSeeder extends Seeder
             'password'=> bcrypt('12345678'),
             'tbl_filiere_id'=>'1',
             'matricule' => 'CM-UDS-22SCI0558',
-            'role'=>'admin'
+            'role'=>'admin',
+            'matricule' => 'CM-UDS-22SCI2554',
         ]);
 
         User::create([
@@ -52,6 +53,7 @@ class UserSeeder extends Seeder
             "email"=>'adrienesonfack@gmail.com',
             'password'=> bcrypt('00000000'),
             'tbl_filiere_id'=>'1',
+            'matricule' => 'CM-UDS-22SCI0589',
         ]);
         User::create([
             'nom_user'=>'Gildas Landry',
