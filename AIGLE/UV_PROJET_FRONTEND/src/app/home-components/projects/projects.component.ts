@@ -175,7 +175,7 @@ export class ProjectsComponent implements OnInit {
     } else {
       // Aucun des deux paramètres n’est présent
       console.log('Aucun paramètre name ou id dans l’URL', projectid.titre_projet);
-      return "['/homec/project-detail', projectid.id]";
+      return "['/home/project-detail', projectid.id]";
     }
     
     /*this.route.queryParams.subscribe(params => {

@@ -14,7 +14,7 @@ export class PopupCommComponent implements OnInit{
   //@Input()visible:boolean=false;
   //@Output() close = new EventEmitter<void>();
 
-  commentaires: string[] = [];
+  commentaires: any[] = [];
   userOnline={};
   newComm:string="";
   nameU!: string | null;
@@ -30,8 +30,13 @@ export class PopupCommComponent implements OnInit{
   ) {}
 
   ngOnInit(): void {
-     const projetId = this.data.projetId;
-      this.userDataService.userData$.subscribe(data => {
+    const projetId = this.data.projetId;
+    // Récupérer les commentaires du projet au chargement
+    this.com.getAllcommentsByprojects(projetId).subscribe((comments: any[]) => {
+      this.commentaires = comments;
+    });
+
+    this.userDataService.userData$.subscribe(data => {
       if (data) {
         console.log('Nom reçu :', data.name );
         console.log('ID reçu :', data.id );
@@ -39,14 +44,14 @@ export class PopupCommComponent implements OnInit{
         this.idU = data.id;
       }
     });
-      this.route.queryParams.subscribe(params => {
-        if(params['name'] && params['id']){
-          this.nameU = params['name'];
-          this.idU = params['id'];
-        }else{
-          this.nameU = null
-          this.idU = null;
-        }
+    this.route.queryParams.subscribe(params => {
+      if(params['name'] && params['id']){
+        this.nameU = params['name'];
+        this.idU = params['id'];
+      }else{
+        this.nameU = null;
+        this.idU = null;
+      }
       console.log('name:', this.nameU);
       console.log('id:', this.idU);
     });
@@ -67,18 +72,19 @@ export class PopupCommComponent implements OnInit{
     this.com.addComment(projetID, texte, date)
       .subscribe({
         next: response => {
-          this.commentaires.push(texte);
+          // Après ajout, recharger la liste des commentaires
+          this.com.getAllcommentsByprojects(projetID).subscribe((comments: any[]) => {
+            this.commentaires = comments;
+          });
           this.newComm = '';
           setTimeout(() => {
             const liste = document.querySelector('.liste');
             //if (liste) liste = liste; //liste.scrollTop = liste.scrollHeight
           }, 50);
-          // Fermer la popup et signaler qu'un commentaire a été envoyé
+          // Optionnel : navigation ou fermeture de la popup
           //this.dialogRef.close({ commentSent: true });
           //this.dialogRef.close();
-          this.router.navigate([`/homec/project-detail/${projetID}`], { queryParams: { name: this.data.name, id: this.data.id } });
-          // Rediriger vers la page de détail du projet avec queryParams si présents
-          //window.location.href = `/homec/project-detail/${projetID}` + (Object.keys(queryParams).length ? `?name=${name}&id=${id}` : '');
+          //this.router.navigate([`/homec/project-detail/${projetID}`], { queryParams: { name: this.data.name, id: this.data.id } });
         },
         error: err => {
           console.error('Erreur lors de l\'ajout du commentaire :', err);

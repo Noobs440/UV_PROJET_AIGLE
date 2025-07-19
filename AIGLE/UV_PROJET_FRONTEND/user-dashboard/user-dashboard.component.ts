@@ -106,9 +106,6 @@ export class UserDashboardComponent implements OnInit{
 
   openDialog(): void {
     const dialogConfig = new MatDialogConfig();
-
-
-
     dialogConfig.disableClose = true;
     dialogConfig.width='400px';
     dialogConfig.height='620px';
