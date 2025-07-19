@@ -14,6 +14,8 @@ export class UserService {
   private userSubject = new BehaviorSubject<any>(null);
 
   constructor(private http: HttpClient) {}
+  inscription(nom_user:string ,email:string, password:string, tbl_filiere_id:string,matricule:string):Observable<any>{
+    return this.http.post<any>(`${this.apiUrl}/usecases/auth/inscription` , {nom_user , email , password,tbl_filiere_id, matricule}, { withCredentials: true });}
 
   /**
    * Récupère les headers d'authentification avec JWT.
@@ -54,13 +56,6 @@ export class UserService {
     );
   }
 
-  inscription(nom_user: string, email: string, password: string, tbl_filiere_id: string): Observable<any> {
-    return this.http.post<any>(
-      `${this.apiUrl}/usecases/auth/inscription`,
-      { nom_user, email, password, tbl_filiere_id },
-      { withCredentials: true }
-    );
-  }
 
   logout(): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/deconnexion`, null, this.getAuthHeaders());

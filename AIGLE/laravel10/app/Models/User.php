@@ -29,6 +29,7 @@ class User extends Authenticatable
         'nom_user',
         'email',
         'photo',
+        'matricule',
         'tbl_filiere_id',
         'password',
         'surname',

@@ -23,6 +23,17 @@
           *ngIf="(registerFormControl['username'].touched || submitted) && registerFormControl['username'].errors?.['required']">
           {{ 'USERNAME_REQUIRED' | translate }}
         </span>
+      <!--  DÉBUT DU CHAMP MATRICULE AJOUTÉ  -->
+      <div class="form-group mb-1">
+        <label class="mb-1" for="matricule">{{ 'MATRICULE' | translate }}</label>
+        <input formControlName="matricule" type="text" id="matricule" name="matricule" placeholder="{{ 'MATRICULE' | translate }}"
+               [ngClass]="{'custom-outline': (registerFormControl['matricule'].touched || submitted) && registerFormControl['matricule'].errors}"
+               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue">
+       <span class="text-red-600 text-sm" 
+         *ngIf="registerFormControl['matricule'].touched && registerFormControl['matricule'].errors?.['pattern']">
+          {{ 'MATRICULE_FORMAT_INVALID' | translate }}
+       </span>
+      </div>
       </div>
       <div class="form-group mb-1">
         <label class="mb-1" for="email">{{ 'EMAIL' | translate }}</label>

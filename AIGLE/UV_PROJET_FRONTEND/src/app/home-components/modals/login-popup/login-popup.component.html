@@ -43,6 +43,7 @@
         </button>
       </div>
     </form>
+
     <p class="text-red-600 text-center text-sm" *ngIf="errorMessage">{{ errorMessage }}</p>
     <div class="mt-4 text-left">
       <a (click)="this.showPasswordReset = true;" class="cursor-pointer block mb-2 -mt-5 text-sm text-black font-bold">{{ 'forgotPassword' | translate }}</a>
