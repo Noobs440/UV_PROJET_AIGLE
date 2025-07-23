@@ -4,10 +4,15 @@ import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
+
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+  // Récupérer tous les superviseurs (table superviseurs Laravel)
+  getSupervisors(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/ressources/superviseurs`, this.getAuthHeaders());
+  }
   private apiUrl = environment.backendUrl;
 
   // Stocke et diffuse les infos utilisateur actuelles

@@ -32,14 +32,39 @@ export class EnseignantDashboardComponent {
 
 
   ngOnInit() {
-    this.paginate(this.filteredData);
-    this.projetService.countProjectsByStatus().subscribe(projets => {
-      this.data = projets;
-      this.approvedProjects = this.data[0].Approved;
-      this.pendingProjects = this.data[0].Pending;
-      this.rejectedProjects = this.data[0].Rejected;
-      
+    // Récupère l'email du superviseur connecté
+    const email = localStorage.getItem('email');
+    if (email) {
+      this.projetService.getSupervisedProjectsByEmail(email).subscribe((projects: any[]) => {
+        // Mapping pour ag-grid
+        this.rowData = projects.map((p: any, idx: number) => ({
+          id: p.id,
+          titre_projet: p.titre_projet,
+          nom_utilisateur: p.nom_utilisateur || p.author || '',
+          image: p.image || '',
+          status: p.status || p.projectStatus || '',
+          descript_projet: p.descript_projet || '',
+          nom_categorie: p.nom_categorie || '',
+          niveau: p.niveau || '',
+          type: p.type || '',
+          created_at: p.created_at || '',
+          email: p.email || '',
+          views: p.views || 0,
+          action: ''
+        }));
+        this.filteredData = [...this.rowData];
+        this.paginate(this.filteredData);
+      });
+    }
 
+    // Statistiques (optionnel)
+    this.projetService.countProjectsByStatus().subscribe((projets: any[]) => {
+      this.data = projets;
+      if (this.data && this.data.length > 0) {
+        this.approvedProjects = this.data[0].Approved;
+        this.pendingProjects = this.data[0].Pending;
+        this.rejectedProjects = this.data[0].Rejected;
+      }
     });
   }
 
@@ -70,13 +95,7 @@ export class EnseignantDashboardComponent {
       'bg-danger': status === 'Rejected'
     };
   }
-  rowData: RowData[] = [
-    { sn: 1, title: 'Brandon Jacob', author: 'At praesentium minu', image: 'https://via.placeholder.com/50', status: 'Approved' },
-    { sn: 2, title: 'Bridie Kessler', author: 'Blanditiis dolor omnis similique', image: 'https://via.placeholder.com/50', status: 'Pending' },
-    { sn: 3, title: 'Ashleigh Langosh', author: 'At recusandae consectetur', image: 'https://via.placeholder.com/50', status: 'Approved' },
-    { sn: 4, title: 'Angus Grady', author: 'Ut voluptatem id earum et', image: 'https://via.placeholder.com/50', status: 'Rejected' },
-    { sn: 5, title: 'Raheem Lehner', author: 'Sunt similique distinctio', image: 'https://via.placeholder.com/50', status: 'Approved' }
-  ];
+  rowData: RowData[] = [];
 
   filteredData: RowData[] = [...this.rowData];
   paginatedData: RowData[] = [];
@@ -106,8 +125,10 @@ export class EnseignantDashboardComponent {
 
   sortTable(field: keyof RowData): void {
     const sortedData = [...this.filteredData].sort((a, b) => {
-      if (a[field] < b[field]) return -1;
-      if (a[field] > b[field]) return 1;
+      const aValue = a[field] ?? '';
+      const bValue = b[field] ?? '';
+      if (aValue < bValue) return -1;
+      if (aValue > bValue) return 1;
       return 0;
     });
     this.paginate(sortedData);
@@ -144,9 +165,17 @@ interface ProjectStatus {
   Rejected: number;
 }
 interface RowData {
-  sn: number;
-  title: string;
-  author: string;
+  id: number;
+  titre_projet: string;
+  nom_utilisateur: string;
   image: string;
   status: string;
+  descript_projet?: string;
+  nom_categorie?: string;
+  niveau?: string;
+  type?: string;
+  created_at?: string;
+  email?: string;
+  views?: number;
+  action?: string;
 }

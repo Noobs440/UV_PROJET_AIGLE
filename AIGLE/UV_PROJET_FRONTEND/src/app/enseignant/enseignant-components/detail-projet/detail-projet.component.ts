@@ -9,6 +9,14 @@ import { DocumentService } from '../../../services/document.service';
   styleUrl: './detail-projet.component.css'
 })
 export class DetailProjetComponent {
+  getFullDocumentUrl(lien_doc: string): string {
+    if (!lien_doc) return '#';
+    if (lien_doc.startsWith('http')) return lien_doc;
+    if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
+      return `http://localhost:8000/${lien_doc.replace(/^\/+/, '')}`;
+    }
+    return `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
+  }
   documents: any[]=[];
 
   selectedProjectId!: number;

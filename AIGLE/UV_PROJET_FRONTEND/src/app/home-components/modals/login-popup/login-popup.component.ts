@@ -192,7 +192,6 @@ export class LoginPopupComponent {
         next: value => {
           console.log(value)
 
-
           const queryParams = {
             token: value.access_token,
             name: value.username,
@@ -212,13 +211,8 @@ export class LoginPopupComponent {
           localStorage.setItem('id', id);
           localStorage.setItem('user', JSON.stringify(value.user)); // Stocker les informations de l'utilisateur
 
-          //alert(`Bienvenue sur votre page d'utilisateur, ${name}`);
-
-
-
           // Rediriger l'utilisateur en fonction de son rôle
-
-            this.router.navigate([`/${userRole}/dashboard`],{queryParams});
+          this.redirectUserByRole(userRole, queryParams);
           // Fermer le modal
           this.dialogRef.close();
         },
@@ -229,9 +223,25 @@ export class LoginPopupComponent {
         },
         complete: () => {
           this.isLoading = false;
-          //this.router.navigate(['']);
         }
       });
+    }
+  }
+
+  private redirectUserByRole(role: string, queryParams: any) {
+    switch (role) {
+      case 'admin':
+        this.router.navigate(['/admin/dashboard'], { queryParams });
+        break;
+      case 'superviseur':
+        this.router.navigate(['/enseignant'], { queryParams });
+        break;
+      case 'user':
+        this.router.navigate(['/user/dashboard'], { queryParams });
+        break;
+      default:
+        this.router.navigate(['/unauthorized']);
+        break;
     }
   }
 
