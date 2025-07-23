@@ -11,10 +11,7 @@ import { ProjectDetailComponent } from './user-components/project-detail/project
 import { DocumentPopupComponent } from './user-components/document-popup/document-popup.component';
 import { CompleteDialogComponent } from './user-components/complete-dialog/complete-dialog.component';
 import { HelpComponent } from './user-components/help/help.component';
-<<<<<<< HEAD
 import { CollaborateurEditPopupComponent } from './collaborateur-edit-popup/collaborateur-edit-popup.component';
-=======
->>>>>>> LISE
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogModule } from '@angular/material/dialog'; // ✅ correction ici
@@ -27,12 +24,8 @@ import { MatDialogModule } from '@angular/material/dialog'; // ✅ correction ic
     ProjectDetailComponent,
     DocumentPopupComponent,
     CompleteDialogComponent,
-<<<<<<< HEAD
       HelpComponent,
       CollaborateurEditPopupComponent
-=======
-    HelpComponent
->>>>>>> LISE
   ],
   imports: [
     CommonModule,
