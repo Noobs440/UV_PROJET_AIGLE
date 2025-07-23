@@ -48,7 +48,8 @@ export class DetailProjectComponent {
        this.email=params['email']
      });
 
-     this.documentService.getDocumentsByProject(this.id).subscribe(response => {
+     this.documentService.getDocumentsByProject(this.selectedProjectId).subscribe(response => {
+      console.log('Documents reçus pour le projet', this.selectedProjectId, ':', response);
       this.documents = response;
     });
 
@@ -67,6 +68,13 @@ export class DetailProjectComponent {
       return '';
     }
     return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
+  }
+  getFullDocumentUrl(lien_doc: string): string {
+    if (!lien_doc) return '#';
+    // Ajoute /storage/ devant le nom du fichier
+    return lien_doc.startsWith('http')
+      ? lien_doc
+      : `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 
   actionCellRenderer() {

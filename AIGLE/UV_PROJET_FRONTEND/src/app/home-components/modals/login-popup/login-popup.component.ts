@@ -185,6 +185,7 @@ export class LoginPopupComponent {
 
   onSubmit() {
     this.submitted = true;
+    this.errorMessage = '';
 
     if (this.loginForm.invalid) {
       return;
@@ -195,7 +196,6 @@ export class LoginPopupComponent {
       this.userService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
         next: value => {
           console.log(value)
-
 
           const queryParams = {
             token: value.access_token,
@@ -216,13 +216,9 @@ export class LoginPopupComponent {
           localStorage.setItem('id', id);
           localStorage.setItem('user', JSON.stringify(value.user)); // Stocker les informations de l'utilisateur
 
-          //alert(`Bienvenue sur votre page d'utilisateur, ${name}`);
-
-
-
           // Rediriger l'utilisateur en fonction de son rôle
 
-            this.router.navigate([`/${userRole}/dashboard`],{queryParams});
+            this.router.navigate([`/${userRole}/dashboard`]);
           // Fermer le modal
           this.dialogRef.close();
         },
@@ -230,12 +226,29 @@ export class LoginPopupComponent {
           console.error(err);
           this.isLoading = false;
           this.errorMessage = "Addresse email ou mot de passe invalide";
+          console.log('Erreur login, errorMessage:', this.errorMessage);
         },
         complete: () => {
           this.isLoading = false;
-          //this.router.navigate(['']);
         }
       });
+    }
+  }
+
+  private redirectUserByRole(role: string, queryParams: any) {
+    switch (role) {
+      case 'admin':
+        this.router.navigate(['/admin/dashboard'], { queryParams });
+        break;
+      case 'superviseur':
+        this.router.navigate(['/enseignant'], { queryParams });
+        break;
+      case 'user':
+        this.router.navigate(['/user/dashboard'], { queryParams });
+        break;
+      default:
+        this.router.navigate(['/unauthorized']);
+        break;
     }
   }
 

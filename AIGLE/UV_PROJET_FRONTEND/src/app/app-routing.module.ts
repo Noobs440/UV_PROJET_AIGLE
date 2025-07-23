@@ -78,7 +78,6 @@ const routes: Routes = [
       {path:"home/category", component:PopCategoryComponent},
       {path:"home/projects-listing", component:ProjectsComponent},
       {path:"home/team", component:TeamComponent},
-      {path:"home/project-detail/:id", component:ProjectDetailComponent},
       {path:"home",component:HomeComponent,},
     ],
   },

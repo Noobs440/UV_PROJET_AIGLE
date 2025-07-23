@@ -6,6 +6,18 @@ import { Observable, tap, catchError, of } from 'rxjs';
   providedIn: 'root'
 })
 export class ProjetService {
+  // Récupérer les projets supervisés par email
+  getSupervisedProjectsByEmail(email: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_BASE}/projects/supervised-by-email?email=${encodeURIComponent(email)}`);
+  }
+  // Récupérer les projets supervisés par l'utilisateur connecté
+  getSupervisedProjects(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_BASE}/projects/supervised`);
+  }
+  // Assigner un superviseur à un projet
+  assignSupervisorToProject(projectId: number, supervisorId: string): Observable<any> {
+    return this.http.post(`${this.API_BASE}/projects/${projectId}/assign-supervisor`, { supervisorId });
+  }
 
   private API_BASE = 'http://localhost:8000/api';
 

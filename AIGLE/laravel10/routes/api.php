@@ -47,6 +47,11 @@ Route::middleware('auth:sanctum')->group(function () {
 // Route spécifique pour ajouter un superviseur à un projet (hors préfixe 'ressources' pour cohérence)
 Route::post('superviseurs/add-to-project/{projectId}', [TblSuperviseurController::class, 'addToProject']);
 
+
+Route::post('/projects/{id}/assign-supervisor', [App\Http\Controllers\ProjectController::class, 'assignSupervisor']);
+// Route pour récupérer les projets supervisés par l'utilisateur connecté
+Route::get('/projects/supervised', [App\Http\Controllers\ProjectController::class, 'getSupervisedProjects']);
+
 // Ressources CRUD
 Route::prefix('ressources')->group(function () {
     Route::apiResource('universites', TblUniversiteController::class);
@@ -115,6 +120,8 @@ Route::prefix('usecases')->group(function () {
         Route::post('/categories', 'searchCategories');
         Route::post('/documents', 'searchDocuments');
     });
+// Route pour récupérer les projets supervisés par email
+    Route::get('/projects/supervised-by-email', [App\Http\Controllers\ProjectController::class, 'getSupervisedProjectsByEmail']);
 
     // Listing
     Route::prefix('listing')->controller(ListingController::class)->group(function () {

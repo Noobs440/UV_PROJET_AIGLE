@@ -9,6 +9,7 @@ import { ProjetService } from '../../../services/projet.service';
 import { CollaborateurService } from '../../../services/collaborateur.service';
 import { CompleteDialogComponent } from '../complete-dialog/complete-dialog.component';
 import { CollaborateurEditPopupComponent } from '../../collaborateur-edit-popup/collaborateur-edit-popup.component'
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-project-detail',
@@ -16,6 +17,13 @@ import { CollaborateurEditPopupComponent } from '../../collaborateur-edit-popup/
   styleUrls: ['./project-detail.component.css']
 })
 export class ProjectDetailComponent implements OnInit {
+supervisors = [
+  { id: 101, name: 'Adriene Sonfack', email: 'adrienesonfack@gmail.com' },
+  { id: 102, name: 'Marie Martin', email: 'marie.martin@email.com' },
+  { id: 103, name: 'Ali Ben', email: 'ali.ben@email.com' },
+  { id: 104, name: 'Nouvel Enseignant', email: 'nouvel.enseignant@email.com' }
+];
+  selectedSupervisorId: number | null = null;
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
   collaborators: any[] = [];
@@ -53,7 +61,32 @@ export class ProjectDetailComponent implements OnInit {
     private collaborateurService: CollaborateurService,
     private projetService: ProjetService,
     private projetStatusService: ProjetstatusService,
+    private userService: UserService,
   ) {}
+
+  fetchSupervisors() {
+    this.userService.getSupervisors().subscribe({
+      next: (supervisors: any[]) => {
+        this.supervisors = supervisors;
+      },
+      error: err => {
+        console.error('Erreur lors du chargement des superviseurs', err);
+      }
+    });
+  }
+
+  addSupervisorToProject(supervisorId: string) {
+    if (!supervisorId) return;
+    this.projetService.assignSupervisorToProject(this.id, supervisorId as string).subscribe({
+      next: () => {
+        this.openCompleteDialog('Superviseur assigné avec succès.');
+      },
+      error: err => {
+        console.error("Erreur lors de l'assignation du superviseur", err);
+        alert("Erreur lors de l'assignation du superviseur.");
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.nom_collab = localStorage.getItem('nom_collab');
@@ -84,6 +117,9 @@ export class ProjectDetailComponent implements OnInit {
     this.documentService.getDocumentsByProject(this.id).subscribe(res => this.documents = res);
     this.collaborateurService.getCollaborateursByProject(this.id).subscribe(res => this.collaborators = res);
 
+    // Charger la liste des superviseurs
+    // this.fetchSupervisors();
+
     this.actionCellRenderer();
   }
 
@@ -100,7 +136,11 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   submitProject() {
-    this.submitService.submitProject(this.id).subscribe({
+    if (!this.selectedSupervisorId) {
+      alert("Veuillez choisir un superviseur avant de soumettre le projet !");
+      return;
+    }
+    this.submitService.submitProject(this.id, this.selectedSupervisorId).subscribe({
       next: () => alert("Votre projet a été soumis"),
       error: err => alert("Votre projet doit contenir au moins un document"),
       complete: () => this.Submitted = true

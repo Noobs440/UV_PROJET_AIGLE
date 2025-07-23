@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
-
+import { MatIconModule } from '@angular/material/icon';
 import { ProfileComponent } from './components/profile/profile.component';
 import { EditNameComponent } from './components/profile/edit-name.component';
 import { EditEmailComponent } from './components/profile/edit-email.component';
@@ -93,7 +93,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     
     EditPasswordComponent,
     EditPhotoComponent,
-
+    MatIconModule,
     BrowserModule,
     BrowserAnimationsModule ,
     AppRoutingModule,

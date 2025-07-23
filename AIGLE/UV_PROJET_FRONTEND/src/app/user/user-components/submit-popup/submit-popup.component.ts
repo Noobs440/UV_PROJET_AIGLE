@@ -84,7 +84,7 @@ export class SubmitPopupComponent implements OnInit {
 
     this.collaboratorForm = this.fb.group({
       name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
     });
 
     this.supervisorForm = this.fb.group({

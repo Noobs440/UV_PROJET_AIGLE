@@ -3,6 +3,13 @@
     <i class="fas fa-times text-lg"></i>
   </button>
 
+  <!-- Navigation boutons exemple -->
+  <div class="flex justify-center gap-2 mb-4">
+    <button (click)="setFormType('document')" class="px-3 py-1 rounded" [class.bg-blue-200]="formType==='document'">Document</button>
+    <button (click)="setFormType('collaborator')" class="px-3 py-1 rounded" [class.bg-blue-200]="formType==='collaborator'">Collaborateur</button>
+    <button (click)="setFormType('supervisor')" class="px-3 py-1 rounded" [class.bg-blue-200]="formType==='supervisor'">Superviseur</button>
+  </div>
+
   <!-- ====== Document Form ====== -->
   <h2 *ngIf="formType === 'document'" class="mb-2 text-3xl font-bold text-center text-customBlue poppins-bold">
     Créer un Document
@@ -16,8 +23,8 @@
       <label class="block mb-1">Nom du document</label>
       <input formControlName="title" type="text" placeholder="Nom du document"
              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
-             [ngClass]="{'border-red-500': submitted && documentFormControl['title'].invalid}" />
-      <small class="text-red-600" *ngIf="submitted && documentFormControl['title'].errors?.['required']">
+             [ngClass]="{'border-red-500': submittedDocument && documentFormControl['title'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedDocument && documentFormControl['title'].errors?.['required']">
         Champ requis
       </small>
     </div>
@@ -26,8 +33,8 @@
       <label class="block mb-1">Fichier</label>
       <input type="file" (change)="onFileSelected($event)"
              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
-             [ngClass]="{'border-red-500': submitted && documentFormControl['file'].invalid}" />
-      <small class="text-red-600" *ngIf="submitted && documentFormControl['file'].errors?.['required']">
+             [ngClass]="{'border-red-500': submittedDocument && documentFormControl['file'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedDocument && documentFormControl['file'].errors?.['required']">
         Champ requis
       </small>
     </div>
@@ -51,8 +58,8 @@
       <label class="block mb-1">Nom</label>
       <input formControlName="name" type="text" placeholder="Nom du collaborateur"
              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
-             [ngClass]="{'border-red-500': submitted && collaboratorFormControl['name'].invalid}" />
-      <small class="text-red-600" *ngIf="submitted && collaboratorFormControl['name'].errors?.['required']">
+             [ngClass]="{'border-red-500': submittedCollaborator && collaboratorFormControl['name'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedCollaborator && collaboratorFormControl['name'].errors?.['required']">
         Champ requis
       </small>
     </div>
@@ -61,11 +68,11 @@
       <label class="block mb-1">Email</label>
       <input formControlName="email" type="email" placeholder="Email"
              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
-             [ngClass]="{'border-red-500': submitted && collaboratorFormControl['email'].invalid}" />
-      <small class="text-red-600" *ngIf="submitted && collaboratorFormControl['email'].errors?.['required']">
+             [ngClass]="{'border-red-500': submittedCollaborator && collaboratorFormControl['email'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedCollaborator && collaboratorFormControl['email'].errors?.['required']">
         Champ requis
       </small>
-      <small class="text-red-600" *ngIf="submitted && collaboratorFormControl['email'].errors?.['email']">
+      <small class="text-red-600" *ngIf="submittedCollaborator && collaboratorFormControl['email'].errors?.['email']">
         Email invalide
       </small>
     </div>
@@ -89,8 +96,8 @@
       <label class="block mb-1">Nom</label>
       <input formControlName="name" type="text" placeholder="Nom du superviseur"
              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
-             [ngClass]="{'border-red-500': submitted && supervisorFormControl['name'].invalid}" />
-      <small class="text-red-600" *ngIf="submitted && supervisorFormControl['name'].errors?.['required']">
+             [ngClass]="{'border-red-500': submittedSupervisor && supervisorFormControl['name'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedSupervisor && supervisorFormControl['name'].errors?.['required']">
         Champ requis
       </small>
     </div>
@@ -99,11 +106,11 @@
       <label class="block mb-1">Email</label>
       <input formControlName="email" type="email" placeholder="Email"
              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
-             [ngClass]="{'border-red-500': submitted && supervisorFormControl['email'].invalid}" />
-      <small class="text-red-600" *ngIf="submitted && supervisorFormControl['email'].errors?.['required']">
+             [ngClass]="{'border-red-500': submittedSupervisor && supervisorFormControl['email'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedSupervisor && supervisorFormControl['email'].errors?.['required']">
         Champ requis
       </small>
-      <small class="text-red-600" *ngIf="submitted && supervisorFormControl['email'].errors?.['email']">
+      <small class="text-red-600" *ngIf="submittedSupervisor && supervisorFormControl['email'].errors?.['email']">
         Email invalide
       </small>
     </div>

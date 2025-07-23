@@ -19,6 +19,7 @@ class TblProjet extends Model
         'user_id',
         'views',
         'image',
+        'supervisor_id',
     ];
 
     public function user()

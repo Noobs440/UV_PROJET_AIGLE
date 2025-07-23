@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { Observable, of, BehaviorSubject,throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+  // Récupérer tous les superviseurs (table superviseurs Laravel)
+  getSupervisors(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/ressources/superviseurs`, this.getAuthHeaders());
+  }
   private apiUrl = environment.backendUrl;
 
   // Stocke et diffuse les infos utilisateur actuelles
-  private userSubject = new BehaviorSubject<any>(null);
+  public userSubject = new BehaviorSubject<any>(null);
 
   constructor(private http: HttpClient) {}
   inscription(nom_user:string ,email:string, password:string, tbl_filiere_id:string,matricule:string):Observable<any>{
@@ -51,7 +56,8 @@ export class UserService {
       }),
       catchError(error => {
         console.error('Erreur de connexion:', error);
-        return of(null);
+        throw error;
+        return throwError(() => error); 
       })
     );
   }

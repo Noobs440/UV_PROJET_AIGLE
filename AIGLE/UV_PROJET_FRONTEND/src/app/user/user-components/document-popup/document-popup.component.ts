@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DocumentService } from '../../../services/document.service';
 import { CollaborateurService } from '../../../services/collaborateur.service';
 import { SuperviseurService } from '../../../services/superviseur.service';
@@ -21,7 +21,10 @@ export class DocumentPopupComponent implements OnInit {
   supervisorForm!: FormGroup;
 
   selectedFile!: File;
-  submitted = false;
+
+  submittedDocument = false;
+  submittedCollaborator = false;
+  submittedSupervisor = false;
 
   constructor(
     private fb: FormBuilder,
@@ -33,11 +36,10 @@ export class DocumentPopupComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.formType = this.data.formType;
+    this.formType = this.data.formType || 'document';
     this.id = this.data.id;
     this.user_id = this.data.user_id;
 
-    // Initialisation des formulaires
     this.documentForm = this.fb.group({
       title: ['', Validators.required],
       file: ['', Validators.required]
@@ -53,7 +55,6 @@ export class DocumentPopupComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]]
     });
 
-    // Mode édition
     this.isEditMode = !!(this.formType === 'collaborator' && this.data.collaborator);
 
     if (this.isEditMode) {
@@ -62,6 +63,23 @@ export class DocumentPopupComponent implements OnInit {
         email: this.data.collaborator.email_collab
       });
     }
+  }
+
+  // Réinitialise la variable submitted du formulaire affiché
+  resetSubmitted(type: string) {
+    if (type === 'document') {
+      this.submittedDocument = false;
+    } else if (type === 'collaborator') {
+      this.submittedCollaborator = false;
+    } else if (type === 'supervisor') {
+      this.submittedSupervisor = false;
+    }
+    return true; // pour l'appel dans le template
+  }
+
+  setFormType(type: string) {
+    this.formType = type;
+    this.resetSubmitted(type);
   }
 
   get documentFormControl() {
@@ -82,14 +100,17 @@ export class DocumentPopupComponent implements OnInit {
       this.documentForm.patchValue({ file: this.selectedFile.name });
     }
   }
+
   onCancel(): void {
-  this.dialogRef.close();
-}
+    this.dialogRef.close();
+  }
 
   onSubmit() {
-    this.submitted = true;
-
-    if (this.formType === 'document' && this.documentForm.valid && this.selectedFile) {
+    if (this.formType === 'document') {
+      this.submittedDocument = true;
+      if (this.documentForm.invalid || !this.selectedFile) {
+        return;
+      }
       const formData = new FormData();
       formData.append('nom_doc', this.documentForm.value.title);
       formData.append('user_id', this.user_id);
@@ -105,7 +126,11 @@ export class DocumentPopupComponent implements OnInit {
         complete: () => this.dialogRef.close(true)
       });
 
-    } else if (this.formType === 'collaborator' && this.collaboratorForm.valid) {
+    } else if (this.formType === 'collaborator') {
+      this.submittedCollaborator = true;
+      if (this.collaboratorForm.invalid) {
+        return;
+      }
 
       if (this.isEditMode) {
         this.colService.updateCollaborateur(
@@ -139,7 +164,11 @@ export class DocumentPopupComponent implements OnInit {
         });
       }
 
-    } else if (this.formType === 'supervisor' && this.supervisorForm.valid) {
+    } else if (this.formType === 'supervisor') {
+      this.submittedSupervisor = true;
+      if (this.supervisorForm.invalid) {
+        return;
+      }
       this.supService.addSuperviseur(
         this.supervisorForm.value.name,
         this.supervisorForm.value.email
