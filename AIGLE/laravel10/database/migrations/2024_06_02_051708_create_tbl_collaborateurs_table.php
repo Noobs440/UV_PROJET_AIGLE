@@ -17,11 +17,15 @@ return new class extends Migration
             $table->id();
             $table->string('nom_collab');
             $table->string('email_collab');
-            // Suppression de la clé étrangère tbl_projet_id (relation many-to-many désormais)
-            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('tbl_projet_id');
             $table->timestamps();
-            $table->unique(['nom_collab', 'email_collab']);
+            $table->unique(['nom_collab', 'email_collab', 'user_id', 'tbl_projet_id']);
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('tbl_projet_id')->references('id')->on('tbl_projets')->onDelete('cascade');
         });
+
+
 
     }
 

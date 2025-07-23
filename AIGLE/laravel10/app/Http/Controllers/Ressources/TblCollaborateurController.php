@@ -31,33 +31,15 @@ class TblCollaborateurController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        // On cherche ou crée le collaborateur (même email/noms pour plusieurs projets)
+        // On crée ou récupère le collaborateur pour ce projet et cet utilisateur
         $collaborateur = TblCollaborateur::firstOrCreate(
             [
                 'email_collab' => $request->email_collab,
-                'nom_collab' => $request->nom_collab
-            ],
-            [
-                'user_id' => $request->user_id
+                'nom_collab' => $request->nom_collab,
+                'user_id' => $request->user_id,
+                'tbl_projet_id' => $request->tbl_projet_id
             ]
         );
-
-        // On crée le lien dans la table pivot projet-collaborateur
-        \App\Models\TblCollaborateurProjet::firstOrCreate([
-            'tbl_projet_id' => $request->tbl_projet_id,
-            'tbl_collaborateur_id' => $collaborateur->id
-        ]);
-
-        // Récupérer l'utilisateur ajouté comme collaborateur
-        $user = \App\Models\User::find($request->user_id);
-        $projet = TblProjet::find($request->tbl_projet_id);
-
-        // Associer le collaborateur à l'utilisateur (table pivot collaborateur_utilisateur)
-        if ($user && $collaborateur) {
-            $user->collaborateurs()->syncWithoutDetaching([$collaborateur->id]);
-        }
-        // (Notification supprimée ici pour éviter les doublons, elle sera envoyée via l'API dédiée si besoin)
-
         return response()->json($collaborateur, 201);
     }
 

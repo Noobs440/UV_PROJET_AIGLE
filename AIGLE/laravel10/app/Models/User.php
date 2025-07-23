@@ -56,7 +56,7 @@ class User extends Authenticatable
 
     public function collaborateurs()
     {
-        return $this->belongsToMany(TblCollaborateur::class, 'collaborateur_utilisateur');
+        return $this->belongsToMany(TblCollaborateur::class, 'tbl_collaborateur_user');
     }
 
     public function superviseurs()

@@ -24,26 +24,22 @@ class TblCollaborateur extends Model
 
     protected $table = 'tbl_collaborateurs';
 
+
     protected $fillable = [
         'nom_collab',
         'email_collab',
         'user_id',
-        // 'tbl_projet_id', // Supprimé car la relation projet est maintenant many-to-many via la table pivot
+        'tbl_projet_id',
     ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relation many-to-many avec les projets via la table pivot tbl_collaborateur_projets
-    public function projets()
+    public function projet()
     {
-        return $this->belongsToMany(
-            TblProjet::class,
-            'tbl_collaborateur_projets',
-            'tbl_collaborateur_id',
-            'tbl_projet_id'
-        );
+        return $this->belongsTo(TblProjet::class, 'tbl_projet_id');
     }
 
     public function toSearchableArray()

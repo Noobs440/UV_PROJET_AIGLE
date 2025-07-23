@@ -466,18 +466,15 @@ class ProjetSeeder extends Seeder
     ]);
 
     TblProjet::create([
-        'titre_projet' => 'Système de réservation en ligne',
-        'descript_projet' => 'Création d’un système de réservation en ligne pour les hôtels et les restaurants avec une gestion intégrée des disponibilités.',
-        'image' => '/storage/images/img8.jpeg',
-        'soumis'=>'1',
-        'status' => 'Rejected',
-        'user_id' => '3',
-        'tbl_niveau_id' => '4',
-        'tbl_categorie_id' => '3',
-    ]);
-
-    TblProjet::create([
         'titre_projet' => 'Reconnaissance faciale',
+        'descript_projet' => 'Développement d’un système de reconnaissance faciale basé sur l’IA pour l’authentification et la sécurité.',
+        'image' => '/storage/images/img9.jpeg', // Remplacer par Cloudinary si besoin
+        'soumis'=>'1',
+        'status' => 'Approved',
+        'user_id' => '4',
+        'tbl_niveau_id' => '6',
+        'tbl_categorie_id' => '2',
+    ]);
 
     // Uploader toutes les images restantes et créer les projets avec URL Cloudinary
     $moreImages = [
@@ -490,7 +487,7 @@ class ProjetSeeder extends Seeder
         storage_path('app/public/images/img1.jpeg'),
         storage_path('app/public/images/img2.jpeg'),
         storage_path('app/public/images/img3.jpeg'),
-        storage_path('app/public/images/img4.jpeg'),
+        storage_path('app/public/images/img4.jpeg')
     ];
     $moreCloudinary = [];
     foreach ($moreImages as $imgPath) {
@@ -513,98 +510,11 @@ class ProjetSeeder extends Seeder
             'tbl_niveau_id'=>'2',
             'tbl_categorie_id'=>'3',
         ],
-        [
-            'titre_projet'=>'Gestion des chaînes d approvisionnement',
-            'descript_projet' => 'Développement d une plateforme de gestion des chaînes d approvisionnement basée sur la blockchain pour suivre et vérifier l authenticité et la provenance des produits tout au long de la chaîne logistique.',
-            'image'=> $moreCloudinary[$idx++],
-            'soumis'=>'0',
-            'status'=>'Approved',
-            'user_id'=>'4',
-            'tbl_niveau_id'=>'4',
-            'tbl_categorie_id'=>'3',
-        ],
-        [
-            'titre_projet'=>'Optimisation des réseaux sans fil',
-            'descript_projet' => ' Étude et mise en œuvre de techniques d optimisation pour les réseaux sans fil afin d améliorer la couverture, la capacité et la qualité de service, en utilisant des algorithmes de routage avancés.',
-            'image'=> $moreCloudinary[$idx++],
-            'status'=>'Approved',
-            'soumis'=>'0',
-            'user_id'=>'2',
-            'tbl_niveau_id'=>'1',
-            'tbl_categorie_id'=>'4',
-        ],
-        [
-            'titre_projet'=>'Système de gestion de la bande passante',
-            'descript_projet' => 'Développement d un système de gestion de la bande passante pour les réseaux d entreprise, permettant de prioriser le trafic réseau et d allouer dynamiquement les ressources en fonction des besoins.',
-            'image'=> $moreCloudinary[$idx++],
-            'soumis'=>'1',
-            'status'=>'Rejected',
-            'user_id'=>'1',
-            'tbl_niveau_id'=>'2',
-            'tbl_categorie_id'=>'4',
-        ],
-        [
-            'titre_projet'=>'Analyse prédictive des ventes',
-            'descript_projet' => ' Utilisation des techniques de data science et d apprentissage automatique pour analyser les données de ventes historiques et prédire les tendances futures, afin  d aider les entreprises à optimiser leur stratégie commerciale.',
-            'image'=> $moreCloudinary[$idx++],
-            'status'=>'Approved',
-            'soumis'=>'1',
-            'user_id'=>'3',
-            'tbl_niveau_id'=>'4',
-            'tbl_categorie_id'=>'5',
-        ],
-        [
-            'titre_projet'=>'Détection de fraudes financières',
-            'descript_projet' => 'Développement d un système de gestion de la bande passante pour les réseaux d entreprise, permettant de prioriser le trafic réseau et d allouer dynamiquement les ressources en fonction des besoins.',
-            'image'=> $moreCloudinary[$idx++],
-            'soumis'=>'1',
-            'status'=>'Approved',
-            'user_id'=>'1',
-            'tbl_niveau_id'=>'2',
-            'tbl_categorie_id'=>'5',
-        ],
-        [
-            'titre_projet'=>'Optimisation des réseaux sans fils',
-            'descript_projet' => ' Étude et mise en œuvre de techniques d optimisation pour les réseaux sans fil afin d améliorer la couverture, la capacité et la qualité de service, en utilisant des algorithmes de routage avancés.',
-            'image'=> $moreCloudinary[$idx++],
-            'soumis'=>'1',
-            'status'=>'Approved',
-            'user_id'=>'1',
-            'tbl_niveau_id'=>'4',
-            'tbl_categorie_id'=>'4',
-        ],
-        [
-            'titre_projet'=>'Système de gestion de la bande passantes',
-            'descript_projet' => 'Développement d un système de gestion de la bande passante pour les réseaux d entreprise, permettant de prioriser le trafic réseau et d allouer dynamiquement les ressources en fonction des besoins.',
-            'image'=> $moreCloudinary[$idx++],
-            'status'=>'Pending',
-            'soumis'=>'1',
-            'user_id'=>'1',
-            'tbl_niveau_id'=>'2',
-            'tbl_categorie_id'=>'5',
-        ],
-        [
-            'titre_projet'=>'Analyse prédictive des ventes, stock et achats',
-            'descript_projet' => ' Utilisation des techniques de data science et d apprentissage automatique pour analyser les données de ventes historiques et prédire les tendances futures, afin  d aider les entreprises à optimiser leur stratégie commerciale.',
-            'image'=> $moreCloudinary[$idx++],
-            'soumis'=>'1',
-            'status'=>'Approved',
-            'user_id'=>'3',
-            'tbl_niveau_id'=>'1',
-            'tbl_categorie_id'=>'1',
-        ],
-        [
-            'titre_projet'=>'Détection de fraudes financières partie2',
-            'descript_projet' => 'Développement d un système de gestion de la bande passante pour les réseaux d entreprise, permettant de prioriser le trafic réseau et d allouer dynamiquement les ressources en fonction des besoins.',
-            'image'=> $moreCloudinary[$idx++],
-            'soumis'=>'1',
-            'status'=>'Approved',
-            'user_id'=>'1',
-            'tbl_niveau_id'=>'2',
-            'tbl_categorie_id'=>'2',
-        ],
-        // ...ajoute les autres projets ici en suivant le même schéma...
+        // ...autres projets Cloudinary...
     ];
+    // ...ajoute les autres projets ici en suivant le même schéma...
     foreach ($projets as $projet) {
         TblProjet::create($projet);
     }
+}
+}
