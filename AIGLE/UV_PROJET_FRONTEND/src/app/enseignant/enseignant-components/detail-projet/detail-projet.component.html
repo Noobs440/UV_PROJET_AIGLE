@@ -46,7 +46,9 @@
                   <div class="con1 container">
                       <div class="row ">
                         <div class="col-lg-6 ps-lg-5">
-                          <img [src]="getFullImageUrl(projectImage)" alt="" class="img-fluid services-img">
+                          <a [href]="getFullImageUrl(projectImage)" target="_blank" rel="noopener">
+                            <img [src]="getFullImageUrl(projectImage)" alt="" class="img-fluid services-img">
+                          </a>
                           <h3>{{selectedProjectTitle}} ({{type}})</h3>
                           <p>
                              {{description}}
@@ -63,7 +65,8 @@
                         <div class="service-box">
                           <h4>Documents Related</h4>
                           <div class="download-catalog">
-                            <a *ngFor="let document of documents | slice:0:(isExpanded ? documents.length : 4)" href="#">
+                            <a *ngFor="let document of documents | slice:0:(isExpanded ? documents.length : 4)"
+                               [href]="getFullDocumentUrl(document.lien_doc)" target="_blank" rel="noopener">
                               <i class="bi bi-filetype-pdf"></i><span>{{ document.nom_doc }}</span>
                             </a>
                           </div>

@@ -1,9 +1,32 @@
-import { Component, inject, Input } from '@angular/core';
-import { ScriptLoaderService } from '../../services/script.service';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
+
+// Interfaces
+interface ProjectStatus {
+  Approved: number;
+  Pending: number;
+  Rejected: number;
+}
+
+interface RowData {
+  id: number;
+  titre_projet: string;
+  nom_utilisateur: string;
+  image: string;
+  status: string;
+  descript_projet?: string;
+  nom_categorie?: string;
+  niveau?: string;
+  type?: string;
+  created_at?: string;
+  email?: string;
+  views?: number;
+  action?: string;
+}
+
+// Imports
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProjetService } from '../../services/projet.service';
-import { RouterModule } from '@angular/router';
+import { DocumentService } from '../../services/document.service';
 
 @Component({
   selector: 'app-enseignant-dashboard',
@@ -11,7 +34,7 @@ import { RouterModule } from '@angular/router';
   styleUrl: './enseignant-dashboard.component.css'
 })
 export class EnseignantDashboardComponent {
-  constructor(private router:Router, private projetService:ProjetService){}
+  documentsMap: { [key: number]: any[] } = {};
 
   projectStatus: ProjectStatus = {
     Approved: 0,
@@ -19,17 +42,29 @@ export class EnseignantDashboardComponent {
     Rejected: 0
   };
 
-  selectedProjectId!: number ;
+  selectedProjectId!: number;
   approvedProjects!: number;
   pendingProjects!: number;
   rejectedProjects!: number;
   selectedProjectTitle: string | null = null;
   showDetailProject: boolean = false;
-  data: any[]=[];
-  // ngOnInit(): void {
-  //   this.scriptLoader.loadScript('assets/assets/js/main.js');
-  // }
+  data: any[] = [];
 
+  isSidebarCollapsed = true;
+  rowSelection = 'single';
+
+  rowData: RowData[] = [];
+  filteredData: RowData[] = [];
+  paginatedData: RowData[] = [];
+  currentPage = 1;
+  rowsPerPage = 2;
+  totalPages: number[] = [];
+
+  constructor(
+    private router: Router,
+    private projetService: ProjetService,
+    private documentService: DocumentService
+  ) {}
 
   ngOnInit() {
     // Récupère l'email du superviseur connecté
@@ -37,7 +72,7 @@ export class EnseignantDashboardComponent {
     if (email) {
       this.projetService.getSupervisedProjectsByEmail(email).subscribe((projects: any[]) => {
         // Mapping pour ag-grid
-        this.rowData = projects.map((p: any, idx: number) => ({
+        this.rowData = projects.map((p: any) => ({
           id: p.id,
           titre_projet: p.titre_projet,
           nom_utilisateur: p.nom_utilisateur || p.author || '',
@@ -52,11 +87,14 @@ export class EnseignantDashboardComponent {
           views: p.views || 0,
           action: ''
         }));
+        // Charger les documents pour chaque projet
+        this.rowData.forEach(row => {
+          this.loadDocumentsForProject(row.id);
+        });
         this.filteredData = [...this.rowData];
         this.paginate(this.filteredData);
       });
     }
-
     // Statistiques (optionnel)
     this.projetService.countProjectsByStatus().subscribe((projets: any[]) => {
       this.data = projets;
@@ -68,11 +106,22 @@ export class EnseignantDashboardComponent {
     });
   }
 
+  // Méthode pour charger les documents d'un projet
+  loadDocumentsForProject(projectId: number) {
+    this.documentService.getDocumentsByProject(projectId).subscribe((docs: any[]) => {
+      this.documentsMap[projectId] = docs;
+    });
+  }
 
-
-  isSidebarCollapsed = true;
-
-  rowSelection = 'single';
+  // Méthode pour obtenir l'URL complète d'un document
+  getFullDocumentUrl(lien_doc: string): string {
+    if (!lien_doc) return '#';
+    if (lien_doc.startsWith('http')) return lien_doc;
+    if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
+      return `http://localhost:8000/${lien_doc.replace(/^\/+/, '')}`;
+    }
+    return `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
+  }
 
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
@@ -81,13 +130,13 @@ export class EnseignantDashboardComponent {
   ngAfterViewInit() {
     const toggleButton = document.querySelector('.toggle-sidebar-btn');
     const sidebar = document.querySelector('.sidebar');
-
     if (toggleButton && sidebar) {
       toggleButton.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
       });
     }
   }
+
   getStatusClass(status: string) {
     return {
       'bg-success': status === 'Approved',
@@ -95,20 +144,11 @@ export class EnseignantDashboardComponent {
       'bg-danger': status === 'Rejected'
     };
   }
-  rowData: RowData[] = [];
-
-  filteredData: RowData[] = [...this.rowData];
-  paginatedData: RowData[] = [];
-  currentPage = 1;
-  rowsPerPage = 2;
-  totalPages: number[] = [];
-
 
   renderActionButtons(status: string): string {
     let actionButtons = `
-      <i  class="fas fa-eye text-primary" style="border-radius:50%; box-shadow:white; padding:7px; font-size:20px; background-color:#f6f6fe; cursor: pointer;"></i>
+      <i class="fas fa-eye text-primary" style="border-radius:50%; box-shadow:white; padding:7px; font-size:20px; background-color:#f6f6fe; cursor: pointer;"></i>
     `;
-
     if (status === 'Pending') {
       actionButtons += `
         <i class="fas fa-check text-success" style="border-radius:50%; box-shadow:white; padding:7px; font-size:20px; background-color:#e0f8e9; cursor: pointer;"></i>
@@ -119,7 +159,6 @@ export class EnseignantDashboardComponent {
         <i class="fas fa-trash-alt text-danger" style="background-color:#ffecdf; border-radius:50%; box-shadow:white; padding:7px; font-size:20px; cursor: pointer;"></i>
       `;
     }
-
     return actionButtons;
   }
 
@@ -151,31 +190,10 @@ export class EnseignantDashboardComponent {
     const end = start + this.rowsPerPage;
     this.paginatedData = data.slice(start, end);
   }
+
   showDetail(selectedRow: any) {
     this.selectedProjectId = selectedRow.sn;
     this.selectedProjectTitle = selectedRow.title;
     this.router.navigate(['/enseignant/dashboard/project-detail', this.selectedProjectId], { queryParams: { title: this.selectedProjectTitle } });
   }
-
-}
-
-interface ProjectStatus {
-  Approved: number;
-  Pending: number;
-  Rejected: number;
-}
-interface RowData {
-  id: number;
-  titre_projet: string;
-  nom_utilisateur: string;
-  image: string;
-  status: string;
-  descript_projet?: string;
-  nom_categorie?: string;
-  niveau?: string;
-  type?: string;
-  created_at?: string;
-  email?: string;
-  views?: number;
-  action?: string;
 }
