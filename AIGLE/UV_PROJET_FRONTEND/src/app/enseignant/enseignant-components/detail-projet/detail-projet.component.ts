@@ -35,31 +35,39 @@ export class DetailProjetComponent {
   constructor(private route: ActivatedRoute,private router:Router,private documentService:DocumentService, private projetStatusService:ProjetstatusService) {}
 
   ngOnInit(): void {
+    // Récupère l'ID du projet depuis les paramètres de route
+    this.selectedProjectId = +this.route.snapshot.paramMap.get('id')!;
 
-     // Accessing the route parameters
-     this.selectedProjectId = +this.route.snapshot.paramMap.get('id')!;
+    // Récupère les autres infos du projet depuis les query params
+    this.route.queryParams.subscribe(params => {
+      this.id = params['id'];
+      this.selectedProjectTitle = params['title'];
+      this.projectStatus = params['status'];
+      this.projectImage = params['image'];
+      this.description = params['description'];
+      this.author = params['author'];
+      this.category = params['category'];
+      this.level = params['level'];
+      this.type = params['type'];
+      this.date = params['date'];
+      this.views = params['views'];
+      this.email = params['email'];
 
-     // Accessing the query parameters
-     this.route.queryParams.subscribe(params => {
-       this.id = params['id'];
-       this.selectedProjectTitle = params['title'];
-       this.projectStatus=params['status'];
-       this.projectImage=params['image'];
-       this.description=params['description']
-       this.author=params['author']
-       this.category=params['category'];
-       this.level=params['level'];
-       this.type=params['type'];
-       this.date=params['date'];
-       this.views=params['views'];
-       this.email=params['email']
-     });
-
-     this.documentService.getDocumentsByProject(this.id).subscribe(response => {
-      this.documents = response;
+      // Charge les documents du projet
+      if (this.selectedProjectId) {
+        this.documentService.getDocumentsByProject(this.selectedProjectId).subscribe({
+          next: (docs) => {
+            this.documents = docs;
+          },
+          error: (err) => {
+            console.error('Erreur chargement documents', err);
+            this.documents = [];
+          }
+        });
+      }
     });
-
-     this.actionCellRenderer();
+    // Appel de la fonction d'action renderer si besoin
+    this.actionCellRenderer();
   }
 
   isExpanded = false;
@@ -70,7 +78,15 @@ export class DetailProjetComponent {
 
 
   getFullImageUrl(imagePath: string): string {
-    return `${'http://localhost:8000'}${imagePath}`;
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('/public') || imagePath.startsWith('public')) {
+      return `http://localhost:8000/${imagePath.replace(/^\/+/,'')}`;
+    }
+    if (imagePath.startsWith('/storage') || imagePath.startsWith('storage')) {
+      return `http://localhost:8000/${imagePath.replace(/^\/+/,'')}`;
+    }
+    return `http://localhost:8000/storage/${imagePath.replace(/^\/+/,'')}`;
   }
 
   actionCellRenderer() {

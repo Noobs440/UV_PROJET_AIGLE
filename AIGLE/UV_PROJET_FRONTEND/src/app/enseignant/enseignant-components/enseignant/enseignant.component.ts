@@ -21,7 +21,7 @@ export class EnseignantComponent implements OnInit {
   name!: string;
   role!: string;
   id: any;
-  
+  photo: string = 'assets/img/default-profile.png';
   // États pour les listes déroulantes
   isProjectsCollapsed: boolean = true;
   isEtudiantsCollapsed: boolean = true; // Nouveau
@@ -51,6 +51,17 @@ export class EnseignantComponent implements OnInit {
       this.name = params['name'];
       this.role = params['role'];
       this.id = params['id'];
+    });
+
+    // Chargement de la photo de profil dynamique
+    this.userService.loadUserProfile();
+    this.userService.getUserProfile().subscribe({
+      next: (userData) => {
+        this.photo = this.getFullImageUrl(userData?.photo);
+      },
+      error: () => {
+        this.photo = 'assets/img/default-profile.png';
+      }
     });
   }
 
