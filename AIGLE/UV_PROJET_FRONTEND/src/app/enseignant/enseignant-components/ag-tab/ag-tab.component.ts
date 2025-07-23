@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { ColDef } from 'ag-grid-community';
 import { ProjetService } from '../../../services/projet.service';
@@ -20,15 +20,13 @@ export class AgTabComponent implements OnInit {
     { headerName: 'Action', field: 'action', filter: true, cellRenderer: this.actionCellRenderer.bind(this) }
   ];
 
-  rowData: any[] = [];
+  @Input() rowData: any[] = [];
 
   selectedProjectId: number | undefined;
   selectedProjectTitle: string | undefined;
 
   ngOnInit() {
-    this.projetService.getProjects().subscribe(projets => {
-      this.rowData = projets;
-    });
+    // Ne charge rien par défaut, le tableau reste vide tant que rien n'est transmis par l'Input
   }
 
   imageCellRenderer(params: any) {

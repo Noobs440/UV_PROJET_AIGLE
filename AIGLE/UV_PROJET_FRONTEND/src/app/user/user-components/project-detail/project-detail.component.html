@@ -53,9 +53,21 @@
                 <button class="btn btn-cola" (click)="openDialog('collaborator')">
                   <i class="fas fa-plus"></i> Add Collaborator
                 </button>
-                <button class="btn btn-sup" (click)="openDialog('supervisor')">
-                  <i class="fas fa-plus"></i> Add Supervisor
-                </button>
+                <!-- Dropdown to select supervisor -->
+                <div class="mt-2 mb-2">
+                  <label for="supervisorSelect" class="form-label">Choose Supervisor:</label>
+                  <select id="supervisorSelect" class="form-select" [(ngModel)]="selectedSupervisorId">
+                    <option [ngValue]="null" disabled selected>-- Choisir un superviseur --</option>
+                    <option *ngFor="let supervisor of supervisors" [ngValue]="supervisor.id">
+                      {{ supervisor.name }} ({{ supervisor.email }})
+                    </option>
+                  </select>
+                  <button class="btn btn-primary mt-2" 
+                          (click)="selectedSupervisorId && addSupervisorToProject(selectedSupervisorId.toString())" 
+                          [disabled]="!selectedSupervisorId">
+                    <i class="fas fa-user-plus"></i> Assigner le superviseur sélectionné
+                  </button>
+                </div>
                 <button class="btn btn-del" (click)="openDeleteDialog(deleteDialog)">
                   <i class="fas fa-trash"></i> Delete
                 </button>

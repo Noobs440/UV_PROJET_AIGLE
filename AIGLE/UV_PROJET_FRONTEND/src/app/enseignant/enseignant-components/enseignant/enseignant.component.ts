@@ -175,4 +175,11 @@ export class EnseignantComponent implements OnInit {
       this.getAllProjects();
     });
   }
+
+  getFullImageUrl(imagePath: string): string {
+    if (!imagePath) {
+      return 'assets/img/default-profile.png';
+    }
+    return imagePath.startsWith('http') ? imagePath : `http://localhost:8000/${imagePath.replace(/^\/+/, '')}`;
+  }
 }
