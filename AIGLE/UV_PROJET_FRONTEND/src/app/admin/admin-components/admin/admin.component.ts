@@ -2,8 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ProjetService } from '../../../services/projet.service';
 import { NotificationService } from '../../../services/notification.service';
 import { UserService } from '../../../services/user.service';
-import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin',
@@ -18,6 +17,8 @@ export class AdminComponent implements OnInit {
   role!: string;
   id: any;
 
+  photo: string = 'assets/img/default-profile.png'; // photo par défaut
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -25,6 +26,10 @@ export class AdminComponent implements OnInit {
     private projetService: ProjetService,
     private notificationService: NotificationService
   ) {}
+  isProjectsCollapsed: boolean = true;
+  toggleProjects() {
+    this.isProjectsCollapsed = !this.isProjectsCollapsed;
+  }
 
   ngOnInit(): void {
     this.getAllProjects();
@@ -35,7 +40,19 @@ export class AdminComponent implements OnInit {
       this.role = params['role'];
       this.id = params['id'];
     });
+
+    // Chargement de la photo de profil dynamique
+    this.userService.loadUserProfile();
+    this.userService.getUserProfile().subscribe({
+      next: (userData) => {
+        this.photo = this.getFullImageUrl(userData?.photo);
+      },
+      error: () => {
+        this.photo = 'assets/img/default-profile.png';
+      }
+    });
   }
+
   @ViewChild('toggleSidebarBtn', { static: true }) toggleSidebarBtn!: ElementRef;
   @ViewChild('body', { static: true }) sidebar!: ElementRef;
 
@@ -107,9 +124,14 @@ export class AdminComponent implements OnInit {
 
   updateProjectStatus(projectId: number, newStatus: string): void {
     this.projetService.updateProjectStatus(projectId, newStatus).subscribe(() => {
-      this.getAllProjects(); // Actualiser la liste des projets après la mise à jour
+      this.getAllProjects();
     });
   }
 
-
+  getFullImageUrl(imagePath: string): string {
+    if (!imagePath) {
+      return 'assets/img/default-profile.png';
+    }
+    return imagePath.startsWith('http') ? imagePath : `http://localhost:8000/${imagePath.replace(/^\/+/, '')}`;
+  }
 }

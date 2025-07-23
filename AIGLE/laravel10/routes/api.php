@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\AffectationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Usecases\{
     ProfileController,
@@ -17,7 +16,6 @@ use App\Http\Controllers\Usecases\{
     SoumissionController,
     RechercheController
 };
-
 use App\Http\Controllers\Ressources\{
     TblUniversiteController,
     TblFaculteController,
@@ -35,37 +33,26 @@ use App\Http\Controllers\Ressources\{
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| Routes API accessibles via /api/...
 |
 */
-
-// Routes d'authentification
 Route::middleware('auth:sanctum')->group(function () {
-    // Profile routes
-    Route::prefix('user')->controller(ProfileController::class)->group(function () {
-        Route::get('/', 'getUserProfile');
-        Route::put('/update-name', 'updateName');
-        Route::put('/email', 'updateEmail');
-        Route::put('/update-password', 'updatePassword');
-        Route::post('/photo', 'updatePhoto');
-    });
-
-    // Auth routes
-    Route::prefix('auth')->group(function () {
-        Route::post('deconnexion', [AuthController::class, 'deconnexion']);
-        
-        // Notification routes
-        Route::controller(NotificationController::class)->group(function () {
-            Route::get('notifications', 'getNotifications');
-            Route::post('notifications/read/{id}', 'markAsRead');
-            Route::post('notifications/readAll', 'markAllAsRead');
-        });
-    });
+    Route::get('/user', [ProfileController::class, 'getUserProfile']);
+    Route::put('/user/update-name', [ProfileController::class, 'updateName']);
+    Route::put('/user/email', [ProfileController::class, 'updateEmail']);
+    Route::put('/user/update-password', [ProfileController::class, 'updatePassword']);
+    Route::post('/user/photo', [ProfileController::class, 'updatePhoto']);
 });
 
-// Routes des ressources
+// Route spécifique pour ajouter un superviseur à un projet (hors préfixe 'ressources' pour cohérence)
+Route::post('superviseurs/add-to-project/{projectId}', [TblSuperviseurController::class, 'addToProject']);
+
+
+Route::post('/projects/{id}/assign-supervisor', [App\Http\Controllers\ProjectController::class, 'assignSupervisor']);
+// Route pour récupérer les projets supervisés par l'utilisateur connecté
+Route::get('/projects/supervised', [App\Http\Controllers\ProjectController::class, 'getSupervisedProjects']);
+
+// Ressources CRUD
 Route::prefix('ressources')->group(function () {
     Route::apiResource('universites', TblUniversiteController::class);
     Route::apiResource('facultes', TblFaculteController::class);
@@ -78,9 +65,35 @@ Route::prefix('ressources')->group(function () {
     Route::apiResource('documents', TblDocumentController::class);
 });
 
-// Routes des usecases (non authentifiées)
+// Routes sécurisées avec authentification Sanctum
+Route::middleware('auth:sanctum')->group(function () {
+
+    // Profil utilisateur
+    Route::prefix('user')->controller(ProfileController::class)->group(function () {
+        Route::get('/', 'getUserProfile');
+        Route::put('/update-name', 'updateName');
+        Route::put('/email', 'updateEmail');
+        Route::put('/update-password', 'updatePassword');
+        Route::post('/photo', 'updatePhoto');
+    });
+
+    // Authenticated routes
+    Route::prefix('auth')->group(function () {
+        Route::post('deconnexion', [AuthController::class, 'deconnexion']);
+        
+        // Notifications
+        Route::controller(NotificationController::class)->group(function () {
+            Route::get('notifications', 'getNotifications');
+            Route::post('notifications/read/{id}', 'markAsRead');
+            Route::post('notifications/readAll', 'markAllAsRead');
+        });
+    });
+});
+
+// Routes non authentifiées (usecases)
 Route::prefix('usecases')->group(function () {
-    // Authentication
+
+    // Authentification
     Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::post('inscription', 'inscription')->middleware('web');
         Route::post('connexion', 'connexion');
@@ -88,30 +101,33 @@ Route::prefix('usecases')->group(function () {
         Route::post('verify', 'verify')->middleware('web');
     });
 
-    // Password management
+    // Gestion mot de passe
     Route::prefix('password')->controller(GestionMotDePasseController::class)->group(function () {
         Route::post('sendcode', 'sendVerificationCode');
         Route::post('verificationcode', 'verifyCode');
         Route::post('reset', 'resetPassword');
     });
 
-    // File upload
+    // Upload fichiers
     Route::prefix('upload')->controller(FileUploadController::class)->group(function () {
         Route::post('/', 'uploadFile');
         Route::post('/delete', 'deleteFile');
     });
 
-    // Search
+    // Recherche
     Route::prefix('search')->controller(RechercheController::class)->group(function () {
         Route::post('/projets', 'search');
         Route::post('/categories', 'searchCategories');
         Route::post('/documents', 'searchDocuments');
     });
+// Route pour récupérer les projets supervisés par email
+    Route::get('/projects/supervised-by-email', [App\Http\Controllers\ProjectController::class, 'getSupervisedProjectsByEmail']);
 
     // Listing
     Route::prefix('listing')->controller(ListingController::class)->group(function () {
         Route::get('/categorie/projets/{id}', 'showProjects');
         Route::get('/projet/documents/{id}', 'ShowDocuments');
+        Route::get('/projet/collaborateurs/{id}', 'ShowCollaborateurs');
         Route::get('/niveau/projets/{id}', 'ShowLevelProjects');
         Route::get('/user/documents/{id}', 'showUserDocuments');
         Route::get('/user/projets/{id}', 'showUserProjects');
@@ -120,24 +136,24 @@ Route::prefix('usecases')->group(function () {
         Route::get('/getprojectstype', 'getProjectTypes');
     });
 
-    // Homepage
+    // Accueil
     Route::prefix('acceuil')->controller(APIAcceuilController::class)->group(function () {
         Route::get('/categories', 'index');
         Route::get('/projets', 'listerProjets');
         Route::get('/projets/ordre', 'listerProjetsParDate');
     });
 
-    // Project views
+    // Vues projets
     Route::prefix('addview')->controller(ProjectViewController::class)->group(function () {
         Route::get('/{id}', 'addView');
     });
 
-    // Add documents
+    // Ajout documents
     Route::prefix('add')->controller(AddController::class)->group(function () {
         Route::post('doc/projet/{id}', 'ajouterDocument');
     });
 
-    // Project status
+    // Statut projets
     Route::prefix('status')->controller(ProjectStatusController::class)->group(function () {
         Route::get('/approved/pending/{id}', 'approvePendingProject')->middleware('web');
         Route::get('/rejected/pending/{id}', 'rejectPendingProject')->middleware('web');
@@ -145,11 +161,12 @@ Route::prefix('usecases')->group(function () {
         Route::put('projects/{id}', 'updateStatus')->middleware('web');
     });
 
-    // Project submission
+    // Soumission projet
     Route::prefix('submit')->controller(SoumissionController::class)->group(function () {
         Route::post('/{id}', 'submitProject')->middleware('web');
     });
-
-    // add supervisor
-    Route::post('/affecter-superviseur', [AffectationController::class, 'assignerSuperviseur']);
 });
+
+
+Route::post('collaborateurs/add-to-project/{projectId}', [TblCollaborateurController::class, 'addToProject']);
+

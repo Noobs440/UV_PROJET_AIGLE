@@ -5,16 +5,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 import { UserRoutingModule } from './user-routing.module';
-import { UserDashboardComponent } from '../../../user-dashboard/user-dashboard.component';
+
+import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { SubmitPopupComponent } from './user-components/submit-popup/submit-popup.component';
 import { UserComponent } from './user-components/user/user.component';
 import { ProjectDetailComponent } from './user-components/project-detail/project-detail.component';
 import { DocumentPopupComponent } from './user-components/document-popup/document-popup.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialog, MatDialogActions, MatDialogContent } from '@angular/material/dialog';
 import { CompleteDialogComponent } from './user-components/complete-dialog/complete-dialog.component';
 import { HelpComponent } from './user-components/help/help.component';
+import { CollaborateurEditPopupComponent } from './collaborateur-edit-popup/collaborateur-edit-popup.component';
 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialogModule } from '@angular/material/dialog'; // ✅ correction ici
 
 @NgModule({
   declarations: [
@@ -24,7 +26,8 @@ import { HelpComponent } from './user-components/help/help.component';
     ProjectDetailComponent,
     DocumentPopupComponent,
     CompleteDialogComponent,
-    HelpComponent
+      HelpComponent,
+      CollaborateurEditPopupComponent
   ],
   imports: [
     CommonModule,
@@ -32,8 +35,7 @@ import { HelpComponent } from './user-components/help/help.component';
     FormsModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
-    MatDialogActions,
-    MatDialogContent
+    MatDialogModule // ✅ module correct
   ]
 })
 export class UserModule { }

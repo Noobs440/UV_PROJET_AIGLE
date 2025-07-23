@@ -1,6 +1,13 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 
+import { ProfileComponent } from './components/profile/profile.component';
+import { EditNameComponent } from './components/profile/edit-name.component';
+import { EditEmailComponent } from './components/profile/edit-email.component';
+import { EditPasswordComponent } from './components/profile/edit-password.component';
+import { EditPhotoComponent } from './components/profile/edit-photo.component';
+
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home-components/home/home.component';
@@ -38,8 +45,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CounterDirective } from './home-components/stats/counter.directive';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
-import { AdminsysComponent } from './adminsys/adminsys.component';
 import { HelpComponent } from './user/user-components/help/help.component';
+
+
 
 
 // AoT requires an exported function for factories
@@ -75,9 +83,17 @@ export function HttpLoaderFactory(http: HttpClient) {
     CounterDirective,
     SafeUrlPipe,
     ConfirmDialogComponent,
-    AdminsysComponent,
+    EditEmailComponent,
+    
   ],
   imports: [
+
+     ProfileComponent,
+    EditNameComponent,
+    
+    EditPasswordComponent,
+    EditPhotoComponent,
+
     BrowserModule,
     BrowserAnimationsModule ,
     AppRoutingModule,

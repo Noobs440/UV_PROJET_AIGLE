@@ -31,10 +31,19 @@ export class AgTabComponent implements OnInit {
     });
   }
 
-  imageCellRenderer(params: any) {
-    const imageUrl = `http://localhost:8000${params.value}`;
-    return `<img src="${imageUrl}" alt="image" class="img-fluid" style="max-width: 100px; max-height: 100px;">`;
+  // Dans ta classe AgTabComponent
+getFullImageUrl(projectImage: string): string {
+  if (!projectImage) {
+    return '';
   }
+  return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
+}
+
+imageCellRenderer(params: any) {
+  const imageUrl = this.getFullImageUrl(params.value);
+  return `<img src="${imageUrl}" alt="image" class="img-fluid" style="max-width: 100px; max-height: 100px;">`;
+}
+
 
   statusCellRenderer(params: any) {
     const statusClass = params.value === 'Approved' ? 'bg-success' :

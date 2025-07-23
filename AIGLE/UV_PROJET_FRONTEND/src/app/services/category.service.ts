@@ -20,15 +20,26 @@ export class CategoryService {
     )
   }
 
-  addCategory(nom_cat:string , descript_cat:string):Observable<any>{
-    return this.http.post<any>('http://localhost:8000/api/ressources/categories', {nom_cat , descript_cat});
+  addCategory(nom_cat:string , descript_cat:string, icone:string):Observable<any>{
+    return this.http.post<any>('http://localhost:8000/api/ressources/categories', {nom_cat , descript_cat, icone});
   }
 
   deleteCategory(id:string):Observable<any>{
     return this.http.delete(`http://localhost:8000/api/ressources/categories/${id}`);
   }
 
-  updateCategory(id:string ,nom_cat:string , descript_cat:string):Observable<any>{
-    return this.http.put<any>(`http://localhost:8000/api/ressources/categories/${id}`, {nom_cat , descript_cat});
+  updateCategory(id:string ,nom_cat:string , descript_cat:string, icone:string):Observable<any>{
+    return this.http.put<any>(`http://localhost:8000/api/ressources/categories/${id}`, {nom_cat , descript_cat, icone});
   }
+addCategoryMultipart(formData: FormData) {
+  return this.http.post<any>('http://localhost:8000/api/ressources/categories', formData);
+}
+
+updateCategoryMultipart(id: number, formData: FormData) {
+  formData.append('_method', 'PUT'); // important !
+  return this.http.post<any>(`http://localhost:8000/api/ressources/categories/${id}`, formData);
+}
+
+
+
 }

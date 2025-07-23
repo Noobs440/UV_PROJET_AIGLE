@@ -47,9 +47,13 @@ export class ProjectDetailComponent implements OnInit{
 
   selectedPdf:string="";
 
-  previewDocument(Path: string) {
-    let url=`${'http://localhost:8000'}${Path}`;
-    window.open(url,'_blank');
+  getFullDocumentUrl(lien_doc: string): string {
+    if (!lien_doc) return '#';
+    if (lien_doc.startsWith('http')) return lien_doc;
+    if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
+      return `http://localhost:8000/${lien_doc.replace(/^\/+/, '')}`;
+    }
+    return `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 
   ngOnInit(): void {
@@ -132,8 +136,11 @@ export class ProjectDetailComponent implements OnInit{
     this.isExpanded = !this.isExpanded;
   }
 
-  getFullImageUrl(imagePath: string): string {
-    return `${'http://localhost:8000'}${imagePath}`;
+    getFullImageUrl(projectImage: string): string {
+    if (!projectImage) {
+      return '';
+    }
+    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
   }
   getFullDocument(documentPath:string){
     return `${'http://localhost:8000'}${documentPath}`;

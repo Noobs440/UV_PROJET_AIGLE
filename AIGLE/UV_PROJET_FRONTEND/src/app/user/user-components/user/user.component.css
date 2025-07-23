@@ -709,12 +709,15 @@ a{
   background: #f6f9ff;
   padding: 10px 15px;
   border-radius: 4px;
+  padding: 0.5rem 1rem;
 }
 
 .sidebar-nav .nav-link i {
   font-size: 16px;
   margin-right: 10px;
   color: #368fa5;
+  padding: 0.5rem 1.5rem;
+
 }
 
 .sidebar-nav .nav-link.collapsed {
@@ -735,12 +738,14 @@ a{
   color: #06BBCC;
 }
 
-.sidebar-nav .nav-link .bi-chevron-down {
+.sidebar-nav .nav-link .bi-chevron-down .bi-chevron-up {
   margin-right: 0;
+  transition: transform 0.2s ease;
   transition: transform 0.2s ease-in-out;
+  margin-left: auto;
 }
 
-.sidebar-nav .nav-link:not(.collapsed) .bi-chevron-down {
+.sidebar-nav .nav-link:not(.collapsed) .bi-chevron-down .bi-chevron-up {
   transform: rotate(180deg);
 }
 
@@ -1261,4 +1266,96 @@ a{
 .mycopyright{
   text-align: center;
   color: #012970;
+}
+
+/* Container de la barre recherche + filtre */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  max-width: 600px;
+  margin-left: 15px;
+}
+
+/* Input recherche */
+.search-bar input[type="text"] {
+  flex-grow: 1;
+  height: 36px;
+  border-radius: 4px 0 0 4px;
+  border: 1px solid #ced4da;
+  padding: 0 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.search-bar input[type="text"]:focus {
+  border-color: #0d6efd; /* Bleu Bootstrap */
+  box-shadow: 0 0 5px rgba(13, 110, 253, 0.5);
+}
+
+/* Bouton submit de recherche */
+.search-bar button[type="submit"] {
+  background-color: #0d6efd;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  color: white;
+  height: 36px;
+  width: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.search-bar button[type="submit"]:hover {
+  background-color: #0b5ed7;
+}
+
+/* Bouton filtre (dropdown) */
+.dropdown > button.btn-outline-primary {
+  height: 36px;
+  width: 36px;
+  padding: 0;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dropdown > button.btn-outline-primary img {
+  max-width: 20px;
+  max-height: 20px;
+  pointer-events: none;
+}
+
+/* Liste dropdown */
+.dropdown-menu {
+  min-width: 120px;
+  font-size: 14px;
+  padding: 5px 0;
+}
+
+/* Items dropdown */
+.dropdown-item {
+  cursor: pointer;
+  padding: 6px 15px;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.dropdown-item:hover {
+  background-color: #e9ecef;
+}
+
+/* Responsive : réduire marge sur petits écrans */
+@media (max-width: 576px) {
+  .search-bar {
+    max-width: 100%;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 60px;
+  }
 }

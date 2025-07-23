@@ -56,6 +56,8 @@ class TblCollaborateurProjet extends Model
     protected $fillable = [
         'tbl_projet_id',
         'tbl_collaborateur_id',
+
+
     ];
 
     /**

@@ -41,8 +41,11 @@
               </div>
               <p class="post-category">{{ post.nom_categorie }}</p>
               <h2 class="title">
-                <a >{{ post.titre_projet }}</a>
+                <a>{{ post.titre_projet }}</a>
               </h2>
+              <a *ngIf="post.lien_doc" [href]="getFullDocumentUrl(post.lien_doc)" target="_blank" rel="noopener">
+                <i class="bi bi-filetype-pdf"></i> Voir le document
+              </a>
               <div class="d-flex align-items-center">
                 <div class="post-meta">
                   <p class="post-author">{{ post.nom_utilisateur }}</p>

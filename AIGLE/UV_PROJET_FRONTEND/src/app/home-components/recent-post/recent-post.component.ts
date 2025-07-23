@@ -76,7 +76,22 @@ export class RecentPostComponent implements OnInit {
     }
   }
 
-  getFullImageUrl(imagePath: string): string {
-    return `${this.baseUrl}${imagePath}`;
+  getFullImageUrl(projectImage: string): string {
+    if (!projectImage) {
+      return '';
+    }
+    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
+  }
+
+  getFullDocumentUrl(lien_doc: string): string {
+    if (!lien_doc) return '#';
+    // Si le lien commence déjà par http, retourne tel quel
+    if (lien_doc.startsWith('http')) return lien_doc;
+    // Si le lien commence par /public ou public, ajoute le préfixe
+    if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
+      return `http://localhost:8000/${lien_doc.replace(/^\/+/, '')}`;
+    }
+    // Sinon, ajoute /storage/
+    return `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 }

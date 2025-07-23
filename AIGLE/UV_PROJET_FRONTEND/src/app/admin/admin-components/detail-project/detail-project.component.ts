@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
 import { Router } from '@angular/router';
 import { DocumentService } from '../../../services/document.service';
+
 @Component({
   selector: 'app-detail-project',
   templateUrl: './detail-project.component.html',
@@ -47,7 +48,8 @@ export class DetailProjectComponent {
        this.email=params['email']
      });
 
-     this.documentService.getDocumentsByProject(this.id).subscribe(response => {
+     this.documentService.getDocumentsByProject(this.selectedProjectId).subscribe(response => {
+      console.log('Documents reçus pour le projet', this.selectedProjectId, ':', response);
       this.documents = response;
     });
 
@@ -61,8 +63,18 @@ export class DetailProjectComponent {
   }
 
 
-  getFullImageUrl(imagePath: string): string {
-    return `${'http://localhost:8000'}${imagePath}`;
+  getFullImageUrl(projectImage: string): string {
+    if (!projectImage) {
+      return '';
+    }
+    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
+  }
+  getFullDocumentUrl(lien_doc: string): string {
+    if (!lien_doc) return '#';
+    // Ajoute /storage/ devant le nom du fichier
+    return lien_doc.startsWith('http')
+      ? lien_doc
+      : `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 
   actionCellRenderer() {

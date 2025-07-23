@@ -1,209 +1,174 @@
-<div  #body>
+<div #body>
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
       <a class="logo d-flex align-items-center">
-        <img src="assets/img/logo1.jpg" alt="">
-        <span class="d-none d-lg-block">User {{ user_name | uppercase}}</span>
+        <img src="assets/img/logo1.jpg" alt="Logo">
+        <span class="d-none d-lg-block">User {{ user_name | uppercase }}</span>
       </a>
-      <i #toggleSidebarBtn (click)="toggleSidebar()"  class="bi bi-list toggle-sidebar-btn d-lg-none"></i>
-    </div><!-- End Logo -->
+      <i #toggleSidebarBtn (click)="toggleSidebar()" class="bi bi-list toggle-sidebar-btn d-lg-none"></i>
+    </div>
 
-    <div class="search-bar">
-      <form class="search-form d-flex align-items-center" method="POST" action="#">
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+    <!-- Barre de recherche -->
+    <div class="search-bar d-flex align-items-center flex-grow-1 mx-4">
+      <form class="search-form d-flex align-items-center w-100" (submit)="$event.preventDefault()">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (input)="filterProjects()"
+          placeholder="Rechercher un projet..."
+          class="form-control me-2"
+          name="query"
+        />
+        <button type="submit" class="btn btn-outline-primary l" title="Search"><i class="bi bi-search"></i></button>
       </form>
-    </div><!-- End Search Bar -->
+    </div>
 
+    <!-- Navigation -->
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
 
-        <li class="nav-item d-block d-lg-none">
-          <a class="nav-link nav-icon search-bar-toggle" href="#">
-            <i class="bi bi-search"></i>
-          </a>
-        </li><!-- End Search Icon-->
-
+        <!-- Notifications -->
         <li class="nav-item dropdown">
-          <a class="nav-link nav-icon" data-bs-toggle="dropdown">
-            <i class="bi bi-bell"></i>
-            <span class="badge bg-primary badge-number">{{ notifications.length }}</span>
+          <a class="nav-link nav-icon position-relative" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-bell fs-5"></i>
+            <span *ngIf="notifications.length > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              {{ notifications.length }}
+            </span>
           </a>
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-            <li class="dropdown-header">
-              You have {{ notifications.length }} new notifications
-              <span class="badge rounded-pill bg-primary p-2 ms-2" (click)="markAllNotificationAsRead()">View all</span>
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications p-3" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+            <li class="d-flex justify-content-between align-items-center mb-2">
+              <strong>Notifications ({{ notifications.length }})</strong>
+              <button class="btn btn-sm btn-link" (click)="markAllNotificationAsRead()">Tout marquer comme lu</button>
             </li>
-            <li *ngFor="let notification of notifications">
-              <hr class="dropdown-divider">
-              <div class="notification-item d-flex align-items-start justify-content-between">
-                <div>
-                  <!-- Example of displaying notification data -->
-                  <h6>{{ notification.data.project_title }}</h6>
-                  <p>{{ notification.data.status }}</p>
-                  <p>{{ notification.data.message }}</p>
-                  <p>{{ notification.created_at | date:'mediumDate' }}</p>
-                </div>
-                <div class="align-self-end">
-                  <!-- Example of marking notification as read -->
-                  <button class="btn btn-primary btn-sm" (click)="markNotificationAsRead(notification.id)">Mark as Read</button>
-                </div>
+
+            <li *ngIf="notifications.length === 0" class="text-center text-muted py-3">
+              Aucune notification
+            </li>
+
+            <li *ngFor="let notification of notifications" class="dropdown-item border rounded mb-2 p-2">
+              <div>
+                <h6 class="mb-1">{{ notification.data.project_title }}</h6>
+                <small class="text-primary fw-bold">{{ notification.data.status }}</small>
+                <p class="mb-1">{{ notification.data.message }}</p>
+                <small class="text-muted">{{ notification.created_at | date:'medium' }}</small>
               </div>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li class="dropdown-footer">
-              <a >Show all notifications</a>
+              <button class="btn btn-outline-primary btn-sm mt-2" (click)="markNotificationAsRead(notification.id)">
+                Marquer comme lu
+              </button>
             </li>
           </ul>
-        </li><!-- End Notifications Dropdown --><!-- End Notification Nav -->
+        </li>
 
-
+        <!-- Profil -->
         <li class="nav-item dropdown pe-3">
-
           <a class="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-            <img src="assets/navi.png" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2">{{user_name}}</span>
-          </a><!-- End Profile Iamge Icon -->
+            <img [src]="photo" alt="Profil" class="user-photo" style="width: 40px; height: 40px; border-radius: 50%;">
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{ user_name }}</span>
+          </a>
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6>{{user_name}}</h6>
+              <h6>{{ user_name }}</h6>
             </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
+            <li><hr class="dropdown-divider"></li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" >
+              <a class="dropdown-item d-flex align-items-center" routerLink="/profile">
                 <i class="bi bi-person"></i>
-                <span>My Profile</span>
+                <span>Mon Profil</span>
               </a>
             </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
+            <li><hr class="dropdown-divider"></li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" >
+              <a class="dropdown-item d-flex align-items-center">
                 <i class="bi bi-gear"></i>
-                <span>Account Settings</span>
+                <span>Paramètres</span>
               </a>
             </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
+            <li><hr class="dropdown-divider"></li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" [routerLink]="['/helpUser']"
->
+              <a class="dropdown-item d-flex align-items-center"[routerLink]="['/helpUser']" >
                 <i class="bi bi-question-circle"></i>
-                <span>Need Help?</span>
+                <span>Aide</span>
               </a>
             </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
+            <li><hr class="dropdown-divider"></li>
 
             <li>
-              <p class="dropdown-item d-flex align-items-center" (click)="deconnexion()">
+              <p class="dropdown-item d-flex align-items-center mb-0" (click)="deconnexion()">
                 <i class="bi bi-box-arrow-right"></i>
-                <span>Sign Out</span>
+                <span>Déconnexion</span>
               </p>
             </li>
-
-          </ul><!-- End Profile Dropdown Items -->
-        </li><!-- End Profile Nav -->
-
+          </ul>
+        </li>
       </ul>
-    </nav><!-- End Icons Navigation -->
-
-  </header><!-- End Header -->
+    </nav>
+  </header>
+  <!-- End Header -->
 
   <!-- ======= Sidebar ======= -->
   <aside id="sidebar" class="sidebar">
-
     <ul class="sidebar-nav" id="sidebar-nav">
-
       <li class="nav-item">
-        <a class="nav-link " >
+        <a class="nav-link">
           <i class="bi bi-grid"></i>
-          <span>{{user_name | uppercase}} Dashboard</span>
+          <span>{{ user_name | uppercase }} Dashboard</span>
         </a>
-      </li><!-- End Dashboard Nav -->
+      </li>
 
       <li class="nav-heading">Pages</li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#components-nav">
           <i class="bi bi-menu-button-wide"></i><span>My Projects</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li *ngFor="let project of projects">
-            <a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" [routerLink]="['/user/dashboard/project-detail', project.id]" [queryParams]="getProjectQueryParams(project)">
-              <i class="bi bi-circle"></i><span>{{project.titre}}</span>
+        <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li *ngIf="filteredProjects.length === 0" class="text-muted px-3">Aucun projet trouvé.</li>
+          <li *ngFor="let project of filteredProjects">
+            <a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+               [routerLink]="['/user/dashboard/project-detail', project.id]"
+               [queryParams]="getProjectQueryParams(project)">
+              <i class="bi bi-circle"></i><span>{{ project.titre }}</span>
             </a>
           </li>
         </ul>
       </li>
+
       <li class="nav-item">
-        <a class="nav-link collapsed" >
+        <a class="nav-link collapsed">
           <i class="bi bi-person"></i>
           <span>Profile</span>
         </a>
-      </li><!-- End Profile Page Nav -->
+      </li>
+
       <li class="nav-item">
-        <a class="nav-link collapsed" >
+        <a class="nav-link collapsed">
           <i class="fas fa-cog"></i>
           <span>Settings</span>
         </a>
-      </li><!-- End Profile Page Nav -->
-
+      </li>
     </ul>
+  </aside>
+  <!-- End Sidebar -->
 
-  </aside><!-- End Sidebar-->
+  <!-- Affichage du filtre actif -->
+  <span *ngIf="selectedTypeFilter !== 'all'" class="badge bg-info text-dark ms-2">
+    Filtré par : {{ selectedTypeFilter }}
+    <i class="bi bi-x ms-1" style="cursor: pointer;" (click)="clearTypeFilter()"></i>
+  </span>
 
-  <!-- Notifications Dropdown Menu -->
-  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-    <li class="dropdown-header">
-      You have {{ notifications.length }} new notifications
-      <span class="badge rounded-pill bg-primary p-2 ms-2" (click)="markAllNotificationAsRead()">View all</span>
-    </li>
-    <li *ngFor="let notification of notifications">
-      <hr class="dropdown-divider">
-      <div class="notification-item d-flex align-items-start justify-content-between">
-        <div>
-          <!-- Example of displaying notification data -->
-          <h6>{{ notification.data.project_title }}</h6>
-          <p>{{ notification.data.status }}</p>
-          <p>{{ notification.data.message }}</p>
-          <p>{{ notification.created_at | date:'mediumDate' }}</p>
-        </div>
-        <div class="align-self-end">
-          <!-- Example of marking notification as read -->
-          <button class="btn btn-danger btn-sm btn-custom" (click)="markNotificationAsRead(notification.id)">Mark as Read</button>
-        </div>
-      </div>
-    </li>
-    <li>
-      <hr class="dropdown-divider">
-    </li>
-    <li class="dropdown-footer">
-      <a href="#">Show all notifications</a>
-    </li>
-  </ul><!-- End Notifications Dropdown -->
-
-    <router-outlet></router-outlet>
+  <router-outlet></router-outlet>
 
   <footer id="footer" class="footer">
     <div class="mycopyright">
       &copy; Copyright <strong><span>AcadProManage</span></strong>. All Rights Reserved
     </div>
-    <div class="credits">
-
-    </div>
-  </footer><!-- End Footer -->
+    <div class="credits"></div>
+  </footer>
 </div>

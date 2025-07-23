@@ -86,6 +86,17 @@ class ListingController extends Controller
         // Retourner les documents
         return response()->json($documents);
     }
+    public function showCollaborateurs($id)
+    {
+        // Récupérer le projet par son ID
+        $projet = TblProjet::findOrFail($id);
+
+        // Récupérer les collaborateurs associés à ce projet
+        $collaborateurs = $projet->collaborateurs;
+
+        // Retourner les collaborateurs
+        return response()->json($collaborateurs);
+    }
 
     /**
      * @OA\Get(

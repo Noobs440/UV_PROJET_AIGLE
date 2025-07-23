@@ -77,7 +77,7 @@ class TblCategorieController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $iconeUrl = $this->fileUploadService->uploadFile($request->file('icone'), 'public/icones');
+        $iconeUrl = $this->fileUploadService->uploadFile($request->file('icone'), 'public/images_cat');
 
         $categorie = TblCategorie::create([
             'nom_cat' => $request->nom_cat,
@@ -163,7 +163,7 @@ class TblCategorieController extends Controller
         $validator = Validator::make($request->all(), [
             'nom_cat'=>'required|max:255',
             'descript_cat'=>'required',
-            'icone' => 'required|mimes:svg,png,ico',
+            'icone' => 'nullable|mimes:svg,png,ico',
         ]);
         if($validator->fails()){
             return response()->json(['errors' => $validator->errors()], 400);
@@ -175,12 +175,12 @@ class TblCategorieController extends Controller
 
         if ($request->hasFile('icone')) {
             // Supprimer l'image précédente si elle existe
-            if ($categorie->image) {
+            if ($categorie->icone) {
                 $this->fileUploadService->deleteFile($categorie->icone);
             }
 
             // Télécharger la nouvelle image
-            $iconeUrl = $this->fileUploadService->uploadFile($request->file('icone'), 'public/icones');
+            $iconeUrl = $this->fileUploadService->uploadFile($request->file('icone'), 'public/images_cat');
             $categorie->icone = $iconeUrl;
         }
 
@@ -215,8 +215,15 @@ class TblCategorieController extends Controller
      * )
      */
     public function destroy(string $id)
-    {
-        TblCategorie::where('id', $id)->delete();
-        return response()->noContent();
+{
+    $categorie = TblCategorie::where('id', $id)->firstOrFail();
+    if ($categorie->icone) {
+        $this->fileUploadService->deleteFile($categorie->icone);
     }
+
+    $categorie->delete();
+
+    return response()->noContent();
+}
+
 }

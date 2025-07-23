@@ -60,7 +60,7 @@ class TblDocument extends Model
         'nom_doc',
         'lien_doc',
         'user_id',
-        'tbl_projet_id',
+        'tbl_projet_id'
     ];
 
     public function user()

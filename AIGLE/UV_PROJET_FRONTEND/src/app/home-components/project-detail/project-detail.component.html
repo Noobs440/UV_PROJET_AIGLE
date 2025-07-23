@@ -32,8 +32,9 @@
           <div class="service-box">
             <h4>Documents Related</h4>
             <div class="download-catalog">
-              <a *ngFor="let document of documents | slice:0:(isExpanded ? documents.length : 4)" href="#">
-                <i class="bi bi-filetype-pdf"></i><span (click)="previewDocument(document.lien_doc)">{{ document.nom_doc }}</span>
+              <a *ngFor="let document of documents | slice:0:(isExpanded ? documents.length : 4)"
+                 [href]="getFullDocumentUrl(document.lien_doc)" target="_blank" rel="noopener">
+                <i class="bi bi-filetype-pdf"></i><span>{{ document.nom_doc }}</span>
               </a>
             </div>
             <div *ngIf="documents.length > 4" class="show-more" (click)="toggleExpand()">

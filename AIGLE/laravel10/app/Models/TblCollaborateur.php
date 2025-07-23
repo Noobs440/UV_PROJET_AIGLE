@@ -6,44 +6,30 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 
-
 /**
  * @OA\Schema(
  *     schema="TblCollaborateur",
  *     type="object",
  *     title="TblCollaborateur",
  *     required={"nom_collab", "email_collab"},
- *     @OA\Property(
- *         property="id",
- *         type="integer",
- *         format="int64",
- *         description="The unique identifier of the collaborator"
- *     ),
- *     @OA\Property(
- *         property="nom_collab",
- *         type="string",
- *         description="Name of the collaborator"
- *     ),
- *     @OA\Property(
- *         property="email_collab",
- *         type="string",
- *         description="Email of the collaborator"
- *     )
+ *     @OA\Property(property="id", type="integer", format="int64", description="Identifiant unique du collaborateur"),
+ *     @OA\Property(property="nom_collab", type="string", description="Nom du collaborateur"),
+ *     @OA\Property(property="email_collab", type="string", format="email", description="Email du collaborateur"),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time")
  * )
  */
-
 class TblCollaborateur extends Model
 {
     use HasFactory, Searchable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    protected $table = 'tbl_collaborateurs';
+
     protected $fillable = [
         'nom_collab',
         'email_collab',
+        'user_id',
+        'tbl_projet_id',
     ];
     public function users()
     {
@@ -57,29 +43,14 @@ class TblCollaborateur extends Model
 
     public function toSearchableArray()
     {
-        $array = $this->toArray();
-
         return [
-            'nom_collab' => $array['nom_collab'],
+            'nom_collab' => $this->nom_collab,
+            'email_collab' => $this->email_collab,
         ];
     }
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
-
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
-
 }

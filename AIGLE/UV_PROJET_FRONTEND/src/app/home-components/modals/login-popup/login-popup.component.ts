@@ -22,6 +22,8 @@ export class LoginPopupComponent {
   errorMessage = '';
   resetForm!: FormGroup;
   showPasswordReset = false;
+  showPassword = false;
+  showConfirmPassword = false;
   submitted3 = false;
   isLoading: boolean = false;
   resetRequestForm!: FormGroup;
@@ -40,7 +42,7 @@ export class LoginPopupComponent {
     private fb: FormBuilder,
     private customValidator: CustomvalidationService,
     private userService: UserService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.resetRequestForm = this.fb.group({
@@ -58,12 +60,12 @@ export class LoginPopupComponent {
 
     this.resetForm = this.fb.group({
       newPassword: ['', Validators.required],
-      confirmPassword: ['', [Validators.required, ]]
+      confirmPassword: ['', [Validators.required,]]
     },
-    {
-      validator: this.customValidator.MatchPassword('newPassword', 'confirmPassword'),
-    }
-  );
+      {
+        validator: this.customValidator.MatchPassword('newPassword', 'confirmPassword'),
+      }
+    );
   }
 
   get loginFormControl() {
@@ -190,16 +192,15 @@ export class LoginPopupComponent {
         next: value => {
           console.log(value)
 
-
-          const queryParams={
-           token:value.access_token,
-           name:value.username,
-           role : value.role,
-           id:value.id,
-           isLoggedOut:false
+          const queryParams = {
+            token: value.access_token,
+            name: value.username,
+            role: value.role,
+            id: value.id,
+            isLoggedOut: false
           }
-          const userRole=value.role;
-          const token=value.access_token;
+          const userRole = value.role;
+          const token = value.access_token;
           const name = value.username;
           const role = value.role;
           const id = value.id;
@@ -207,19 +208,11 @@ export class LoginPopupComponent {
           localStorage.setItem('token', token);
           localStorage.setItem('name', name);
           localStorage.setItem('role', role);
-          localStorage.setItem('id',id);
+          localStorage.setItem('id', id);
           localStorage.setItem('user', JSON.stringify(value.user)); // Stocker les informations de l'utilisateur
 
-          //alert(`Bienvenue sur votre page d'utilisateur, ${name}`);
-
-
-
           // Rediriger l'utilisateur en fonction de son rôle
-
-            this.router.navigateByUrl(
-              this.router.createUrlTree([`/${userRole}/dashboard`], { queryParams }),
-              { replaceUrl: true }
-            );
+          this.redirectUserByRole(userRole, queryParams);
           // Fermer le modal
           this.dialogRef.close();
         },
@@ -230,9 +223,25 @@ export class LoginPopupComponent {
         },
         complete: () => {
           this.isLoading = false;
-          //this.router.navigate(['']);
         }
       });
+    }
+  }
+
+  private redirectUserByRole(role: string, queryParams: any) {
+    switch (role) {
+      case 'admin':
+        this.router.navigate(['/admin/dashboard'], { queryParams });
+        break;
+      case 'superviseur':
+        this.router.navigate(['/enseignant'], { queryParams });
+        break;
+      case 'user':
+        this.router.navigate(['/user/dashboard'], { queryParams });
+        break;
+      default:
+        this.router.navigate(['/unauthorized']);
+        break;
     }
   }
 

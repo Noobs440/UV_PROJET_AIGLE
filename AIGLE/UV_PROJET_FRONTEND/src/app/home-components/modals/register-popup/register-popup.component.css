@@ -55,10 +55,10 @@
 
 .custom-scroll {
   /* Container styles */
-  overflow-y: auto; /* Always show scrollbar */
+  overflow-y:visible; /* Always show scrollbar */
   scrollbar-width: thin; /* For Firefox */
   scrollbar-color:#06BBCC; /* For Firefox */
-  max-height: 600px; /* Adjust height as needed */
+  max-height: none; /* Adjust height as needed */
 }
 
 .custom-scroll::-webkit-scrollbar {
@@ -79,3 +79,4 @@ mat-spinner {
   height: 50px;
   stroke: #06BBCC; /* spinner color */
 }
+
