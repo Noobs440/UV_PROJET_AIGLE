@@ -217,8 +217,8 @@ export class LoginPopupComponent {
           localStorage.setItem('user', JSON.stringify(value.user)); // Stocker les informations de l'utilisateur
 
           // Rediriger l'utilisateur en fonction de son rôle
-
-            this.router.navigate([`/${userRole}/dashboard`]);
+ // Rediriger l'utilisateur en fonction de son rôle
+          this.redirectUserByRole(userRole, queryParams);
           // Fermer le modal
           this.dialogRef.close();
         },
