@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,23 +27,24 @@ class TblCollaborateur extends Model
     protected $fillable = [
         'nom_collab',
         'email_collab',
+        'user_id',
+        // 'tbl_projet_id', // Supprimé car la relation projet est maintenant many-to-many via la table pivot
     ];
-
-    public function users()
+    public function user()
     {
-        return $this->belongsToMany(User::class, 'collaborateur_utilisateur');
+        return $this->belongsTo(User::class);
     }
 
+    // Relation many-to-many avec les projets via la table pivot tbl_collaborateur_projets
     public function projets()
-{
-    return $this->belongsToMany(
-        TblProjet::class,
-        'collaborateur_projet',   // nom exact de la table pivot
-        'tbl_collaborateur_id',   // clé étrangère vers collaborateur dans la pivot
-        'tbl_projet_id'           // clé étrangère vers projet dans la pivot
-    );
-}
-
+    {
+        return $this->belongsToMany(
+            TblProjet::class,
+            'tbl_collaborateur_projets',
+            'tbl_collaborateur_id',
+            'tbl_projet_id'
+        );
+    }
 
     public function toSearchableArray()
     {

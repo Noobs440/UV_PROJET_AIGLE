@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home-components/home/home.component';
+import { HomeConnectedComponent } from './home-components/home/home-connected.component';
 import { ContactComponent } from './home-components/contact/contact.component';
 import { PopCategoryComponent } from './home-components/pop-category/pop-category.component';
 import { ProjectsComponent } from './home-components/projects/projects.component';
@@ -81,6 +82,7 @@ const routes: Routes = [
       {path:"home/team", component:TeamComponent},
       {path:"home/project-detail/:id", component:ProjectDetailComponent},
       {path:"home",component:HomeComponent},
+      {path:"home-connected",component:HomeConnectedComponent},
     ],
      //canActivate: [appGuard]
   },

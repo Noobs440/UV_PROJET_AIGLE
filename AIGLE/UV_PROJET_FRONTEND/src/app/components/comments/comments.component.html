@@ -1,0 +1,54 @@
+<div class="comments-section">
+  <div class="comments-list">
+    <div *ngFor="let comment of comments" class="comment-item">
+      <div class="comment-header d-flex align-items-center">
+        <img [src]="comment.user?.avatar || 'assets/img/default-avatar.png'" class="comment-avatar me-2" alt="avatar" />
+        <div>
+          <span class="comment-author">{{ comment.user?.name }}</span>
+          <span class="comment-date">{{ comment.created_at | date:'short' }}</span>
+        </div>
+      </div>
+      <div class="comment-content">{{ comment.content }}</div>
+      <div class="comment-actions">
+        <button class="btn btn-link btn-sm text-primary" (click)="startReply(comment)"><i class="bi bi-reply"></i> Répondre</button>
+        <button *ngIf="isOwner(comment)" class="btn btn-link btn-sm text-warning" (click)="startEdit(comment)"><i class="bi bi-pencil"></i> Modifier</button>
+        <button *ngIf="isOwner(comment)" class="btn btn-link btn-sm text-danger" (click)="deleteComment(comment)"><i class="bi bi-trash"></i> Supprimer</button>
+      </div>
+      <!-- Réponses -->
+      <div class="replies ms-4 mt-2" *ngIf="comment.replies && comment.replies.length">
+        <div *ngFor="let reply of comment.replies" class="reply-item">
+          <div class="comment-header d-flex align-items-center">
+            <img [src]="reply.user?.avatar || 'assets/img/default-avatar.png'" class="comment-avatar me-2" alt="avatar" />
+            <div>
+              <span class="comment-author">{{ reply.user?.name }}</span>
+              <span class="comment-date">{{ reply.created_at | date:'short' }}</span>
+            </div>
+          </div>
+          <div class="comment-content">{{ reply.content }}</div>
+          <div class="comment-actions">
+            <button *ngIf="isOwner(reply)" class="btn btn-link btn-sm text-warning" (click)="startEdit(reply)"><i class="bi bi-pencil"></i> Modifier</button>
+            <button *ngIf="isOwner(reply)" class="btn btn-link btn-sm text-danger" (click)="deleteComment(reply)"><i class="bi bi-trash"></i> Supprimer</button>
+          </div>
+        </div>
+      </div>
+      <!-- Champ de réponse -->
+      <div *ngIf="replyingTo === comment.id" class="reply-box mt-2">
+        <input [(ngModel)]="replyContent" class="form-control" placeholder="Votre réponse..." />
+        <button class="btn btn-primary btn-sm mt-1" (click)="sendReply(comment)">Envoyer</button>
+        <button class="btn btn-link btn-sm" (click)="cancelReply()">Annuler</button>
+      </div>
+      <!-- Champ d'édition -->
+      <div *ngIf="editingCommentId === comment.id" class="edit-box mt-2">
+        <input [(ngModel)]="editContent" class="form-control" />
+        <button class="btn btn-success btn-sm mt-1" (click)="saveEdit(comment)">Enregistrer</button>
+        <button class="btn btn-link btn-sm" (click)="cancelEdit()">Annuler</button>
+      </div>
+    </div>
+  </div>
+  <!-- Ajout d'un commentaire principal -->
+  <div class="add-comment mt-3 d-flex align-items-center">
+    <img [src]="currentUser?.avatar || 'assets/img/default-avatar.png'" class="comment-avatar me-2" alt="avatar" />
+    <input [(ngModel)]="newComment" class="form-control me-2" placeholder="Écrire un commentaire..." (keyup.enter)="addComment()" />
+    <button class="btn btn-primary" (click)="addComment()">Publier</button>
+  </div>
+</div>

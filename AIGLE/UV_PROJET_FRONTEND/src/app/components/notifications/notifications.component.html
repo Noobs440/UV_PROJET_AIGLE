@@ -1,0 +1,9 @@
+<div *ngIf="loading">Chargement des notifications...</div>
+<ul *ngIf="!loading && notifications.length">
+  <li *ngFor="let notif of notifications" [class.lu]="notif.read_at">
+    <span>{{ notif.data.message }}</span>
+    <a *ngIf="notif.data.url" [href]="notif.data.url" target="_blank">Voir le projet</a>
+    <button *ngIf="!notif.read_at" (click)="markAsRead(notif.id)">Marquer comme lue</button>
+  </li>
+</ul>
+<div *ngIf="!loading && !notifications.length">Aucune notification.</div>

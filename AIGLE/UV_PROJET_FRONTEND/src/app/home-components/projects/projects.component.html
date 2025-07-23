@@ -89,7 +89,6 @@
             <a [routerLink]="['/home/project-detail', post.id]" [queryParams]="getProjectQueryParams(post)">{{ post.titre_projet }}</a>
           </h2>
           <div class="d-flex align-items-center">
-            <!-- <img [src]="getFullImageUrl(post.image_utilisateur)" alt="" class="img-fluid user-avatar"> -->
             <div class="post-meta">
               <p class="author">{{ post.nom_utilisateur }}</p>
               <p class="date">
@@ -97,6 +96,7 @@
               </p>
             </div>
           </div>
+          <app-comments [projectId]="post.id"></app-comments>
         </article>
       </div>
     </div>

@@ -1,0 +1,22 @@
+.bg-green-100 { background-color: #d1fae5; }
+.border-green-400 { border-color: #34d399; }
+.text-green-700 { color: #047857; }
+.bg-red-100 { background-color: #fee2e2; }
+.border-red-400 { border-color: #f87171; }
+.text-red-700 { color: #b91c1c; }
+.bg-blue-100 { background-color: #dbeafe; }
+.border-blue-400 { border-color: #60a5fa; }
+.text-blue-700 { color: #1e40af; }
+.border { border-width: 1px; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+.rounded { border-radius: 0.25rem; }
+.relative { position: relative; }
+.mb-2 { margin-bottom: 0.5rem; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.ml-4 { margin-left: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.font-bold { font-weight: 700; }
+.focus\:outline-none:focus { outline: none; }

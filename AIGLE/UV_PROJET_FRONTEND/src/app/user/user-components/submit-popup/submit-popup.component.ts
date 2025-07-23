@@ -9,6 +9,7 @@ import { CategoryService } from '../../../services/category.service';
 import { NiveauService } from '../../../services/niveau.service';
 import { DocumentService } from '../../../services/document.service';
 import { CollaborateurService } from '../../../services/collaborateur.service';
+import { NotificationService } from '../../../services/notification.service';
 import { SuperviseurService } from '../../../services/superviseur.service';
 
 @Component({
@@ -18,6 +19,9 @@ import { SuperviseurService } from '../../../services/superviseur.service';
   providers: [DatePipe]
 })
 export class SubmitPopupComponent implements OnInit {
+  alertMessage: string = '';
+  alertType: 'success' | 'error' | 'info' = 'info';
+  showAlert: boolean = false;
   creationForm!: FormGroup;
   documentForm!: FormGroup;
   collaboratorForm!: FormGroup;
@@ -60,7 +64,8 @@ export class SubmitPopupComponent implements OnInit {
     private projetService: ProjetService,
     private route: ActivatedRoute,
     private categoryService: CategoryService,
-    private niveauService: NiveauService
+    private niveauService: NiveauService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
@@ -190,7 +195,9 @@ export class SubmitPopupComponent implements OnInit {
       this.projetService.addProject(formData).subscribe({
         next: value => {
           this.project_id = value.id;
-          alert("Projet créé avec succès !");
+          this.alertType = 'success';
+          this.alertMessage = 'Projet créé avec succès !';
+          this.showAlert = true;
         },
         error: err => {
           console.error(err);
@@ -218,12 +225,16 @@ export class SubmitPopupComponent implements OnInit {
 
       this.documentService.addDocument(formData).subscribe({
         next: () => {
-          alert("Document ajouté avec succès !");
+          this.alertType = 'success';
+          this.alertMessage = 'Document ajouté avec succès !';
+          this.showAlert = true;
           this.saveD = true;
         },
         error: err => {
           console.error(err);
-          alert("Erreur lors de l'ajout du document.");
+          this.alertType = 'error';
+          this.alertMessage = "Erreur lors de l'ajout du document.";
+          this.showAlert = true;
         },
         complete: () => {
           this.isLoading = false;
@@ -233,6 +244,13 @@ export class SubmitPopupComponent implements OnInit {
     }
 
     if (this.formType === 'collaborator' && this.collaboratorForm.valid) {
+      // Ajout du log pour vérifier les valeurs envoyées
+      console.log('Ajout collaborateur:', {
+        nom_collab: this.collaboratorForm.value.name,
+        email_collab: this.collaboratorForm.value.email,
+        tbl_projet_id: this.project_id,
+        user_id: this.user_id
+      });
       this.colService.addCollaborateur(
         this.collaboratorForm.value.name,
         this.collaboratorForm.value.email,
@@ -240,13 +258,35 @@ export class SubmitPopupComponent implements OnInit {
         this.user_id
       ).subscribe({
         next: () => {
-          alert("Collaborateur ajouté et notification envoyée !");
-          this.saveC = true;
-          this.collaboratorForm.reset();
+          // Envoi de la notification à tous les collaborateurs et au créateur
+          const notifPayload = {
+            projectId: this.project_id,
+            collaboratorEmail: this.collaboratorForm.value.email,
+            message: `Vous avez été ajouté comme collaborateur au projet. Cliquez ici pour voir le projet.`
+          };
+          this.notificationService.sendProjectNotification(notifPayload).subscribe({
+            next: () => {
+              // Optionnel: envoi d'un email (si backend disponible)
+              // this.notificationService.sendProjectEmail(notifPayload).subscribe();
+              this.alertType = 'success';
+              this.alertMessage = 'Collaborateur ajouté et notification envoyée !';
+              this.showAlert = true;
+              this.saveC = true;
+              this.collaboratorForm.reset();
+            },
+            error: err => {
+              console.error(err);
+              this.alertType = 'error';
+              this.alertMessage = "Collaborateur ajouté, mais erreur lors de l'envoi de la notification.";
+              this.showAlert = true;
+            }
+          });
         },
         error: err => {
           console.error(err);
-          alert("Erreur lors de l'ajout du collaborateur.");
+          this.alertType = 'error';
+          this.alertMessage = "Erreur lors de l'ajout du collaborateur.";
+          this.showAlert = true;
         },
         complete: () => {
           this.isLoading = false;
@@ -260,13 +300,17 @@ export class SubmitPopupComponent implements OnInit {
         this.supervisorForm.value.email
       ).subscribe({
         next: () => {
-          alert("Superviseur ajouté !");
+          this.alertType = 'success';
+          this.alertMessage = 'Superviseur ajouté !';
+          this.showAlert = true;
           this.saveS = true;
           this.supervisorForm.reset();
         },
         error: err => {
           console.error(err);
-          alert("Erreur lors de l'ajout du superviseur.");
+          this.alertType = 'error';
+          this.alertMessage = "Erreur lors de l'ajout du superviseur.";
+          this.showAlert = true;
         },
         complete: () => {
           this.isLoading = false;

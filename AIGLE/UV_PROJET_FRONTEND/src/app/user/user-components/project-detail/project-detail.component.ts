@@ -1,3 +1,5 @@
+
+
 import { Component, OnInit, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
@@ -10,6 +12,7 @@ import { CollaborateurService } from '../../../services/collaborateur.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { CompleteDialogComponent } from '../complete-dialog/complete-dialog.component';
 import { Subscription } from 'rxjs';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-project-detail',
@@ -20,7 +23,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
 
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
-  collaborators:any[]=[];
+  collaborators: any[] = [];
   documents: any[] = [];
   selectedProjectId = 0;
   selectedProjectTitle = '';
@@ -43,6 +46,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   user_token: string | null = null;
   confirm_message = '';
   isExpanded = false;
+  projetOwnerId: string | null = null;
 
   private queryParamsSub?: Subscription;
 
@@ -55,7 +59,8 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     private projetService: ProjetService,
     private projetStatusService: ProjetstatusService,
     private collaborateurService: CollaborateurService,
-  ) {}
+    private notificationService: NotificationService
+  ) { }
 
   ngOnInit(): void {
     this.user_id = localStorage.getItem('id');
@@ -79,12 +84,11 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
       this.views = Number(params['views']) || 0;
       this.email = params['email'] || '';
     });
-
     this.projetService.countViews(this.id).subscribe({
       next: value => {
         console.log('Count views response:', value);
       },
-      error: () => {}
+      error: () => { }
     });
 
     this.documentService.getDocumentsByProject(this.id).subscribe(response => {
@@ -94,12 +98,81 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
       this.collaborators = response;
     });
 
+    // Récupère l'id du créateur du projet
+    this.projetService.getProjectById(this.id).subscribe((projet: any) => {
+      this.projetOwnerId = projet.user_id?.toString();
+    });
+
     this.actionCellRenderer();
+  }
+
+  isProjectOwner(): boolean {
+    return !!this.user_id && !!this.projetOwnerId && this.user_id === this.projetOwnerId;
   }
 
   ngOnDestroy(): void {
     this.queryParamsSub?.unsubscribe();
   }
+
+
+  approveProject(): void {
+    if (!this.isProjectOwner()) {
+      alert("Vous n'avez pas le droit d'approuver ce projet.");
+      return;
+    }
+    this.projetStatusService.approveProject(this.id).subscribe({
+      next: () => {
+        this.projectStatus = 'Approved';
+        const notifPayload = {
+          projectId: this.id,
+          collaboratorEmail: '',
+          message: 'Le statut du projet a changé : approuvé.'
+        };
+        this.notificationService.sendProjectNotification(notifPayload).subscribe({
+          next: () => {
+            alert("Projet approuvé et notification envoyée à tous les collaborateurs.");
+          },
+          error: () => {
+            alert("Projet approuvé, mais la notification n'a pas pu être envoyée.");
+          }
+        });
+      },
+      error: err => {
+        alert("Erreur lors de l'approbation du projet");
+        console.error(err);
+      }
+    });
+  }
+
+  rejectProject(): void {
+    if (!this.isProjectOwner()) {
+      alert("Vous n'avez pas le droit de rejeter ce projet.");
+      return;
+    }
+    this.projetStatusService.rejectProject(this.id).subscribe({
+      next: () => {
+        this.projectStatus = 'Rejected';
+        const notifPayload = {
+          projectId: this.id,
+          collaboratorEmail: '',
+          message: 'Le statut du projet a changé : rejeté.'
+        };
+        this.notificationService.sendProjectNotification(notifPayload).subscribe({
+          next: () => {
+            alert("Projet rejeté et notification envoyée à tous les collaborateurs.");
+          },
+          error: () => {
+            alert("Projet rejeté, mais la notification n'a pas pu être envoyée.");
+          }
+        });
+      },
+      error: err => {
+        alert("Erreur lors du rejet du projet");
+        console.error(err);
+      }
+    });
+  }
+
 
   deleteProject(Projectid: number): void {
     this.projetService.deleteProject(Projectid).subscribe({
@@ -133,10 +206,28 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   }
 
   submitProject(): void {
+    if (!this.isProjectOwner()) {
+      alert("Vous n'avez pas le droit de soumettre ce projet.");
+      return;
+    }
     this.submitService.submitProject(this.id).subscribe({
       next: () => {
-        alert("Votre projet a été soumis");
-        this.Submitted = true;
+        // Notifier tous les collaborateurs et le créateur du projet
+        const notifPayload = {
+          projectId: this.id,
+          collaboratorEmail: '', // Vide pour notifier tous les collaborateurs
+          message: `Le statut du projet a changé : soumis.`
+        };
+        this.notificationService.sendProjectNotification(notifPayload).subscribe({
+          next: () => {
+            alert("Votre projet a été soumis et les collaborateurs ont été notifiés.");
+            this.Submitted = true;
+          },
+          error: () => {
+            alert("Votre projet a été soumis, mais la notification n'a pas pu être envoyée.");
+            this.Submitted = true;
+          }
+        });
       },
       error: err => {
         alert("Votre projet doit contenir au moins un document");
@@ -149,22 +240,25 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     this.isExpanded = !this.isExpanded;
   }
 
- openDialog(formType: string): void {
-  const dialogRef = this.dialog.open(DocumentPopupComponent, {
-    width: '400px',
-    height: '550px',
-    data: {
-      formType,
-      id: this.id,           // ✅ Ajout de l'ID du projet
-      user_id: this.user_id  // (optionnel, utile pour les documents)
+  openDialog(formType: string): void {
+    if (!this.isProjectOwner()) {
+      alert("Vous n'avez pas le droit d'ajouter des documents, collaborateurs ou superviseur.");
+      return;
     }
-  });
+    const dialogRef = this.dialog.open(DocumentPopupComponent, {
+      width: '400px',
+      height: '550px',
+      data: {
+        formType,
+        id: this.id,           // ✅ Ajout de l'ID du projet
+        user_id: this.user_id  // (optionnel, utile pour les documents)
+      }
+    });
 
-  dialogRef.afterClosed().subscribe(() => {
-    console.log('The dialog was closed');
-  });
-}
-
+    dialogRef.afterClosed().subscribe(() => {
+      console.log('The dialog was closed');
+    });
+  }
 
   openDeleteDialog(templateRef: TemplateRef<any>): void {
     this.dialog.open(templateRef, {
@@ -191,7 +285,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/,'')}`;
   }
 
   actionCellRenderer(): string {
@@ -218,3 +312,4 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     return actionButtons;
   }
 }
+

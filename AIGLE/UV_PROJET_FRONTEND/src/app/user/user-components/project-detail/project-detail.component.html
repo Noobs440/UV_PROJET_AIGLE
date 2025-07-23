@@ -32,19 +32,19 @@
           <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="actions" role="tabpanel" aria-labelledby="actions-tab">
               <div class="actions mt-3">
-                <button class="btn btn-view" (click)="openDialog('document')">
+                <button class="btn btn-view" (click)="openDialog('document')" [disabled]="!isProjectOwner()">
                   <i class="fas fa-plus"></i> Add Document
                 </button>
-                <button class="btn btn-cola" (click)="openDialog('collaborator')">
+                <button class="btn btn-cola" (click)="openDialog('collaborator')" [disabled]="!isProjectOwner()">
                   <i class="fas fa-plus"></i> Add Collaborator
                 </button>
-                <button class="btn btn-sup" (click)="openDialog('supervisor')">
+                <button class="btn btn-sup" (click)="openDialog('supervisor')" [disabled]="!isProjectOwner()">
                   <i class="fas fa-plus"></i> Add Supervisor
                 </button>
-                <button class="btn btn-del" (click)="openDeleteDialog(deleteDialog)">
+                <button class="btn btn-del" (click)="openDeleteDialog(deleteDialog)" [disabled]="!isProjectOwner()">
                   <i class="fas fa-trash"></i> Delete
                 </button>
-                <button *ngIf="projectStatus === 'Not Submitted' && !Submitted" class="btn btn-sup" (click)="submitProject()">
+                <button *ngIf="projectStatus === 'Not Submitted' && !Submitted" class="btn btn-sup" (click)="submitProject()" [disabled]="!isProjectOwner()">
                   <i class="fas fa-plus"></i> Submit
                 </button>
               </div>

@@ -6,6 +6,7 @@ import { EditNameComponent } from './components/profile/edit-name.component';
 import { EditEmailComponent } from './components/profile/edit-email.component';
 import { EditPasswordComponent } from './components/profile/edit-password.component';
 import { EditPhotoComponent } from './components/profile/edit-photo.component';
+import { HomeConnectedComponent } from './home-components/home-connected/home-connected.component';
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -13,12 +14,13 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home-components/home/home.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { NavComponent } from './shared/nav/nav.component';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { RegisterComponent } from './home-components/modals/register-popup/register-popup.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommentsModule } from './components/comments/comments.module';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatDialogModule } from '@angular/material/dialog';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
@@ -59,6 +61,7 @@ export function HttpLoaderFactory(http: HttpClient) {
   declarations: [
     AppComponent,
     HomeComponent,
+    HomeConnectedComponent,
     FooterComponent,
     NavComponent,
     RegisterComponent,
@@ -80,20 +83,15 @@ export function HttpLoaderFactory(http: HttpClient) {
     DefaultComponent,
     OverlayOptionsComponent,
     CounterDirective,
-    CounterDirective,
     SafeUrlPipe,
     ConfirmDialogComponent,
     EditEmailComponent,
-    
-  ],
-  imports: [
-
-     ProfileComponent,
+    ProfileComponent,
     EditNameComponent,
-    
     EditPasswordComponent,
     EditPhotoComponent,
-
+  ],
+  imports: [
     BrowserModule,
     BrowserAnimationsModule ,
     AppRoutingModule,
@@ -104,6 +102,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ScrollingModule,
     OverlayModule,
     FormsModule,
+    CommentsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -115,7 +114,12 @@ export function HttpLoaderFactory(http: HttpClient) {
   providers: [
     provideClientHydration(),
     provideHttpClient(withFetch()),
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: (require('./services/auth.interceptor').AuthInterceptor),
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

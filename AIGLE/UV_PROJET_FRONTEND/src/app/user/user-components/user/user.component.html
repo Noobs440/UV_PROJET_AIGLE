@@ -1,3 +1,4 @@
+
 <div #body>
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -163,6 +164,8 @@
     Filtré par : {{ selectedTypeFilter }}
     <i class="bi bi-x ms-1" style="cursor: pointer;" (click)="clearTypeFilter()"></i>
   </span>
+
+  <app-alert *ngIf="showAlert" [type]="alertType" [message]="alertMessage" (close)="showAlert = false"></app-alert>
 
   <router-outlet></router-outlet>
 

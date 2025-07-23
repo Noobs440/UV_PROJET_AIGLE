@@ -71,11 +71,17 @@ Route::middleware('auth:sanctum')->group(function () {
         
         // Notifications
         Route::controller(NotificationController::class)->group(function () {
-            Route::get('notifications', 'getNotifications');
+            Route::get('notifications', 'index');
             Route::post('notifications/read/{id}', 'markAsRead');
+            Route::post('notifications/project', 'sendProjectNotification');
+            // Ajout de la route pour marquer toutes les notifications comme lues
             Route::post('notifications/readAll', 'markAllAsRead');
         });
     });
+
+    // === Likes projets ===
+    Route::post('likes/projects/{project}/toggle-like', [\App\Http\Controllers\ProjectLikeController::class, 'toggleLike']);
+    Route::get('likes/projects/{project}', [\App\Http\Controllers\ProjectLikeController::class, 'getLikes']);
 });
 
 // Routes non authentifiées (usecases)
@@ -113,6 +119,7 @@ Route::prefix('usecases')->group(function () {
     Route::prefix('listing')->controller(ListingController::class)->group(function () {
         Route::get('/categorie/projets/{id}', 'showProjects');
         Route::get('/projet/documents/{id}', 'ShowDocuments');
+        Route::get('/projet/collaborateurs/{id}', 'ShowCollaborators');
         Route::get('/niveau/projets/{id}', 'ShowLevelProjects');
         Route::get('/user/documents/{id}', 'showUserDocuments');
         Route::get('/user/projets/{id}', 'showUserProjects');
@@ -151,6 +158,13 @@ Route::prefix('usecases')->group(function () {
         Route::post('/{id}', 'submitProject')->middleware('web');
     });
 });
+
+// === Commentaires ===
+Route::get('comments/project/{project_id}', [\App\Http\Controllers\CommentController::class, 'index']);
+Route::post('comments', [\App\Http\Controllers\CommentController::class, 'store']);
+Route::post('comments/{parent_id}/reply', [\App\Http\Controllers\CommentController::class, 'reply']);
+Route::put('comments/{id}', [\App\Http\Controllers\CommentController::class, 'update']);
+Route::delete('comments/{id}', [\App\Http\Controllers\CommentController::class, 'destroy']);
 
 
 Route::post('collaborateurs/add-to-project/{projectId}', [TblCollaborateurController::class, 'addToProject']);

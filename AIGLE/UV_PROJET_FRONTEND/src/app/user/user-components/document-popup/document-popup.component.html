@@ -1,4 +1,5 @@
 <div class="w-full contain-content h-full max-w-lg p-6 pt-2 bg-white rounded-lg shadow-lg">
+  <app-alert [type]="alertType" [message]="alertMessage" [show]="showAlert" (closed)="showAlert = false"></app-alert>
   <button (click)="onCancel()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
     <i class="fas fa-times text-l"></i>
   </button>

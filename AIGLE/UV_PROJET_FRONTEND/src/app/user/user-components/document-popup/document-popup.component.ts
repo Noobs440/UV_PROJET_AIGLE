@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DocumentService } from '../../../services/document.service';
 import { CollaborateurService } from '../../../services/collaborateur.service';
 import { SuperviseurService } from '../../../services/superviseur.service';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-document-popup',
@@ -23,13 +24,18 @@ export class DocumentPopupComponent implements OnInit {
   submitted = false;
   userId!: number;
 
+  alertMessage: string = '';
+  alertType: 'success' | 'error' | 'info' = 'info';
+  showAlert: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<DocumentPopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private documentService: DocumentService,
     private colService: CollaborateurService, // ✅ corrigé ici
-    private supService: SuperviseurService    // ✅ corrigé ici
+    private supService: SuperviseurService,   // ✅ corrigé ici
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -84,35 +90,64 @@ export class DocumentPopupComponent implements OnInit {
 
         this.documentService.addDocument(formData).subscribe({
           next: () => {
-            alert('Document ajouté avec succès !');
-            this.dialogRef.close(true);
+            this.alertType = 'success';
+            this.alertMessage = 'Document ajouté avec succès !';
+            this.showAlert = true;
+            setTimeout(() => {
+              this.showAlert = false;
+              this.dialogRef.close(true);
+            }, 2000);
           },
           error: (err) => {
             console.error(err);
-            alert('Erreur lors de l\'ajout du document : ' + (err.error?.message || 'Erreur inconnue'));
+            this.alertType = 'error';
+            this.alertMessage = 'Erreur lors de l\'ajout du document : ' + (err.error?.message || 'Erreur inconnue');
+            this.showAlert = true;
           }
         });
       } else {
-        alert('Veuillez sélectionner un fichier et renseigner le titre.');
+        this.alertType = 'error';
+        this.alertMessage = 'Veuillez sélectionner un fichier et renseigner le titre.';
+        this.showAlert = true;
       }
 
     } else if (this.formType === 'collaborator' && this.collaboratorForm.valid) {
+      // Correction : mapping explicite des champs pour le backend
       this.colService.addCollaborateur(
         this.collaboratorForm.value.name,
         this.collaboratorForm.value.email,
-        (this.projectId).toString(),
-        (this.userId).toString()
+        this.projectId.toString(),
+        this.userId.toString()
       ).subscribe({
         next: () => {
-          alert("Collaborateur ajouté avec succès !");
+          // Envoi notification au collaborateur ajouté et au créateur
+          const notifPayload = {
+            projectId: this.projectId,
+            collaboratorEmail: this.collaboratorForm.value.email,
+            message: `Vous avez été ajouté comme collaborateur au projet. Cliquez ici pour voir le projet.`
+          };
+          this.notificationService.sendProjectNotification(notifPayload).subscribe({
+            next: () => {
+              this.alertType = 'success';
+              this.alertMessage = 'Collaborateur ajouté et notification envoyée !';
+              this.showAlert = true;
+            },
+            error: (err) => {
+              this.alertType = 'error';
+              this.alertMessage = "Collaborateur ajouté, mais erreur lors de l'envoi de la notification.";
+              this.showAlert = true;
+            },
+            complete: () => {
+              this.dialogRef.close(this.collaboratorForm.value);
+              window.location.reload();
+            }
+          });
         },
         error: (err) => {
           console.error(err);
-          alert("Erreur lors de l'ajout du collaborateur.");
-        },
-        complete: () => {
-          this.dialogRef.close(this.collaboratorForm.value);
-          window.location.reload();
+          this.alertType = 'error';
+          this.alertMessage = "Erreur lors de l'ajout du collaborateur : " + (err.error?.message || 'Erreur inconnue');
+          this.showAlert = true;
         }
       });
 
@@ -122,11 +157,15 @@ export class DocumentPopupComponent implements OnInit {
         this.supervisorForm.value.email
       ).subscribe({
         next: () => {
-          alert("Superviseur ajouté avec succès !");
+          this.alertType = 'success';
+          this.alertMessage = 'Superviseur ajouté avec succès !';
+          this.showAlert = true;
         },
         error: (err) => {
           console.error(err);
-          alert("Erreur lors de l'ajout du superviseur.");
+          this.alertType = 'error';
+          this.alertMessage = "Erreur lors de l'ajout du superviseur.";
+          this.showAlert = true;
         },
         complete: () => {
           this.dialogRef.close(this.supervisorForm.value);

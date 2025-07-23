@@ -51,6 +51,15 @@
                   </p>
                 </div>
               </div>
+              <!-- Bouton Like -->
+              <div class="like-section mt-2">
+                <button class="btn btn-sm"
+                        [ngClass]="likeStates[post.id] ? 'btn-primary' : 'btn-outline-primary'"
+                        (click)="toggleLike(post.id); $event.stopPropagation(); $event.preventDefault();">
+                  <i class="fa" [ngClass]="likeStates[post.id] ? 'fa-thumbs-up' : 'fa-thumbs-o-up'"></i>
+                  {{ likeCounts[post.id] || 0 }}
+                </button>
+              </div>
             </article>
           </div><!-- End post list item -->
         </div><!-- End recent posts list -->

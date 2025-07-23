@@ -96,7 +96,8 @@ class TblProjetController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $projet = TblProjet::where('id', $id)->firstOrFail();
+        $projet = TblProjet::with(['collaborateurs.user'])->where('id', $id)->firstOrFail();
+        $oldStatus = $projet->status;
         $projet->titre_projet = $request->titre_projet;
         $projet->descript_projet = $request->descript_projet;
         $projet->tbl_niveau_id = $request->tbl_niveau_id;
@@ -112,7 +113,24 @@ class TblProjetController extends Controller
             $projet->image = $imageUrl;
         }
 
+        // Si le statut change, notifier tous les collaborateurs et le créateur
+        $newStatus = $request->input('status', $projet->status);
+        $projet->status = $newStatus;
         $projet->save();
+
+        if ($oldStatus !== $newStatus) {
+            // Notifier le créateur avec un message spécifique
+            $creatorMessage = "Bonjour " . $projet->user->nom_user . ", le statut de votre projet '" . $projet->titre_projet . "' a changé : " . $newStatus;
+            $projet->user->notify(new \App\Notifications\ProjectStatusChangeNotification($projet, $newStatus, $creatorMessage));
+
+            // Notifier tous les collaborateurs (user_id sur TblCollaborateur) avec un message différent
+            foreach ($projet->collaborateurs as $collab) {
+                if ($collab->user) {
+                    $collabMessage = "Bonjour " . $collab->user->nom_user . ", le statut du projet auquel vous collaborez '" . $projet->titre_projet . "' a changé : " . $newStatus;
+                    $collab->user->notify(new \App\Notifications\ProjetStatusChanged($projet, $newStatus));
+                }
+            }
+        }
 
         return response()->json($projet);
     }

@@ -14,14 +14,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tbl_collaborateurs', function (Blueprint $table) {
-    $table->id();
-    $table->string('nom_collab');
-    $table->string('email_collab');
-    $table->foreignIdFor(TblProjet::class)->constrained()->onDelete('cascade');
-    $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
-    $table->timestamps();
-    $table->unique(['nom_collab', 'email_collab', 'tbl_projet_id']);
-});
+            $table->id();
+            $table->string('nom_collab');
+            $table->string('email_collab');
+            // Suppression de la clé étrangère tbl_projet_id (relation many-to-many désormais)
+            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
+            $table->timestamps();
+            $table->unique(['nom_collab', 'email_collab']);
+        });
 
     }
 

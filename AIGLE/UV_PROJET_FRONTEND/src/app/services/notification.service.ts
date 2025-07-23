@@ -51,4 +51,24 @@ export class NotificationService {
       this.getAuthHeaders()
     );
   }
+
+  /** 🚀 Envoie une notification à tous les collaborateurs et au créateur du projet */
+  sendProjectNotification(payload: { projectId: any, collaboratorEmail: string, message: string }): Observable<any> {
+    // À adapter selon l'API backend réelle
+    return this.http.post<any>(
+      `${this.baseUrl}/notifications/project`,
+      payload,
+      this.getAuthHeaders()
+    );
+  }
+
+  /** (Optionnel) Envoie un email à tous les collaborateurs et au créateur du projet */
+  sendProjectEmail(payload: { projectId: any, collaboratorEmail: string, message: string }): Observable<any> {
+    // À adapter selon l'API backend réelle
+    return this.http.post<any>(
+      `${this.baseUrl}/notifications/project/email`,
+      payload,
+      this.getAuthHeaders()
+    );
+  }
 }

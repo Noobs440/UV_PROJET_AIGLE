@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { AcceuilService } from '../../services/acceuil.service';
 import { ProjetService } from '../../services/projet.service';
+import { ProjectLikeService } from '../../services/project-like.service';
 
 @Component({
   selector: 'app-recent-post',
@@ -30,25 +31,46 @@ export class RecentPostComponent implements OnInit {
   allProjects:any;
   isLoading=false;
 
-  constructor(private acceuilService: AcceuilService, private projectDetailService:ProjetService) {}
+  likeStates: { [projectId: number]: boolean } = {};
+  likeCounts: { [projectId: number]: number } = {};
+
+  constructor(
+    private acceuilService: AcceuilService,
+    private projectDetailService: ProjetService,
+    private projectLikeService: ProjectLikeService
+  ) {}
 
   ngOnInit(): void {
-    this.isLoading=true
+    this.isLoading = true;
     this.acceuilService.getProjectsByOrder().subscribe({
       next: (data) => {
         this.data = data;
         this.chunkPosts();
-        //this.isLoading = false;
+        // Charger les likes pour chaque projet
+        this.data.forEach(post => this.loadLikeState(post.id));
       },
       error: (err) => {
         console.error(err);
         this.isLoading = false;
       },
-      complete: ()=>{
+      complete: () => {
         this.isLoading = false;
       }
     });
+  }
 
+  loadLikeState(projectId: number) {
+    this.projectLikeService.getLikes(projectId).subscribe(res => {
+      this.likeStates[projectId] = res.liked;
+      this.likeCounts[projectId] = res.likes;
+    });
+  }
+
+  toggleLike(projectId: number) {
+    this.projectLikeService.toggleLike(projectId).subscribe(res => {
+      this.likeStates[projectId] = res.liked;
+      this.likeCounts[projectId] = res.likes;
+    });
   }
   getProjectQueryParams(project: any) {
     return {

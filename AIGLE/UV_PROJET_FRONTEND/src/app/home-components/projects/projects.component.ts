@@ -6,6 +6,7 @@ import { NiveauService } from '../../services/niveau.service';
 import { CategoryService } from '../../services/category.service';
 import { RechercheService } from '../../services/recherche.service';
 import { ActivatedRoute } from '@angular/router';
+import { ProjectLikeService } from '../../services/project-like.service';
 
 @Component({
   selector: 'app-projects',
@@ -47,13 +48,17 @@ export class ProjectsComponent implements OnInit {
   selectedDomain = '';
   searchQuery = '';
 
+  likeStates: { [projectId: number]: boolean } = {};
+  likeCounts: { [projectId: number]: number } = {};
+
   constructor(
     private categorieService: CategoryService,
     private niveauService: NiveauService,
     private filiereService: FiliereService,
     private acceuilService: AcceuilService,
     private rechercheService: RechercheService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private projectLikeService: ProjectLikeService
   ) {}
   isLoading=false
   ngOnInit(): void {
@@ -63,6 +68,8 @@ export class ProjectsComponent implements OnInit {
         this.data = data;
         this.applyFilters();
         this.isLoading=false;
+        // Charger les likes pour chaque projet
+        this.data.forEach(post => this.loadLikeState(post.id));
       },
       error: (err) => {
         console.error(err);
@@ -180,5 +187,19 @@ export class ProjectsComponent implements OnInit {
       return '';
     }
     return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
+  }
+
+  loadLikeState(projectId: number) {
+    this.projectLikeService.getLikes(projectId).subscribe(res => {
+      this.likeStates[projectId] = res.liked;
+      this.likeCounts[projectId] = res.likes;
+    });
+  }
+
+  toggleLike(projectId: number) {
+    this.projectLikeService.toggleLike(projectId).subscribe(res => {
+      this.likeStates[projectId] = res.liked;
+      this.likeCounts[projectId] = res.likes;
+    });
   }
 }

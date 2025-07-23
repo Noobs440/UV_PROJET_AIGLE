@@ -1,4 +1,5 @@
 <div class="w-full contain-content h-full max-w-lg p-6 pt-2 bg-white rounded-lg shadow-lg">
+  <app-alert *ngIf="showAlert" [type]="alertType" [message]="alertMessage" (close)="showAlert = false"></app-alert>
   <!-- Bouton fermeture -->
   <button *ngIf="formType === 'project'" (click)="onCancel()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
     <i class="fas fa-times text-l"></i>
@@ -358,8 +359,8 @@
         </button>
         <button
           (click)="onCancel(); formType='collaborator';"
-          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
-        >
+          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark">
+          
           Finish <i class="fas fa-chevron-left"></i>
         </button>
       </div>

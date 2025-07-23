@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+import { AlertModule } from '../components/alert/alert.module';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserRoutingModule } from './user-routing.module';
@@ -31,7 +33,8 @@ import { MatDialogModule } from '@angular/material/dialog'; // ✅ correction ic
     FormsModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
-    MatDialogModule // ✅ module correct
+    MatDialogModule, // ✅ module correct
+    AlertModule
   ]
 })
 export class UserModule { }

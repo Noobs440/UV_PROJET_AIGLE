@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -7,16 +9,23 @@ import { Component } from '@angular/core';
 })
 export class HomeComponent {
   isLoading = true;
-
   sectionClass: string = 'recent-posts section';
-  ngOnInit(): void {
-     this.sectionClass = 'different-class';
 
+  constructor(private router: Router, private authService: AuthService) {}
+
+  ngOnInit(): void {
+    // Redirection automatique si connecté
+    if (this.authService.getUser()) {
+      this.router.navigate(['/home-connected']);
+      return;
+    }
+    this.sectionClass = 'different-class';
     setTimeout(() => {
       this.isLoading = false;
-    }, 300); // 30 seconds
+    }, 300);
   }
-   getFullImageUrl(projectImage: string): string {
+
+  getFullImageUrl(projectImage: string): string {
     if (!projectImage) {
       return '';
     }

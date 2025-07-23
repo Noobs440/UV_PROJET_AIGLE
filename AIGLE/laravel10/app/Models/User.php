@@ -42,7 +42,11 @@ class User extends Authenticatable
 
     public function projets()
     {
-        return $this->hasMany(TblProjet::class);
+        // Projets où l'utilisateur est créateur OU collaborateur
+        return TblProjet::where('user_id', $this->id)
+            ->orWhereHas('collaborateurs', function ($query) {
+                $query->whereIn('tbl_collaborateurs.id', $this->collaborateurs()->pluck('tbl_collaborateurs.id'));
+            });
     }
 
     public function documents()

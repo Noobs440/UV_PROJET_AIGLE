@@ -49,6 +49,11 @@ export class UserComponent implements OnInit {
 
   refreshInterval: any;
 
+  // Gestion des alertes personnalisées (déclarées au niveau de la classe pour accès template)
+  alertMessage: string = '';
+  alertType: 'success' | 'error' | 'info' = 'info';
+  showAlert: boolean = false;
+
   @ViewChild('toggleSidebarBtn', { static: true }) toggleSidebarBtn!: ElementRef;
   @ViewChild('body', { static: true }) sidebar!: ElementRef;
 
@@ -195,7 +200,11 @@ export class UserComponent implements OnInit {
     const result = confirm('Voulez-vous vous déconnecter ?');
     if (result) {
       this.userService.logout().subscribe({
-        next: () => alert('Déconnexion effectuée'),
+        next: () => {
+          this.alertType = 'success';
+          this.alertMessage = 'Déconnexion effectuée';
+          this.showAlert = true;
+        },
         error: err => console.log(err),
         complete: () => {
           localStorage.removeItem('token');

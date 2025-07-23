@@ -1,3 +1,4 @@
+
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap, catchError, of } from 'rxjs';
@@ -6,10 +7,14 @@ import { Observable, tap, catchError, of } from 'rxjs';
   providedIn: 'root'
 })
 export class ProjetService {
-
   private API_BASE = 'http://localhost:8000/api';
 
   constructor(private http: HttpClient) {}
+
+  // ✅ Récupérer un projet par son id
+  getProjectById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.API_BASE}/ressources/projets/${id}`);
+  }
 
   // ✅ Récupérer tous les projets
   getProjects(): Observable<any> {

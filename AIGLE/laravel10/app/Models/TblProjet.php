@@ -58,12 +58,23 @@ class TblProjet extends Model
 
     public function collaborateurs()
     {
+        // Relation many-to-many avec les collaborateurs via la table pivot tbl_collaborateur_projets
         return $this->belongsToMany(
             TblCollaborateur::class,
-            'collaborateur_projet',
+            'tbl_collaborateur_projets',
             'tbl_projet_id',
             'tbl_collaborateur_id'
         );
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(\App\Models\Comment::class, 'project_id');
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(\App\Models\ProjectLike::class, 'project_id');
     }
 
     public function toSearchableArray()
@@ -76,4 +87,4 @@ class TblProjet extends Model
     
 }
         // Envoi de la notification au superviseur
-      
+
