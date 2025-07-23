@@ -1,0 +1,78 @@
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>{{ name | uppercase}} </h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink]="['/home']">Home</a></li>
+        <li class="breadcrumb-item active">{{ name }} Dashboard</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <h4 style="color:#06BBCC; font-weight:bold ">{{name | uppercase}} Bienvenue dans votre espace personnelle</h4>
+
+  <section class="section dashboard">
+    <div class="myheader">
+      <h6>Vous pouvez televerser un projet en cliquant sur le bouton ci dessous.</h6>
+      <button (click)="openDialog()" class="mybutton"> <i class="fas fa-plus"></i> UPLOAD</button>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center">
+          <div class="spinner-grow text-info" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <div class="spinner-grow text-info" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <div class="spinner-grow text-info" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <div class="spinner-grow text-info" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <div class="spinner-grow text-info" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <div class="spinner-grow text-info" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <div class="spinner-grow text-info" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3" *ngFor="let project of selectedProject">
+          <div [routerLink]="['/user/dashboard/project-detail', project.id]" [queryParams]="getProjectQueryParams(project)" class="card">
+            <img [src]="getFullImageUrl(project.image)" alt="Project Image" class="card-img">
+            <div class="card-body">
+              <h5 class="card-title">{{ project.titre }}</h5>
+              <span class="badge category-badge" [style.backgroundColor]="">{{ project.nom_categorie }}</span>
+              <span class="badge status-badge" [ngClass]="{
+                'badge-not-submitted': project.status === 'Not Submitted',
+                'badge-pending': project.status === 'Pending',
+                'badge-approved': project.status === 'Approved',
+                'badge-rejected': project.status === 'Rejected'
+              }">{{ project.status | titlecase }}</span>
+              <p class="card-text">
+                <small class="text-muted fw-bold">By {{ project.nom_utilisateur }} on {{ project.created_at | date:'mediumDate' }}</small>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pagination-controls" *ngIf="totalPages > 1">
+        <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1" class="pagination-button">
+         <i class="fas fa-chevron-left"></i> Previous
+        </button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages" class="pagination-button">
+          Next <i class="fas fa-chevron-right"> </i>
+        </button>
+      </div>
+    </div>
+  </section>
+</main><!-- End #main -->
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
