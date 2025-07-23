@@ -185,6 +185,7 @@ export class LoginPopupComponent {
 
   onSubmit() {
     this.submitted = true;
+    this.errorMessage = '';
 
     if (this.loginForm.invalid) {
       return;
@@ -222,7 +223,7 @@ export class LoginPopupComponent {
 
           // Rediriger l'utilisateur en fonction de son rôle
 
-            this.router.navigate([`/${userRole}/dashboard`],{queryParams});
+            this.router.navigate([`/${userRole}/dashboard`]);
           // Fermer le modal
           this.dialogRef.close();
         },
@@ -230,6 +231,7 @@ export class LoginPopupComponent {
           console.error(err);
           this.isLoading = false;
           this.errorMessage = "Addresse email ou mot de passe invalide";
+          console.log('Erreur login, errorMessage:', this.errorMessage);
         },
         complete: () => {
           this.isLoading = false;

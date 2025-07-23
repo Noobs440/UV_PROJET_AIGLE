@@ -65,7 +65,7 @@
         <!-- Profil -->
         <li class="nav-item dropdown pe-3">
           <a class="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-            <img [src]="'assets/default.png'" alt="Profil" class="user-photo" style="width: 40px; height: 40px; border-radius: 50%;">
+            <img [src]="photo" (error)="photo = 'assets/img/default.png'" alt="Profil" class="user-photo" style="width: 40px; height: 40px; border-radius: 50%;">
             <span class="d-none d-md-block dropdown-toggle ps-2">{{ user_name }}</span>
           </a>
 
@@ -92,7 +92,7 @@
             <li><hr class="dropdown-divider"></li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center"[routerLink]="['/helpUser']" >
+              <a class="dropdown-item d-flex align-items-center" [routerLink]="['/helpUser']">
                 <i class="bi bi-question-circle"></i>
                 <span>Aide</span>
               </a>
@@ -125,29 +125,28 @@
       <li class="nav-heading">Pages</li>
 
       <li class="nav-item">
-  <a class="nav-link collapsed"
-     (click)="toggleProjects()"
-     [attr.aria-expanded]="isProjectsOpen"
-     style="cursor:pointer;">
-    <i class="bi bi-menu-button-wide"></i>
-    <span>My Projects</span>
-    <i class="bi bi-chevron-down ms-auto"></i>
-  </a>
-  <ul id="components-nav"
-      class="nav-content"
-      [class.collapse]="!isProjectsOpen"
-      [class.show]="isProjectsOpen"
-      data-bs-parent="#sidebar-nav">
-    <li *ngIf="filteredProjects.length === 0" class="text-muted px-3">Aucun projet trouvé.</li>
-    <li *ngFor="let project of filteredProjects">
-      <a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-         [routerLink]="['/user/dashboard/project-detail', project.id]"
-         [queryParams]="getProjectQueryParams(project)">
-        <i class="bi bi-circle"></i><span>{{ project.titre }}</span>
-      </a>
-    </li>
-  </ul>
-</li>
+        <a class="nav-link collapsed"
+           (click)="toggleProjects()"
+           [attr.aria-expanded]="isProjectsOpen"
+           style="cursor:pointer;">
+          <i class="bi bi-menu-button-wide"></i>
+          <span>My Projects</span>
+          <i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="components-nav"
+            class="nav-content"
+            [class.collapse]="!isProjectsOpen"
+            [class.show]="isProjectsOpen"
+            data-bs-parent="#sidebar-nav">
+          <li *ngIf="filteredProjects.length === 0" class="text-muted px-3">Aucun projet trouvé.</li>
+          <li *ngFor="let project of filteredProjects">
+            <a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+               [routerLink]="['/user/dashboard/project-detail', project.id]">
+              <i class="bi bi-circle"></i><span>{{ project.titre }}</span>
+            </a>
+          </li>
+        </ul>
+      </li>
 
       <li class="nav-item">
         <a class="nav-link collapsed" routerLink="/profile">

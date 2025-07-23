@@ -3,10 +3,10 @@ import {
   OnInit,
   Renderer2,
   ElementRef,
-  ViewChild
+  ViewChild,
+  HostListener
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { HostListener } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   trigger,
   state,
@@ -32,15 +32,14 @@ import { ListingService } from '../../../services/listing.service';
   ]
 })
 export class UserComponent implements OnInit {
-  token!: string;
-  user_name!: string;
-  role!: string;
-  id: any;
-
+  token: string = '';
+  user_name: string = '';
+  role: string = '';
+  id: string = '';
   photo: string = 'assets/img/default.png';
 
-   showProfileDropdown = false;
-   isProjectsOpen = false;
+  showProfileDropdown = false;
+  isProjectsOpen = false;
 
   notifications: any[] = [];
   dismissedNotificationIds: number[] = [];
@@ -59,7 +58,6 @@ export class UserComponent implements OnInit {
   constructor(
     private projectByIdService: ListingService,
     private projetService: ProjetService,
-    private route: ActivatedRoute,
     private router: Router,
     private userService: UserService,
     private renderer: Renderer2,
@@ -68,28 +66,39 @@ export class UserComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      this.token = params['token'];
-      this.user_name = params['name'];
-      this.role = params['role'];
-      this.id = params['id'];
+    // Récupère les infos utilisateur depuis le localStorage
+    this.token = localStorage.getItem('token') || '';
+    this.user_name = localStorage.getItem('name') || '';
+    this.role = localStorage.getItem('role') || '';
+    this.id = localStorage.getItem('id') || '';
+    this.photo = localStorage.getItem('photo') || 'assets/img/default.png';
 
-      this.userService.userSubject.next({
-    name: this.user_name,
-    id: this.id,
-    token: this.token,
-    role: this.role,
-    photo: this.photo
-  });
+    const storedPhoto = localStorage.getItem('photo');
+  this.photo = storedPhoto && storedPhoto !== 'null' && storedPhoto !== 'undefined'
+    ? (storedPhoto.startsWith('http') ? storedPhoto : `http://localhost:8000/${storedPhoto}`)
+    : 'assets/img/default.png';
 
-      if (this.id) this.loadProjects();
+    // Mets à jour le UserService si besoin
+    this.userService.userSubject.next({
+      name: this.user_name,
+      id: this.id,
+      token: this.token,
+      role: this.role,
+      photo: this.photo
+    });
 
-      this.userService.loadUserProfile();
-      this.userService.getUserProfile().subscribe(profile => {
-    if (profile) {
-      this.userProfile = profile;
-    }
-  });
+    if (this.id) this.loadProjects();
+
+    this.userService.loadUserProfile();
+    this.userService.getUserProfile().subscribe(profile => {
+      if (profile) {
+        this.userProfile = profile;
+        if (profile.photo) {
+          this.photo = profile.photo.startsWith('http')
+            ? profile.photo
+            : `http://localhost:8000/${profile.photo}`;
+        }
+      }
     });
 
     this.loadNotifications();
@@ -97,7 +106,7 @@ export class UserComponent implements OnInit {
     // 🔄 Rafraîchissement automatique toutes les 20 secondes
     this.refreshInterval = setInterval(() => {
       this.loadNotifications();
-    }, 20000); // 20 secondes
+    }, 20000);
   }
 
   ngOnDestroy(): void {
@@ -148,15 +157,19 @@ export class UserComponent implements OnInit {
     this.selectedTypeFilter = 'all';
     this.applyCombinedFilter();
   }
+
   toggleProjects() {
     this.isProjectsOpen = !this.isProjectsOpen;
   }
+
   toggleSidebar(): void {
     this.sidebar.nativeElement.classList.toggle('toggle-sidebar');
   }
-   toggleProfileDropdown() {
+
+  toggleProfileDropdown() {
     this.showProfileDropdown = !this.showProfileDropdown;
   }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -183,49 +196,13 @@ export class UserComponent implements OnInit {
         this.loadNotifications();
         this.dismissedNotificationIds = this.dismissedNotificationIds.filter(id => id !== notificationId);
       });
-    }, 300); // attendre la fin de l'animation
+    }, 300);
   }
 
   markAllNotificationAsRead(): void {
     this.notificationService.markAllNotificationAsRead().subscribe(() => {
       this.loadNotifications();
     });
-  }
- loadUserProfilePhoto(): void {
-    this.userService.getUserProfile().subscribe({
-      next: (userData) => {
-        if (userData.photo) {
-          this.photo = userData.photo.startsWith('http')
-            ? userData.photo
-            : `http://localhost:8000/${userData.photo}`;
-        } else {
-          this.photo = 'assets/img/default.png';
-        }
-      },
-      error: (err) => {
-        console.error('Erreur chargement photo:', err);
-        this.photo = 'assets/img/default.png';
-      }
-    });
-  }
-
-
-  getProjectQueryParams(project: any): any {
-    return {
-      id: project.id,
-      user_id: project.user_id,
-      title: project.titre,
-      status: project.status,
-      image: project.image,
-      description: project.description,
-      views: project.views,
-      author: project.nom_utilisateur,
-      category: project.nom_categorie,
-      level: project.niveau,
-      type: project.type,
-      date: project.created_at,
-      email: project.email
-    };
   }
 
   deconnexion(): void {
@@ -235,7 +212,7 @@ export class UserComponent implements OnInit {
         next: () => alert('Déconnexion effectuée'),
         error: err => console.log(err),
         complete: () => {
-          localStorage.removeItem('token');
+          localStorage.clear();
           this.router.navigate(['/home']);
         }
       });

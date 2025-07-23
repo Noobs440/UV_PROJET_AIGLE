@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { Observable, of, BehaviorSubject,throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
@@ -51,7 +51,8 @@ export class UserService {
       }),
       catchError(error => {
         console.error('Erreur de connexion:', error);
-        return of(null);
+        throw error;
+        return throwError(() => error); 
       })
     );
   }

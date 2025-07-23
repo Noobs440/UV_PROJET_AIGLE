@@ -37,7 +37,7 @@
   <span class="text-danger" *ngIf="(loginFormControl['password'].touched || submitted) && loginFormControl['password'].errors?.['required']">{{ 'passwordRequiredError' | translate }}</span>
   <span class="text-danger text-sm" *ngIf="loginFormControl['password'].touched && loginFormControl['password'].errors?.['invalidPassword']">{{ 'passwordInvalidError' | translate }}</span>
 </div>
-
+ <p class="text-red-600 text-center text-sm" *ngIf="errorMessage">{{ errorMessage }}</p>
       <div class="relative">
         <button [disabled]="isLoading || loginForm.invalid" type="submit"
                 class="disabled:bg-gray-300 disabled:cursor-not-allowed w-full px-4 py-2 text-white rounded-md flex items-center justify-center"
@@ -48,7 +48,7 @@
       </div>
     </form>
 
-    <p class="text-red-600 text-center text-sm" *ngIf="errorMessage">{{ errorMessage }}</p>
+    
     <div class="mt-4 text-left">
       <a (click)="this.showPasswordReset = true;" class="cursor-pointer block mb-2 -mt-5 text-sm text-black font-bold">{{ 'forgotPassword' | translate }}</a>
     </div>
